@@ -1,0 +1,8 @@
+target/generated-sources/openapi/README.md
+target/generated-sources/openapi/pom.xml
+target/generated-sources/openapi/.openapi-generator-ignore
+target/generated-sources/openapi/**/application.properties
+target/generated-sources/openapi/**/OpenApiGeneratorApplication.java
+target/generated-sources/openapi/**/RFC3339DateFormat.java
+target/generated-sources/openapi/src/configuration/**/*
+target/generated-sources/openapi/src/test/**/*

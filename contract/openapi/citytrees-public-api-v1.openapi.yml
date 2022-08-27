@@ -1,0 +1,168 @@
+openapi: 3.0.0
+
+info:
+  title: citytrees public API
+  contact:
+    name: Nagovitsin Maxim
+    email: nagovitsin.maxim@gmail.com
+  version: 0.0.1
+
+servers:
+  - url: http://localhost:8080/api/v1
+    description: local environment
+
+paths:
+  /hello/world:
+    get:
+      tags:
+        - hello-controller
+      operationId: helloWorld
+      summary: Hello summary
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  name:
+                    type: string
+                    example: vasya
+                  age:
+                    type: integer
+                    example: 10
+  /auth/jwt/refresh:
+    post:
+      tags:
+        - auth-controller
+      summary: Create new pair of Cookie (access_token, refresh_token) using old refresh_token
+      operationId: refreshTokenPair
+      parameters:
+        - name: RefreshToken
+          in: cookie
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: OK
+        400:
+          $ref: "#/components/responses/BadRequest"
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/Forbidden'
+        500:
+          $ref: '#/components/responses/Internal Server Error'
+
+  /auth/basic:
+    post:
+      tags:
+        - auth-controller
+      summary: Authenticate user using login and password, JWT tokens will be returned as Cookies (access_token, refresh_token)
+      operationId: handleBasicAuth
+      parameters:
+        - name: Authorization
+          in: header
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: OK
+        400:
+          $ref: "#/components/responses/BadRequest"
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/Forbidden'
+        500:
+          $ref: '#/components/responses/Internal Server Error'
+
+  /auth/oauth2/{provider}:
+    get:
+      tags:
+        - auth-controller
+      summary: Производит аутентификацию пользователя с помощью стороннего провайдера
+      operationId: handle0Auth2
+      parameters:
+        - name: provider
+          in: path
+          required: true
+          schema:
+            type: string
+            enum:
+              - vk
+      responses:
+        200:
+          description: OK
+        400:
+          $ref: "#/components/responses/BadRequest"
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/Forbidden'
+        500:
+          $ref: '#/components/responses/Internal Server Error'
+
+components:
+  schemas:
+    ErrorResponse:
+      description: Error
+      type: object
+      required:
+        - id
+        - code
+        - message
+      properties:
+        id:
+          description: Unique identifier of error
+          type: string
+          format: uuid
+          example: 6e612d3c-d7a3-4aa4-9ff0-a2fb667e02b1
+        code:
+          description: Error code, identifier for type of error
+          type: string
+          example: Forbidden
+        message:
+          description: Description of error
+          type: string
+          example: Not enough privileges to delete user
+
+  responses:
+
+    BadRequest:
+      description: Unexpected request content
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+    Unauthorized:
+      description: Credentials are invalid
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+    Forbidden:
+      description: Not enough privileges
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+    UnprocessableEntity:
+      description: Business exception
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+    InternalServerError:
+      description: Unexpected internal server error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'

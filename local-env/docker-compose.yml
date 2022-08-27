@@ -1,0 +1,20 @@
+services:
+
+  database:
+    image: postgis/postgis:14-3.2-alpine
+    restart: always
+    ports:
+      - "54321:5432"
+    environment:
+      POSTGRES_DB: citytrees
+      POSTGRES_USER: citytrees
+      POSTGRES_PASSWORD: citytrees
+
+  react-ui:
+    build:
+      context: ../frontend
+    ports:
+      - "3000:3000"
+    volumes:
+      - ../frontend:/usr/src/app/citytrees-frontend
+      - /usr/src/app/citytrees-frontend/node_modules
