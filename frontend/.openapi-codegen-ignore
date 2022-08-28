@@ -1,0 +1,7 @@
+frontend/src/generated/openapi/.openapi-generator/*
+frontend/src/generated/openapi/.gitignore
+
+frontend/src/generated/openapi/tsconfig.json
+frontend/src/generated/openapi/README.md
+frontend/src/generated/openapi/git_push.sh
+frontend/src/generated/openapi/.openapi-generator-ignore

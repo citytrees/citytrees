@@ -66,6 +66,64 @@
     <build>
         <plugins>
             <plugin>
+                <artifactId>maven-clean-plugin</artifactId>
+                <configuration>
+                    <filesets>
+                        <fileset>
+                            <directory>${project.basedir}/frontend/src/generated</directory>
+                            <followSymlinks>false</followSymlinks>
+                        </fileset>
+                    </filesets>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.openapitools</groupId>
+                <artifactId>openapi-generator-maven-plugin</artifactId>
+                <version>6.0.1</version>
+                <executions>
+                    <execution>
+                        <id>generate-backend</id>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <inputSpec>${project.basedir}/contract/openapi/citytrees-public-api-v1.openapi.yml</inputSpec>
+                            <output>${project.basedir}/target/generated-sources/openapi</output>
+                            <ignoreFileOverride>${project.basedir}/.openapi-codegen-ignore</ignoreFileOverride>
+                            <generatorName>spring</generatorName>
+                            <library>spring-boot</library>
+                            <apiPackage>${self-default-v1.package}.controller</apiPackage>
+                            <configOptions>
+                                <basePackage>${self-default-v1.package}</basePackage>
+                                <modelPackage>${self-default-v1.package}.model</modelPackage>
+                                <configPackage>${self-default-v1.package}.configuration</configPackage>
+                                <useTags>true</useTags>
+                                <delegatePattern>true</delegatePattern>
+                                <booleanGetterPrefix>is</booleanGetterPrefix>
+                                <openApiNullable>false</openApiNullable>
+                                <annotationLibrary>none</annotationLibrary>
+                                <documentationProvider>none</documentationProvider>
+                            </configOptions>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>generate-frontend</id>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <inputSpec>${project.basedir}/contract/openapi/citytrees-public-api-v1.openapi.yml</inputSpec>
+                            <output>${project.basedir}/frontend/src/generated/openapi</output>
+                            <generatorName>typescript-fetch</generatorName>
+                            <ignoreFileOverride>${project.basedir}/frontend/.openapi-codegen-ignore</ignoreFileOverride>
+                            <configOptions>
+                                <supportsES6>true</supportsES6>
+                            </configOptions>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
@@ -133,50 +191,6 @@
                             <goal>run</goal>
                         </goals>
                     </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.openapitools</groupId>
-                <artifactId>openapi-generator-maven-plugin</artifactId>
-                <version>6.0.1</version>
-                <executions>
-                    <execution>
-                        <id>generate-backend</id>
-                        <goals>
-                            <goal>generate</goal>
-                        </goals>
-                        <configuration>
-                            <inputSpec>${project.basedir}/contract/openapi/citytrees-public-api-v1.openapi.yml</inputSpec>
-                            <output>${project.basedir}/target/generated-sources/openapi</output>
-                            <ignoreFileOverride>${project.basedir}/.openapi-codegen-ignore</ignoreFileOverride>
-                            <generatorName>spring</generatorName>
-                            <library>spring-boot</library>
-                            <apiPackage>${self-default-v1.package}.controller</apiPackage>
-                            <generateApiTests>false</generateApiTests>
-                            <configOptions>
-                                <basePackage>${self-default-v1.package}</basePackage>
-                                <modelPackage>${self-default-v1.package}.model</modelPackage>
-                                <configPackage>${self-default-v1.package}.configuration</configPackage>
-                                <useTags>true</useTags>
-                                <delegatePattern>true</delegatePattern>
-                                <booleanGetterPrefix>is</booleanGetterPrefix>
-                                <openApiNullable>false</openApiNullable>
-                                <annotationLibrary>none</annotationLibrary>
-                                <documentationProvider>none</documentationProvider>
-                            </configOptions>
-                        </configuration>
-                    </execution>
-<!--                    <execution> TODO-->
-<!--                        <id>generate-frontend</id>-->
-<!--                        <goals>-->
-<!--                            <goal>generate</goal>-->
-<!--                        </goals>-->
-<!--                        <configuration>-->
-<!--                            <inputSpec>${project.basedir}/contract/openapi/citytrees-public-api-v1.openapi.yml</inputSpec>-->
-<!--                            <output>${project.basedir}/frontend/generated</output>-->
-<!--                            <generatorName>typescript</generatorName>-->
-<!--                        </configuration>-->
-<!--                    </execution>-->
                 </executions>
             </plugin>
         </plugins>
