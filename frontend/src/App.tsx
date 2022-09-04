@@ -1,18 +1,23 @@
 import React, {useEffect, useState} from 'react';
 import './App.css';
+import {HelloControllerApi} from "./generated/openapi";
 
 function App() {
 
   const [hello, setHello] = useState("");
+  const api = new HelloControllerApi()
 
   useEffect(() => {
-    fetch("http://localhost:8080/").then((response) => response.text().then((data) => {console.log(data); setHello(data)}))
+    api.helloWorld().then(response => {
+      if (response.name !== undefined) {
+        setHello(response.name)
+      }
+    })
   }, [])
 
   return (
     <div className="App">
-      421321
-      {hello}
+      Hello: {hello}
     </div>
   );
 }

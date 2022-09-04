@@ -1,4 +1,4 @@
-package io.citytrees;
+package io.citytrees.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.context.request.NativeWebRequest;

@@ -116,6 +116,7 @@
                             <output>${project.basedir}/frontend/src/generated/openapi</output>
                             <generatorName>typescript-fetch</generatorName>
                             <ignoreFileOverride>${project.basedir}/frontend/.openapi-codegen-ignore</ignoreFileOverride>
+                            <templateDirectory>frontend/mustache-templates</templateDirectory>
                             <configOptions>
                                 <supportsES6>true</supportsES6>
                             </configOptions>
