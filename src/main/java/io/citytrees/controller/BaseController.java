@@ -8,7 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Optional;
 
-abstract public class BaseController {
+public abstract class BaseController {
 
     @Autowired
     private HttpServletRequest httpServletRequest;

@@ -1,0 +1,186 @@
+<!DOCTYPE module PUBLIC
+    "-//Puppy Crawl//DTD Check Configuration 1.3//EN"
+    "http://www.puppycrawl.com/dtds/configuration_1_3.dtd">
+<module name="Checker">
+    <module name="SuppressWarningsFilter" />
+    <module name="TreeWalker">
+        <module name="AbbreviationAsWordInName"/>
+
+        <module name="AnnotationUseStyle">
+            <property name="elementStyle" value="compact"/>
+        </module>
+
+        <module name="ArrayTypeStyle"/>
+        <module name="AvoidDoubleBraceInitialization"/>
+        <module name="AvoidNestedBlocks"/>
+        <module name="AvoidNoArgumentSuperConstructorCall"/>
+        <module name="AvoidStarImport"/>
+        <module name="ClassTypeParameterName"/>
+        <module name="ConstantName"/>
+
+        <!-- Code complexity -->
+        <module name="CyclomaticComplexity">
+            <property name="max" value="15"/>
+        </module>
+
+        <module name="JavaNCSS">
+            <property name="methodMaximum" value="50"/>
+            <property name="classMaximum" value="1500"/>
+            <property name="fileMaximum" value="2000"/>
+            <property name="recordMaximum" value="150"/>
+        </module>
+
+        <module name="DeclarationOrder"/>
+        <module name="DefaultComesLast"/>
+        <module name="EmptyBlock"/>
+
+        <module name="EmptyCatchBlock">
+            <property name="exceptionVariableName" value="^expected|ignored$"/>
+        </module>
+
+        <module name="EmptyLineSeparator">
+            <property name="allowNoEmptyLineBetweenFields" value="true"/>
+            <property name="allowMultipleEmptyLines" value="false"/>
+            <property name="allowMultipleEmptyLinesInsideClassMembers" value="false"/>
+        </module>
+
+        <module name="EmptyStatement"/>
+        <module name="EqualsHashCode"/>
+        <module name="FallThrough"/>
+        <module name="GenericWhitespace"/>
+        <module name="InnerAssignment"/>
+        <module name="InnerTypeLast"/>
+        <module name="InterfaceIsType"/>
+
+        <module name="InterfaceTypeParameterName">
+            <property name="format" value="^[A-Z]$"/>
+        </module>
+
+        <module name="LeftCurly"/>
+
+        <module name="LocalVariableName">
+            <property name="format" value="^[a-z][a-zA-Z0-9]*$"/>
+        </module>
+
+        <!-- Enable after stub removing -->
+        <!-- <module name="MagicNumber"/> -->
+
+        <module name="MemberName"/>
+        <module name="MethodName"/>
+        <module name="MethodParamPad"/>
+
+        <module name="MethodTypeParameterName">
+            <property name="format" value="^[A-Z]{1,2}$"/>
+        </module>
+
+        <module name="ModifiedControlVariable"/>
+        <module name="ModifierOrder"/>
+        <module name="MultipleVariableDeclarations"/>
+        <module name="MutableException"/>
+        <module name="NeedBraces"/>
+
+        <module name="NestedForDepth">
+            <property name="max" value="1"/>
+        </module>
+
+        <module name="NestedIfDepth">
+            <property name="max" value="1"/>
+        </module>
+
+        <module name="NestedTryDepth">
+            <property name="max" value="1"/>
+        </module>
+
+        <module name="NoClone"/>
+        <module name="NoCodeInFile"/>
+        <module name="NoFinalizer"/>
+
+        <module name="NoLineWrap">
+            <property name="tokens" value="IMPORT, STATIC_IMPORT, PACKAGE_DEF"/>
+        </module>
+
+        <module name="NoWhitespaceAfter"/>
+
+        <module name="NoWhitespaceBefore">
+            <property name="allowLineBreaks" value="true"/>
+        </module>
+
+        <module name="NoWhitespaceBeforeCaseDefaultColon"/>
+        <module name="OneStatementPerLine"/>
+        <module name="OneTopLevelClass"/>
+
+        <module name="OperatorWrap">
+            <property name="option" value="eol"/>
+            <property name="tokens" value="PLUS"/>
+        </module>
+
+        <module name="OuterTypeFilename"/>
+        <module name="OuterTypeNumber"/>
+        <module name="PackageDeclaration"/>
+
+        <module name="PackageName">
+            <property name="format" value="^[a-z]+(\.[a-z][a-z0-9]*)*$"/>
+        </module>
+
+        <module name="ParameterAssignment"/>
+
+        <module name="ParameterName">
+            <property name="format" value="^[a-z][a-zA-Z0-9]*$"/>
+        </module>
+
+        <module name="ParameterNumber">
+            <property name="max" value="5"/>
+            <property name="ignoreOverriddenMethods" value="true"/>
+        </module>
+
+        <module name="ParenPad"/>
+
+        <module name="PatternVariableName">
+            <property name="format" value="^[a-z][a-zA-Z0-9]*$"/>
+        </module>
+
+        <module name="RedundantImport"/>
+        <module name="RedundantModifier"/>
+        <module name="RightCurly"/>
+
+        <module name="SeparatorWrap">
+            <property name="id" value="commaOnSameLine"/>
+            <property name="option" value="eol"/>
+            <property name="tokens" value="COMMA"/>
+        </module>
+
+        <module name="SeparatorWrap">
+            <property name="id" value="dotOnNewLine"/>
+            <property name="option" value="nl"/>
+            <property name="tokens" value="DOT"/>
+        </module>
+
+        <module name="SimplifyBooleanExpression"/>
+        <module name="SimplifyBooleanReturn"/>
+        <module name="SingleSpaceSeparator"/>
+
+        <module name="StaticVariableName">
+            <property name="format" value="^[a-z][a-zA-Z0-9]*$"/>
+        </module>
+
+        <module name="StringLiteralEquality"/>
+        <module name="SuppressWarningsHolder" />
+        <module name="TrailingComment"/>
+        <module name="TypecastParenPad"/>
+
+        <module name="TypeName">
+            <property name="format" value="^[A-Z][a-zA-Z0-9]*$"/>
+        </module>
+
+        <module name="UnusedImports"/>
+        <module name="UpperEll"/>
+        <module name="WhitespaceAfter"/>
+        <module name="WhitespaceAround"/>
+    </module>
+
+    <module name="FileTabCharacter"/>
+
+    <module name="LineLength">
+        <property name="max" value="200"/>
+    </module>
+</module>

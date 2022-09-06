@@ -12,26 +12,29 @@ servers:
     description: local environment
 
 paths:
-  /hello/world:
-    get:
+  /register:
+    post:
       tags:
-        - hello-controller
-      operationId: helloWorld
-      summary: Hello summary
+        - register-controller
+      summary: Registers new user
+      operationId: registerNewUser
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterUserRequest'
       responses:
         200:
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  name:
-                    type: string
-                    example: vasya
-                  age:
-                    type: integer
-                    example: 10
+          $ref: '#/components/responses/RegisterUserResponse'
+        400:
+          $ref: "#/components/responses/BadRequest"
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/Forbidden'
+        500:
+          $ref: '#/components/responses/InternalServerError'
   /auth/jwt/refresh:
     post:
       tags:
@@ -54,7 +57,7 @@ paths:
         403:
           $ref: '#/components/responses/Forbidden'
         500:
-          $ref: '#/components/responses/Internal Server Error'
+          $ref: '#/components/responses/InternalServerError'
 
   /auth/basic:
     post:
@@ -78,7 +81,7 @@ paths:
         403:
           $ref: '#/components/responses/Forbidden'
         500:
-          $ref: '#/components/responses/Internal Server Error'
+          $ref: '#/components/responses/InternalServerError'
 
   /auth/oauth2/{provider}:
     get:
@@ -104,10 +107,25 @@ paths:
         403:
           $ref: '#/components/responses/Forbidden'
         500:
-          $ref: '#/components/responses/Internal Server Error'
+          $ref: '#/components/responses/InternalServerError'
 
 components:
   schemas:
+    RegisterUserRequest:
+      type: object
+      required:
+        - email
+        - password
+      properties:
+        email:
+          type: string
+          format: email
+          example: example@mail.com
+        password:
+          type: string
+          format: password
+          example: P@$$w0rd!
+
     ErrorResponse:
       description: Error
       type: object
@@ -131,6 +149,20 @@ components:
           example: Not enough privileges to delete user
 
   responses:
+
+    RegisterUserResponse:
+      description: User successfully created, his id is in response's body
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - userId
+            properties:
+              userId:
+                type: string
+                format: uuid
+                example: ed156378-204b-473c-9d2a-886941a819ff
 
     BadRequest:
       description: Unexpected request content

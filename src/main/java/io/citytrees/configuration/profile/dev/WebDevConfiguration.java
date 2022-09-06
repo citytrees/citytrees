@@ -18,10 +18,10 @@ public class WebDevConfiguration implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
-                .allowedHeaders("*")
-                .allowedMethods("*")
-                .allowedOriginPatterns("*")
-                .allowCredentials(true);
+            .allowedHeaders("*")
+            .allowedMethods("*")
+            .allowedOriginPatterns("*")
+            .allowCredentials(true);
     }
 
     @Override
