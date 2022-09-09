@@ -7,7 +7,7 @@ import org.springframework.data.jdbc.core.mapping.JdbcValue;
 import java.sql.JDBCType;
 
 @WritingConverter
-public abstract class AbstractWritingEnumConverter<E extends Enum<E>> implements Converter<E, JdbcValue> {
+public class WritingEnumConverter<E extends Enum<E>> implements Converter<E, JdbcValue> {
 
     @Override
     public JdbcValue convert(E source) {

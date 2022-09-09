@@ -11,7 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 
 @Component
 @Profile("dev")
-public class NotImplementedInterceptor implements HandlerInterceptor {
+public class NotImplementedResponseStatusInterceptor implements HandlerInterceptor {
     @Override
     public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) {
         if (response.getStatus() == HttpStatus.NOT_IMPLEMENTED.value()) {

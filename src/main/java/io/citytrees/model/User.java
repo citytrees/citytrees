@@ -6,6 +6,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
+import java.util.Set;
 import java.util.UUID;
 
 @Value
@@ -22,7 +23,7 @@ public class User {
     String password;
 
     @Builder.Default
-    Role roles = Role.VOLUNTEER;
+    Set<Role> roles = Set.of(Role.VOLUNTEER);
 
     String firstName;
 
@@ -31,6 +32,6 @@ public class User {
     public enum Role {
         VOLUNTEER,
         MODERATOR,
-        SUPERUSER
+        SUPERUSER,
     }
 }

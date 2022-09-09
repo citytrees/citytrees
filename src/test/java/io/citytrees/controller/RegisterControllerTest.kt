@@ -36,11 +36,11 @@ class RegisterControllerTest : AbstractTest() {
             jsonPath("userId") { isNotEmpty() }
         }.andReturn().apply {
             val response = objectMapper.readValue(response.contentAsString, RegisterNewUser200Response::class.java)
-            val user = userRepository.findById(response.userId).orElseThrow()
+            val user = userRepository.findByUserId(response.userId).orElseThrow()
 
             assertEquals(email, user.email)
             assertEquals(hashUtil.md5WithSalt(password), user.password)
-            assertEquals(User.Role.VOLUNTEER, user.roles)
+            assertEquals(setOf(User.Role.VOLUNTEER), user.roles)
             assertNull(user.firstName)
             assertNull(user.lastName)
         }

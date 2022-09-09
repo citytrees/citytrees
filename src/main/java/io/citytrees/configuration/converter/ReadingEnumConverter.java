@@ -4,11 +4,11 @@ import org.springframework.core.convert.converter.Converter;
 import org.springframework.data.convert.ReadingConverter;
 
 @ReadingConverter
-public abstract class AbstractReadingEnumConverter<E extends Enum<E>> implements Converter<String, E> {
+public class ReadingEnumConverter<E extends Enum<E>> implements Converter<String, E> {
 
     private final Class<E> enumClass;
 
-    protected AbstractReadingEnumConverter(Class<E> enumClass) {
+    protected ReadingEnumConverter(Class<E> enumClass) {
         this.enumClass = enumClass;
     }
 
