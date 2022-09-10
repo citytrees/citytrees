@@ -3,14 +3,9 @@ import './App.css';
 
 function App() {
 
-  const [hello, setHello] = useState("");
-
-  useEffect(() => {
-  }, [])
-
   return (
     <div className="App">
-      Hello: {hello}
+      Hello world
     </div>
   );
 }
