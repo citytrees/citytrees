@@ -1,0 +1,22 @@
+name: CI
+
+on:
+
+    workflow_dispatch:
+
+jobs:
+
+    build:
+        runs-on: ubuntu-latest
+
+        steps:
+            -   uses: actions/checkout@v3
+
+            -   name: Setup Java JDK
+                uses: actions/setup-java@v3.5.0
+                with:
+                    java-version: '17'
+                    distribution: 'temurin'
+                    cache: maven
+            -   name: Build and test
+                run: ./mvnw clean verify -P checkstyle,integration-tests
