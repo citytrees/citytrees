@@ -1,7 +1,7 @@
 package io.citytrees.repository;
 
 import io.citytrees.model.User;
-import io.citytrees.repository.jdbctemplate.UserRepositoryExtension;
+import io.citytrees.repository.extension.UserRepositoryExtension;
 import org.springframework.data.jdbc.repository.query.Query;
 import org.springframework.data.repository.CrudRepository;
 

@@ -1,4 +1,4 @@
-package io.citytrees.repository.jdbctemplate;
+package io.citytrees.repository.extension;
 
 import io.citytrees.model.User;
 
@@ -7,4 +7,5 @@ import java.util.UUID;
 
 public interface UserRepositoryExtension {
     Optional<User> findByUserId(UUID id);
+    Optional<User> findByEmail(String email);
 }

@@ -2,6 +2,8 @@ package io.citytrees.model;
 
 import lombok.Builder;
 import lombok.Value;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
@@ -15,18 +17,23 @@ import java.util.UUID;
 public class User {
 
     @Id
+    @NotNull
     UUID id;
 
+    @NotNull
     String email;
 
+    @NotNull
     @Column("pwd")
     String password;
 
-    @Builder.Default
-    Set<Role> roles = Set.of(Role.VOLUNTEER);
+    @NotNull
+    Set<Role> roles;
 
+    @Nullable
     String firstName;
 
+    @Nullable
     String lastName;
 
     public enum Role {
