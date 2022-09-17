@@ -2,7 +2,7 @@ services:
 
   database:
     image: postgis/postgis:14-3.2-alpine
-    restart: always
+    restart: unless-stopped
     ports:
       - "54321:5432"
     environment:
@@ -13,6 +13,7 @@ services:
   react-ui:
     build:
       context: ../frontend
+    restart: unless-stopped
     ports:
       - "3000:3000"
     volumes:

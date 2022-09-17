@@ -1,8 +1,18 @@
 spring:
+  application:
+    name: citytrees
+  main:
+    banner-mode: off
   datasource:
     url: ${DB_URL:jdbc:postgresql://127.0.0.1:54321/citytrees}
     username: ${DB_LOGIN:citytrees}
     password: ${DB_PASSWORD:citytrees}
+    hikari:
+      maximum-pool-size: 3
+      minimum-idle: 1
+  flyway:
+    connect-retries: 3
+    connect-retries-interval: 1s
 
 password:
   salt: ${PASSWORD_SALT:some_salt}

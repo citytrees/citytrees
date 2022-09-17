@@ -1,0 +1,6 @@
+services:
+
+  database:
+    extends:
+      file: docker-compose.yml
+      service: database
