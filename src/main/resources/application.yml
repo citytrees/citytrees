@@ -11,7 +11,7 @@ spring:
       maximum-pool-size: 3
       minimum-idle: 1
   flyway:
-    connect-retries: 3
+    connect-retries: 5
     connect-retries-interval: 1s
 
 password:
