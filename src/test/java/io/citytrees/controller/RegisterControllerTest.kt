@@ -46,6 +46,11 @@ class RegisterControllerTest : AbstractTest() {
         }
     }
 
+    @Test
+    fun willFail() {
+        throw Exception("")
+    }
+
     private fun givenJsonContent(email: String, password: String) = """
         {
             "email": "$email",
