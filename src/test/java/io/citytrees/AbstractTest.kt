@@ -3,6 +3,7 @@ package io.citytrees
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.citytrees.model.User
 import io.citytrees.service.UserService
+import io.citytrees.v1.model.UserRole
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Tag
 import org.springframework.beans.factory.annotation.Autowired
@@ -41,21 +42,20 @@ abstract class AbstractTest {
         email: String,
         password: String,
         id: UUID = UUID.randomUUID(),
-        roles: Set<User.Role> = setOf(User.Role.VOLUNTEER),
+        roles: Set<UserRole> = setOf(UserRole.BASIC),
         firstName: String? = null,
         lastName: String? = null,
-    ) = userService.create(
-        User.builder()
-            .id(id)
-            .email(email)
-            .password(password)
-            .roles(roles)
-            .firstName(firstName)
-            .lastName(lastName)
-            .build()
-    ).also {
-        CLEANUP_TASKS.addFirst { userService.drop(it) }
-    }
+    ): User = User.builder()
+        .id(id)
+        .email(email)
+        .password(password)
+        .roles(roles)
+        .firstName(firstName)
+        .lastName(lastName)
+        .build().also {
+            userService.create(it)
+            CLEANUP_TASKS.addFirst { userService.drop(it.id) }
+        }
 
     companion object {
         private val CLEANUP_TASKS = ArrayDeque<Runnable>()

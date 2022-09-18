@@ -16,4 +16,12 @@ public interface UserRepository extends CrudRepository<User, UUID>, UserReposito
         RETURNING id
         """)
     UUID create(UUID id, String email, String pwd, String roles, String firstName, String lastName);
+
+    @Query("""
+        UPDATE ct_user
+        SET id=:id, email=:email, first_name=:firstName, last_name=:lastName
+        WHERE id=:id
+        RETURNING id
+        """)
+    UUID update(UUID id, String email, String firstName, String lastName);
 }

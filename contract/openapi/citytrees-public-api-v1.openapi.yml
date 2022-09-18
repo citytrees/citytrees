@@ -12,21 +12,21 @@ servers:
     description: local environment
 
 paths:
-  /register:
+  /user/register:
     post:
       tags:
-        - register-controller
+        - user-controller
       summary: Registers new user
-      operationId: registerNewUser
+      operationId: userRegisterNew
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/RegisterUserRequest'
+              $ref: '#/components/schemas/UserRegisterRequest'
       responses:
         200:
-          $ref: '#/components/responses/RegisterUserResponse'
+          $ref: '#/components/responses/UserRegisterResponse'
         400:
           $ref: "#/components/responses/BadRequest"
         401:
@@ -35,6 +35,68 @@ paths:
           $ref: '#/components/responses/Forbidden'
         500:
           $ref: '#/components/responses/InternalServerError'
+  /user/{id}:
+    get:
+      tags:
+        - user-controller
+      summary: Returns user's information
+      operationId: userGetById
+      parameters: [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      ]
+      responses:
+        200:
+          $ref: '#/components/responses/UserGetResponse'
+        400:
+          $ref: "#/components/responses/BadRequest"
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/Forbidden'
+        500:
+          $ref: '#/components/responses/InternalServerError'
+    put:
+      tags:
+        - user-controller
+      summary: Edits user's information
+      operationId: userUpdateById
+      parameters: [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserUpdateRequest'
+      responses:
+        200:
+          description: OK
+        400:
+          $ref: "#/components/responses/BadRequest"
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/Forbidden'
+        500:
+          $ref: '#/components/responses/InternalServerError'
+
   /auth/jwt/refresh:
     post:
       tags:
@@ -111,7 +173,12 @@ paths:
 
 components:
   schemas:
-    RegisterUserRequest:
+    UserRole:
+      type: string
+      enum:
+        - ADMIN
+        - BASIC
+    UserRegisterRequest:
       type: object
       required:
         - email
@@ -125,6 +192,20 @@ components:
           type: string
           format: password
           example: P@$$w0rd!
+    UserUpdateRequest:
+      type: object
+      required:
+        - email
+      properties:
+        email:
+          type: string
+          example: example@mail.com
+        firstName:
+          type: string
+          example: NewFirstName
+        lastName:
+          type: string
+          example: NewLastName
 
     ErrorResponse:
       description: Error
@@ -149,8 +230,7 @@ components:
           example: Not enough privileges to delete user
 
   responses:
-
-    RegisterUserResponse:
+    UserRegisterResponse:
       description: User successfully created, his id is in response's body
       content:
         application/json:
@@ -163,6 +243,38 @@ components:
                 type: string
                 format: uuid
                 example: ed156378-204b-473c-9d2a-886941a819ff
+    UserGetResponse:
+      description: User's information
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - id
+              - email
+              - roles
+              - firstName
+              - lastName
+            properties:
+              id:
+                type: string
+                format: uuid
+                example: ed156378-204b-473c-9d2a-886941a819ff
+              email:
+                type: string
+                format: email
+                example: example@mail.com
+              roles:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UserRole'
+                example: [ "BASIC" ]
+              firstName:
+                type: string
+                example: FirstName
+              lastName:
+                type: string
+                example: LastName
 
     BadRequest:
       description: Unexpected request content

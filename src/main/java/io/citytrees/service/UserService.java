@@ -4,7 +4,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.citytrees.model.User;
 import io.citytrees.repository.UserRepository;
 import io.citytrees.util.HashUtil;
-import io.citytrees.v1.model.RegisterUserRequest;
+import io.citytrees.v1.model.UserRegisterRequest;
+import io.citytrees.v1.model.UserRole;
+import io.citytrees.v1.model.UserUpdateRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.stereotype.Service;
@@ -21,11 +23,11 @@ public class UserService {
     private final HashUtil hashUtil;
     private final ObjectMapper objectMapper;
 
-    public UUID create(RegisterUserRequest request) {
+    public UUID create(UserRegisterRequest request) {
         return create(UUID.randomUUID(),
             request.getEmail(),
             request.getPassword(),
-            Set.of(User.Role.VOLUNTEER),
+            Set.of(UserRole.BASIC),
             null,
             null);
     }
@@ -46,9 +48,21 @@ public class UserService {
 
     @SneakyThrows
     @SuppressWarnings("ParameterNumber")
-    private UUID create(UUID id, String email, String pwd, Set<User.Role> roles, String firstName, String lastName) {
+    private UUID create(UUID id, String email, String pwd, Set<UserRole> roles, String firstName, String lastName) {
         var rolesJson = objectMapper.writeValueAsString(roles);
         var hashedPassword = hashUtil.md5WithSalt(pwd);
         return userRepository.create(id, email, hashedPassword, rolesJson, firstName, lastName);
+    }
+
+    public Optional<User> getById(UUID id) {
+        return userRepository.findByUserId(id);
+    }
+
+    public void update(UUID id, UserUpdateRequest request) {
+        update(id, request.getEmail(), request.getFirstName(), request.getLastName());
+    }
+
+    public void update(UUID id, String email, String firstName, String lastName) {
+        userRepository.update(id, email, firstName, lastName);
     }
 }
