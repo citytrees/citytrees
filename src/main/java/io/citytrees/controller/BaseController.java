@@ -11,10 +11,10 @@ import java.util.Optional;
 public abstract class BaseController {
 
     @Autowired
-    private HttpServletRequest httpServletRequest;
+    protected HttpServletRequest httpServletRequest;
 
     @Autowired
-    private HttpServletResponse httpServletResponse;
+    protected HttpServletResponse httpServletResponse;
 
     public Optional<NativeWebRequest> getRequest() {
         return Optional.of(new ServletWebRequest(httpServletRequest, httpServletResponse));

@@ -14,5 +14,9 @@ spring:
     connect-retries: 5
     connect-retries-interval: 1s
 
-password:
-  salt: ${PASSWORD_SALT:some_salt}
+security:
+  password-salt: ${PASSWORD_SALT:some_salt}
+  access-token-duration: 30m
+  access-token-secret: ${ACCESS_TOKEN_SECRET:some_secret}
+  refresh-token-duration: 365d
+  refresh-token-secret: ${REFRESH_TOKEN_SECRET:some_other_secret}
