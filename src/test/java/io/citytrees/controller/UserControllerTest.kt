@@ -1,13 +1,9 @@
 package io.citytrees.controller
 
 import io.citytrees.AbstractTest
-import io.citytrees.repository.UserRepository
-import io.citytrees.util.HashUtil
-import io.citytrees.v1.model.UserGetById200Response
-import io.citytrees.v1.model.UserRegisterNew200Response
 import io.citytrees.v1.model.UserRole
+import org.hamcrest.Matchers
 import org.junit.jupiter.api.Test
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.MediaType
 import org.springframework.test.context.jdbc.Sql
 import org.springframework.test.context.jdbc.Sql.ExecutionPhase.AFTER_TEST_METHOD
@@ -16,15 +12,8 @@ import org.springframework.test.web.servlet.post
 import org.springframework.test.web.servlet.put
 import java.util.*
 import kotlin.test.assertEquals
-import kotlin.test.assertNull
 
 class UserControllerTest : AbstractTest() {
-
-    @Autowired
-    private lateinit var userRepository: UserRepository
-
-    @Autowired
-    private lateinit var hashUtil: HashUtil
 
     @Test
     @Sql(statements = ["DELETE FROM ct_user"], executionPhase = AFTER_TEST_METHOD)
@@ -41,15 +30,6 @@ class UserControllerTest : AbstractTest() {
         }.andExpect {
             status { isOk() }
             jsonPath("userId") { isNotEmpty() }
-        }.andReturn().apply {
-            val response = objectMapper.readValue(response.contentAsString, UserRegisterNew200Response::class.java)
-            val user = userRepository.findByUserId(response.userId).orElseThrow()
-
-            assertEquals(email, user.email)
-            assertEquals(hashUtil.md5WithSalt(password), user.password)
-            assertEquals(setOf(UserRole.BASIC), user.roles)
-            assertNull(user.firstName)
-            assertNull(user.lastName)
         }
     }
 
@@ -60,17 +40,18 @@ class UserControllerTest : AbstractTest() {
             firstName = "FirstName",
             lastName = "LastName",
             password = "p@ssw0rd!",
+            roles = setOf(UserRole.BASIC),
         )
 
         mockMvc.get("/api/v1/user/${user.id}")
-            .andExpect { status { isOk() } }
-            .andReturn().apply {
-                val response = objectMapper.readValue(response.contentAsString, UserGetById200Response::class.java)
-                assertEquals(user.id, response.id)
-                assertEquals(user.email, response.email)
-                assertEquals(user.roles, response.roles.toSet())
-                assertEquals(user.firstName, response.firstName)
-                assertEquals(user.lastName, response.lastName)
+            .andExpect {
+                status { isOk() }
+                jsonPath("id") { value(user.id.toString()) }
+                jsonPath("email") { value(user.email) }
+                jsonPath("roles") { isArray() }
+                jsonPath("roles", Matchers.hasItem(UserRole.BASIC.name))
+                jsonPath("firstName") { value(user.firstName) }
+                jsonPath("lastName") { value(user.lastName) }
             }
     }
 

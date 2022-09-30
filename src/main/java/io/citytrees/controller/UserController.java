@@ -2,9 +2,9 @@ package io.citytrees.controller;
 
 import io.citytrees.service.UserService;
 import io.citytrees.v1.controller.UserControllerApiDelegate;
-import io.citytrees.v1.model.UserGetById200Response;
-import io.citytrees.v1.model.UserRegisterNew200Response;
+import io.citytrees.v1.model.UserGetResponse;
 import io.citytrees.v1.model.UserRegisterRequest;
+import io.citytrees.v1.model.UserRegisterResponse;
 import io.citytrees.v1.model.UserUpdateRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -21,32 +21,32 @@ public class UserController extends BaseController implements UserControllerApiD
     private final UserService service;
 
     @Override
-    public ResponseEntity<UserRegisterNew200Response> userRegisterNew(UserRegisterRequest registerUserRequest) {
-        var response = new UserRegisterNew200Response()
+    public ResponseEntity<UserRegisterResponse> registerNewUser(UserRegisterRequest registerUserRequest) {
+        var response = new UserRegisterResponse()
             .userId(service.create(registerUserRequest));
-        return new ResponseEntity<>(response, HttpStatus.OK);
+        return ResponseEntity.ok(response);
     }
 
     @Override
-    public ResponseEntity<UserGetById200Response> userGetById(UUID id) {
+    public ResponseEntity<UserGetResponse> getUserById(UUID id) {
         var optionalUser = service.getById(id);
         if (optionalUser.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
 
         var user = optionalUser.get();
-        var response = new UserGetById200Response()
+        var response = new UserGetResponse()
             .id(user.getId())
             .email(user.getEmail())
             .roles(user.getRoles().stream().toList())
             .firstName(user.getFirstName())
             .lastName(user.getLastName());
-        return new ResponseEntity<>(response, HttpStatus.OK);
+        return ResponseEntity.ok(response);
     }
 
     @Override
-    public ResponseEntity<Void> userUpdateById(UUID id, UserUpdateRequest userUpdateRequest) {
+    public ResponseEntity<Void> updateUserById(UUID id, UserUpdateRequest userUpdateRequest) {
         service.update(id, userUpdateRequest);
-        return new ResponseEntity<>(HttpStatus.OK);
+        return ResponseEntity.ok().build();
     }
 }

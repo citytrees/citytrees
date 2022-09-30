@@ -2,6 +2,7 @@ package io.citytrees.repository;
 
 import io.citytrees.model.User;
 import io.citytrees.repository.extension.UserRepositoryExtension;
+import org.springframework.data.jdbc.repository.query.Modifying;
 import org.springframework.data.jdbc.repository.query.Query;
 import org.springframework.data.repository.CrudRepository;
 
@@ -17,11 +18,11 @@ public interface UserRepository extends CrudRepository<User, UUID>, UserReposito
         """)
     UUID create(UUID id, String email, String pwd, String roles, String firstName, String lastName);
 
+    @Modifying
     @Query("""
         UPDATE ct_user
-        SET id=:id, email=:email, first_name=:firstName, last_name=:lastName
+        SET email=:email, first_name=:firstName, last_name=:lastName
         WHERE id=:id
-        RETURNING id
         """)
-    UUID update(UUID id, String email, String firstName, String lastName);
+    int update(UUID id, String email, String firstName, String lastName);
 }
