@@ -1,5 +1,6 @@
 package io.citytrees.model;
 
+import io.citytrees.v1.model.UserRole;
 import lombok.Builder;
 import lombok.Value;
 import org.jetbrains.annotations.NotNull;
@@ -28,17 +29,11 @@ public class User {
     String password;
 
     @NotNull
-    Set<Role> roles;
+    Set<UserRole> roles;
 
     @Nullable
     String firstName;
 
     @Nullable
     String lastName;
-
-    public enum Role {
-        VOLUNTEER,
-        MODERATOR,
-        SUPERUSER,
-    }
 }

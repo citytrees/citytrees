@@ -3,6 +3,8 @@ package io.citytrees
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.citytrees.model.User
 import io.citytrees.service.UserService
+import io.citytrees.v1.model.UserRole
+import org.hamcrest.Matchers
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Tag
 import org.springframework.beans.factory.annotation.Autowired
@@ -12,6 +14,7 @@ import org.springframework.http.HttpHeaders
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.servlet.MockHttpServletRequestDsl
 import org.springframework.test.web.servlet.MockMvc
+import org.springframework.test.web.servlet.result.JsonPathResultMatchersDsl
 import org.springframework.util.Base64Utils
 import java.util.*
 import kotlin.collections.ArrayDeque
@@ -37,25 +40,28 @@ abstract class AbstractTest {
         header(HttpHeaders.AUTHORIZATION, "Basic ${Base64Utils.encodeToUrlSafeString("$email:$password".encodeToByteArray())}")
     }
 
+    protected fun JsonPathResultMatchersDsl.hasSize(size: Int) {
+        value(Matchers.hasSize<Collection<*>>(size))
+    }
+
     protected fun givenTestUser(
         email: String,
         password: String,
         id: UUID = UUID.randomUUID(),
-        roles: Set<User.Role> = setOf(User.Role.VOLUNTEER),
+        roles: Set<UserRole> = setOf(UserRole.BASIC),
         firstName: String? = null,
         lastName: String? = null,
-    ) = userService.create(
-        User.builder()
-            .id(id)
-            .email(email)
-            .password(password)
-            .roles(roles)
-            .firstName(firstName)
-            .lastName(lastName)
-            .build()
-    ).also {
-        CLEANUP_TASKS.addFirst { userService.drop(it) }
-    }
+    ): User = User.builder()
+        .id(id)
+        .email(email)
+        .password(password)
+        .roles(roles)
+        .firstName(firstName)
+        .lastName(lastName)
+        .build().also {
+            userService.create(it)
+            CLEANUP_TASKS.addFirst { userService.drop(it.id) }
+        }
 
     companion object {
         private val CLEANUP_TASKS = ArrayDeque<Runnable>()

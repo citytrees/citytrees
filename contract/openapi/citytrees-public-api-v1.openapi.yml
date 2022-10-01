@@ -12,10 +12,10 @@ servers:
     description: local environment
 
 paths:
-  /register:
+  /user/register:
     post:
       tags:
-        - register-controller
+        - user-controller
       summary: Registers new user
       operationId: registerNewUser
       requestBody:
@@ -23,10 +23,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/RegisterUserRequest'
+              $ref: '#/components/schemas/UserRegisterRequest'
       responses:
         200:
-          $ref: '#/components/responses/RegisterUserResponse'
+          description: User successfully created, his id is in response's body
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserRegisterResponse"
         400:
           $ref: "#/components/responses/BadRequest"
         401:
@@ -35,6 +39,64 @@ paths:
           $ref: '#/components/responses/Forbidden'
         500:
           $ref: '#/components/responses/InternalServerError'
+  /user/{id}:
+    get:
+      tags:
+        - user-controller
+      summary: Returns user's information
+      operationId: getUserById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        200:
+          description: User's information
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserGetResponse'
+        400:
+          $ref: "#/components/responses/BadRequest"
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/Forbidden'
+        500:
+          $ref: '#/components/responses/InternalServerError'
+    put:
+      tags:
+        - user-controller
+      summary: Edits user's information
+      operationId: updateUserById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserUpdateRequest'
+      responses:
+        200:
+          description: OK
+        400:
+          $ref: "#/components/responses/BadRequest"
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/Forbidden'
+        500:
+          $ref: '#/components/responses/InternalServerError'
+
   /auth/jwt/refresh:
     post:
       tags:
@@ -111,7 +173,49 @@ paths:
 
 components:
   schemas:
-    RegisterUserRequest:
+    UserRole:
+      type: string
+      enum:
+        - ADMIN
+        - BASIC
+    UserRegisterResponse:
+      type: object
+      required:
+        - userId
+      properties:
+        userId:
+          type: string
+          format: uuid
+          example: ed156378-204b-473c-9d2a-886941a819ff
+    UserGetResponse:
+      type: object
+      required:
+        - id
+        - email
+        - roles
+        - firstName
+        - lastName
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: ed156378-204b-473c-9d2a-886941a819ff
+        email:
+          type: string
+          format: email
+          example: example@mail.com
+        roles:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserRole'
+          example: [ "BASIC" ]
+        firstName:
+          type: string
+          example: FirstName
+        lastName:
+          type: string
+          example: LastName
+    UserRegisterRequest:
       type: object
       required:
         - email
@@ -125,6 +229,20 @@ components:
           type: string
           format: password
           example: P@$$w0rd!
+    UserUpdateRequest:
+      type: object
+      required:
+        - email
+      properties:
+        email:
+          type: string
+          example: example@mail.com
+        firstName:
+          type: string
+          example: NewFirstName
+        lastName:
+          type: string
+          example: NewLastName
 
     ErrorResponse:
       description: Error
@@ -146,24 +264,9 @@ components:
         message:
           description: Description of error
           type: string
-          example: Not enough privileges to delete user
+          example: Something went wrong
 
   responses:
-
-    RegisterUserResponse:
-      description: User successfully created, his id is in response's body
-      content:
-        application/json:
-          schema:
-            type: object
-            required:
-              - userId
-            properties:
-              userId:
-                type: string
-                format: uuid
-                example: ed156378-204b-473c-9d2a-886941a819ff
-
     BadRequest:
       description: Unexpected request content
       content:
