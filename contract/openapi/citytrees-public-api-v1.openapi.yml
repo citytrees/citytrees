@@ -264,7 +264,7 @@ components:
         message:
           description: Description of error
           type: string
-          example: Not enough privileges to delete user
+          example: Something went wrong
 
   responses:
     BadRequest:
