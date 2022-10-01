@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import io.citytrees.model.User
 import io.citytrees.service.UserService
 import io.citytrees.v1.model.UserRole
+import org.hamcrest.Matchers
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Tag
 import org.springframework.beans.factory.annotation.Autowired
@@ -13,6 +14,7 @@ import org.springframework.http.HttpHeaders
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.servlet.MockHttpServletRequestDsl
 import org.springframework.test.web.servlet.MockMvc
+import org.springframework.test.web.servlet.result.JsonPathResultMatchersDsl
 import org.springframework.util.Base64Utils
 import java.util.*
 import kotlin.collections.ArrayDeque
@@ -36,6 +38,10 @@ abstract class AbstractTest {
 
     protected fun MockHttpServletRequestDsl.withBasicAuthHeader(email: String, password: String) {
         header(HttpHeaders.AUTHORIZATION, "Basic ${Base64Utils.encodeToUrlSafeString("$email:$password".encodeToByteArray())}")
+    }
+
+    protected fun JsonPathResultMatchersDsl.hasSize(size: Int) {
+        value(Matchers.hasSize<Collection<*>>(size))
     }
 
     protected fun givenTestUser(

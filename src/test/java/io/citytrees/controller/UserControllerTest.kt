@@ -2,7 +2,6 @@ package io.citytrees.controller
 
 import io.citytrees.AbstractTest
 import io.citytrees.v1.model.UserRole
-import org.hamcrest.Matchers
 import org.junit.jupiter.api.Test
 import org.springframework.http.MediaType
 import org.springframework.test.context.jdbc.Sql
@@ -49,7 +48,8 @@ class UserControllerTest : AbstractTest() {
                 jsonPath("id") { value(user.id.toString()) }
                 jsonPath("email") { value(user.email) }
                 jsonPath("roles") { isArray() }
-                jsonPath("roles", Matchers.hasItem(UserRole.BASIC.name))
+                jsonPath("roles") { hasSize(1) }
+                jsonPath("roles[0]") { value(UserRole.BASIC.name) }
                 jsonPath("firstName") { value(user.firstName) }
                 jsonPath("lastName") { value(user.lastName) }
             }
