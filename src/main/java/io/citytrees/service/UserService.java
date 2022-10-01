@@ -1,6 +1,7 @@
 package io.citytrees.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.citytrees.configuration.security.JWTUserDetails;
 import io.citytrees.model.User;
 import io.citytrees.repository.UserRepository;
 import io.citytrees.util.HashUtil;
@@ -9,6 +10,9 @@ import io.citytrees.v1.model.UserRole;
 import io.citytrees.v1.model.UserUpdateRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -17,11 +21,22 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-public class UserService {
+public class UserService implements UserDetailsService {
 
     private final UserRepository userRepository;
     private final HashUtil hashUtil;
     private final ObjectMapper objectMapper;
+
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        return findByEmail(username)
+            .map(user -> JWTUserDetails.builder()
+                .id(user.getId())
+                .email(user.getEmail())
+                .roles(user.getRoles())
+                .build())
+            .orElseThrow();
+    }
 
     public UUID create(UserRegisterRequest request) {
         return create(UUID.randomUUID(),

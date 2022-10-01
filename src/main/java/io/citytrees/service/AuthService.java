@@ -1,6 +1,7 @@
 package io.citytrees.service;
 
-import io.citytrees.model.User;
+import com.auth0.jwt.exceptions.JWTVerificationException;
+import io.citytrees.model.TokenPair;
 import io.citytrees.util.HashUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -35,15 +36,30 @@ public class AuthService {
         userService.findByEmail(email)
             .filter(user -> user.getPassword().equals(hashUtil.md5WithSalt(password)))
             .ifPresentOrElse(
-                user -> setResponseCookies(user, httpServletResponse),
+                user -> setResponseCookies(tokenService.generateNewPair(user), httpServletResponse),
                 () -> {
                     throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
                 });
     }
 
-    private void setResponseCookies(User user, HttpServletResponse httpServletResponse) {
-        var tokenPair = tokenService.generateNewPair(user);
+    public void refreshTokenPair(String refreshToken, HttpServletResponse httpServletResponse) {
+        String email;
+        try {
+            email = tokenService.validateTokenAndExtractEmail(refreshToken);
+        } catch (JWTVerificationException e) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage(), e);
+        }
 
+        userService.findByEmail(email)
+            .ifPresentOrElse(
+                user -> setResponseCookies(tokenService.generateNewPair(user), httpServletResponse),
+                () -> {
+                    throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+                }
+            );
+    }
+
+    private void setResponseCookies(TokenPair tokenPair, HttpServletResponse httpServletResponse) {
         var accessTokenCookie = new Cookie(ACCESS_TOKEN, tokenPair.getAccessToken());
         accessTokenCookie.setMaxAge(COOKIES_MAX_AGE);
 

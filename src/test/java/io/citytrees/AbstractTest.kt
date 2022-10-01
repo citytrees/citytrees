@@ -1,6 +1,7 @@
 package io.citytrees
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import io.citytrees.constants.CookieNames
 import io.citytrees.model.User
 import io.citytrees.service.UserService
 import io.citytrees.v1.model.UserRole
@@ -17,6 +18,7 @@ import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.result.JsonPathResultMatchersDsl
 import org.springframework.util.Base64Utils
 import java.util.*
+import javax.servlet.http.Cookie
 import kotlin.collections.ArrayDeque
 
 @Tag("integration")
@@ -38,6 +40,10 @@ abstract class AbstractTest {
 
     protected fun MockHttpServletRequestDsl.withBasicAuthHeader(email: String, password: String) {
         header(HttpHeaders.AUTHORIZATION, "Basic ${Base64Utils.encodeToUrlSafeString("$email:$password".encodeToByteArray())}")
+    }
+
+    protected fun MockHttpServletRequestDsl.withRefreshTokenCookie(refreshToken: String) {
+        cookie(Cookie(CookieNames.REFRESH_TOKEN, refreshToken))
     }
 
     protected fun JsonPathResultMatchersDsl.hasSize(size: Int) {
