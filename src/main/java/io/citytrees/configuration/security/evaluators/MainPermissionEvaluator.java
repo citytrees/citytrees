@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 
 import java.io.Serializable;
 import java.util.Map;
+import java.util.UUID;
 
 @Component
 @RequiredArgsConstructor
@@ -28,7 +29,7 @@ public class MainPermissionEvaluator implements PermissionEvaluator {
             throw new IllegalArgumentException("Необходимо добавить новый DomainPermissionEvaluator для этого домена");
         }
         return domainPermissionEvaluator.hasPermission(
-            authentication, Long.valueOf(targetId.toString()), permission.toString()
+            authentication, UUID.fromString(targetId.toString()), permission.toString()
         );
     }
 }

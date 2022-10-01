@@ -9,6 +9,7 @@ import io.citytrees.v1.model.UserUpdateRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -45,6 +46,7 @@ public class UserController extends BaseController implements UserControllerApiD
     }
 
     @Override
+    @PreAuthorize("hasAnyRole(@Roles.ADMIN) || hasPermission(#id, @Domains.USER, @Permissions.EDIT)")
     public ResponseEntity<Void> updateUserById(UUID id, UserUpdateRequest userUpdateRequest) {
         service.update(id, userUpdateRequest);
         return ResponseEntity.ok().build();

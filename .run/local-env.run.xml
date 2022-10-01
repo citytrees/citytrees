@@ -4,7 +4,7 @@
       <settings>
         <option name="envFilePath" value="" />
         <option name="commandLineOptions" value="--build" />
-        <option name="sourceFilePath" value="local-env/docker-compose-int-tests.yml" />
+        <option name="sourceFilePath" value="local-env/docker-compose.yml" />
       </settings>
     </deployment>
     <method v="2" />

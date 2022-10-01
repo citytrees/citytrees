@@ -1,6 +1,6 @@
 package io.citytrees.configuration.security;
 
-import io.citytrees.model.User;
+import io.citytrees.v1.model.UserRole;
 import lombok.Builder;
 import lombok.Value;
 import org.springframework.security.core.GrantedAuthority;
@@ -16,7 +16,7 @@ import java.util.UUID;
 public class JWTUserDetails implements UserDetails {
 
     UUID id;
-    Set<User.Role> roles;
+    Set<UserRole> roles;
     String email;
 
     @Override

@@ -3,18 +3,13 @@ package io.citytrees.controller
 import io.citytrees.AbstractTest
 import io.citytrees.constants.CookieNames.ACCESS_TOKEN
 import io.citytrees.constants.CookieNames.REFRESH_TOKEN
-import io.citytrees.service.TokenService
 import org.hamcrest.Matchers.emptyString
 import org.hamcrest.Matchers.not
 import org.junit.jupiter.api.Test
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.test.web.servlet.post
 import java.time.Duration
 
 class AuthControllerTest: AbstractTest() {
-
-    @Autowired
-    private lateinit var tokenService: TokenService
 
     @Test
     fun `should throw 400 when required header not exist`() {

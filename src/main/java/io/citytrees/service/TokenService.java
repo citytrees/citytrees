@@ -6,6 +6,7 @@ import io.citytrees.configuration.properties.SecurityProperties;
 import io.citytrees.configuration.security.JWTUserDetails;
 import io.citytrees.model.TokenPair;
 import io.citytrees.model.User;
+import io.citytrees.v1.model.UserRole;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
@@ -59,7 +60,7 @@ public class TokenService {
         var decodedJWT = verifier.verify(token);
 
         var roles = Arrays.stream(decodedJWT.getClaim(ROLES_CLAIM).asString().split(ROLES_SPLITTER))
-            .map(User.Role::valueOf)
+            .map(UserRole::valueOf)
             .collect(Collectors.toSet());
 
         return JWTUserDetails.builder()
