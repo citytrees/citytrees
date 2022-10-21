@@ -47,4 +47,42 @@ class AuthControllerTest: AbstractTest() {
             }
         }
     }
+
+    @Test
+    fun `should return 400 when refresh called without token`() {
+        mockMvc.post("/api/v1/auth/jwt/refresh")
+            .andExpect {
+                status { isBadRequest() }
+            }
+    }
+
+    @Test
+    fun `should return 401 when refresh token is invalid`() {
+        mockMvc.post("/api/v1/auth/jwt/refresh") {
+            withRefreshTokenCookie("test")
+        }.andExpect {
+            status { isUnauthorized() }
+        }
+    }
+
+    @Test
+    fun `should return 200 and cookies when refreshToken is valid`() {
+        val email = "test@example.com"
+        val password = "123"
+        givenTestUser(email, password)
+
+        val tokenPair = tokenService.generateNewPair(userService.findByEmail(email).orElseThrow())
+        mockMvc.post("/api/v1/auth/jwt/refresh") {
+            withRefreshTokenCookie(tokenPair.refreshToken)
+        }.andExpect {
+            status { isOk() }
+            cookie {
+                value(ACCESS_TOKEN, not(emptyString()))
+                maxAge(ACCESS_TOKEN, Duration.ofDays(365).toSeconds().toInt())
+                value(REFRESH_TOKEN, not(emptyString()))
+                maxAge(REFRESH_TOKEN, Duration.ofDays(365).toSeconds().toInt())
+                httpOnly(REFRESH_TOKEN, true)
+            }
+        }
+    }
 }

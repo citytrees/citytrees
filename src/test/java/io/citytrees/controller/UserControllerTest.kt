@@ -58,7 +58,7 @@ class UserControllerTest : AbstractTest() {
     @Test
     fun `user update by id should return 200`() {
         val userId = UUID.randomUUID()
-        givenTestUser(
+        val user = givenTestUser(
             id = userId,
             email = "test@example.com",
             firstName = "FirstName",
@@ -71,6 +71,7 @@ class UserControllerTest : AbstractTest() {
         val newLastName = "NewLastName"
 
         mockMvc.put("/api/v1/user/${userId}") {
+            withAuthenticationAs(user)
             contentType = MediaType.APPLICATION_JSON
             content = objectMapper.createObjectNode().apply {
                 put("email", newEmail)

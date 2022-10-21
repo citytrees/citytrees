@@ -1,7 +1,9 @@
 package io.citytrees
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import io.citytrees.constants.CookieNames
 import io.citytrees.model.User
+import io.citytrees.service.TokenService
 import io.citytrees.service.UserService
 import io.citytrees.v1.model.UserRole
 import org.hamcrest.Matchers
@@ -17,6 +19,7 @@ import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.result.JsonPathResultMatchersDsl
 import org.springframework.util.Base64Utils
 import java.util.*
+import javax.servlet.http.Cookie
 import kotlin.collections.ArrayDeque
 
 @Tag("integration")
@@ -33,16 +36,23 @@ abstract class AbstractTest {
     @Autowired
     protected lateinit var userService: UserService
 
+    @Autowired
+    protected lateinit var tokenService: TokenService
+
     @AfterEach
     protected fun cleanup() = CLEANUP_TASKS.forEach(Runnable::run)
 
-    protected fun MockHttpServletRequestDsl.withBasicAuthHeader(email: String, password: String) {
+    protected fun MockHttpServletRequestDsl.withBasicAuthHeader(email: String, password: String) =
         header(HttpHeaders.AUTHORIZATION, "Basic ${Base64Utils.encodeToUrlSafeString("$email:$password".encodeToByteArray())}")
-    }
 
-    protected fun JsonPathResultMatchersDsl.hasSize(size: Int) {
+    protected fun MockHttpServletRequestDsl.withAuthenticationAs(user: User) =
+        header(HttpHeaders.AUTHORIZATION, "Bearer ${tokenService.generateNewPair(user).accessToken}")
+
+    protected fun MockHttpServletRequestDsl.withRefreshTokenCookie(refreshToken: String) =
+        cookie(Cookie(CookieNames.REFRESH_TOKEN, refreshToken))
+
+    protected fun JsonPathResultMatchersDsl.hasSize(size: Int) =
         value(Matchers.hasSize<Collection<*>>(size))
-    }
 
     protected fun givenTestUser(
         email: String,
