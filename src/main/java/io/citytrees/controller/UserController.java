@@ -5,6 +5,7 @@ import io.citytrees.v1.controller.UserControllerApiDelegate;
 import io.citytrees.v1.model.UserGetResponse;
 import io.citytrees.v1.model.UserRegisterRequest;
 import io.citytrees.v1.model.UserRegisterResponse;
+import io.citytrees.v1.model.UserUpdatePasswordRequest;
 import io.citytrees.v1.model.UserUpdateRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -22,6 +23,7 @@ public class UserController extends BaseController implements UserControllerApiD
     private final UserService service;
 
     @Override
+    @PreAuthorize("permitAll()")
     public ResponseEntity<UserRegisterResponse> registerNewUser(UserRegisterRequest registerUserRequest) {
         var response = new UserRegisterResponse()
             .userId(service.create(registerUserRequest));
@@ -29,6 +31,7 @@ public class UserController extends BaseController implements UserControllerApiD
     }
 
     @Override
+    @PreAuthorize("permitAll()")
     public ResponseEntity<UserGetResponse> getUserById(UUID id) {
         var optionalUser = service.getById(id);
         if (optionalUser.isEmpty()) {
@@ -49,6 +52,12 @@ public class UserController extends BaseController implements UserControllerApiD
     @PreAuthorize("hasAnyRole(@Roles.ADMIN) || hasPermission(#id, @Domains.USER, @Permissions.EDIT)")
     public ResponseEntity<Void> updateUserById(UUID id, UserUpdateRequest userUpdateRequest) {
         service.update(id, userUpdateRequest);
+        return ResponseEntity.ok().build();
+    }
+
+    @Override
+    public ResponseEntity<Void> updateUserPassword(UserUpdatePasswordRequest userUpdatePasswordRequest) {
+        service.updatePassword(userUpdatePasswordRequest);
         return ResponseEntity.ok().build();
     }
 }

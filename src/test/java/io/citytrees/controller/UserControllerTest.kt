@@ -1,6 +1,7 @@
 package io.citytrees.controller
 
 import io.citytrees.AbstractTest
+import io.citytrees.constants.CookieNames
 import io.citytrees.v1.model.UserRole
 import org.junit.jupiter.api.Test
 import org.springframework.http.MediaType
@@ -90,4 +91,34 @@ class UserControllerTest : AbstractTest() {
             }
     }
 
+    @Test
+    fun `user update password should return 200`() {
+        val email = "test@example.com"
+        val password = "123"
+        givenTestUser(email, password)
+        val newPassword = "1234"
+
+        val accessToken = mockMvc.post("/api/v1/auth/basic") { withBasicAuthHeader(email, password) }
+            .andExpect { status { isOk() } }
+            .andReturn()
+            .response
+            .getCookie(CookieNames.ACCESS_TOKEN)
+            ?.value
+            ?: error("Cookie is not presented")
+
+        mockMvc.put("/api/v1/user/password") {
+            withAccessTokenAuthHeader(accessToken)
+            contentType = MediaType.APPLICATION_JSON
+            content = objectMapper.createObjectNode().apply {
+                put("newPassword", newPassword)
+            }
+        }.andExpect { status { isOk() } }
+
+
+        mockMvc.post("/api/v1/auth/basic") {
+            withBasicAuthHeader(email, newPassword)
+        }.andExpect {
+            status { isOk() }
+        }
+    }
 }

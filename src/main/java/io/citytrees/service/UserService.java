@@ -7,6 +7,7 @@ import io.citytrees.repository.UserRepository;
 import io.citytrees.util.HashUtil;
 import io.citytrees.v1.model.UserRegisterRequest;
 import io.citytrees.v1.model.UserRole;
+import io.citytrees.v1.model.UserUpdatePasswordRequest;
 import io.citytrees.v1.model.UserUpdateRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -26,6 +27,7 @@ public class UserService implements UserDetailsService {
     private final UserRepository userRepository;
     private final HashUtil hashUtil;
     private final ObjectMapper objectMapper;
+    private final SecurityService securityService;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -55,6 +57,23 @@ public class UserService implements UserDetailsService {
         return userRepository.findByEmail(email);
     }
 
+    public Optional<User> getById(UUID id) {
+        return userRepository.findByUserId(id);
+    }
+
+    public void update(UUID id, UserUpdateRequest request) {
+        update(id, request.getEmail(), request.getFirstName(), request.getLastName());
+    }
+
+    public void update(UUID id, String email, String firstName, String lastName) {
+        userRepository.update(id, email, firstName, lastName);
+    }
+
+    public void updatePassword(UserUpdatePasswordRequest userUpdatePasswordRequest) {
+        var hashedPassword = hashUtil.md5WithSalt(userUpdatePasswordRequest.getNewPassword());
+        userRepository.updatePassword(securityService.getCurrentUserId(), hashedPassword);
+    }
+
     /* TO BE USED ONLY IN TESTS! */
     @Deprecated
     public void drop(UUID id) {
@@ -67,17 +86,5 @@ public class UserService implements UserDetailsService {
         var rolesJson = objectMapper.writeValueAsString(roles);
         var hashedPassword = hashUtil.md5WithSalt(pwd);
         return userRepository.create(id, email, hashedPassword, rolesJson, firstName, lastName);
-    }
-
-    public Optional<User> getById(UUID id) {
-        return userRepository.findByUserId(id);
-    }
-
-    public void update(UUID id, UserUpdateRequest request) {
-        update(id, request.getEmail(), request.getFirstName(), request.getLastName());
-    }
-
-    public void update(UUID id, String email, String firstName, String lastName) {
-        userRepository.update(id, email, firstName, lastName);
     }
 }

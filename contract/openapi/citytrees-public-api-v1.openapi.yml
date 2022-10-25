@@ -72,6 +72,8 @@ paths:
         - user-controller
       summary: Edits user's information
       operationId: updateUserById
+      security:
+        - BearerAuth: [ ]
       parameters:
         - name: id
           in: path
@@ -96,6 +98,32 @@ paths:
           $ref: '#/components/responses/Forbidden'
         500:
           $ref: '#/components/responses/InternalServerError'
+  /user/password:
+    put:
+      tags:
+        - user-controller
+      summary: Updates current user's password
+      operationId: updateUserPassword
+      security:
+        - BearerAuth: [ ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserUpdatePasswordRequest"
+      responses:
+        200:
+          description: OK
+        400:
+          $ref: "#/components/responses/BadRequest"
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/Forbidden'
+        500:
+          $ref: '#/components/responses/InternalServerError'
+
 
   /auth/jwt/refresh:
     post:
@@ -103,6 +131,8 @@ paths:
         - auth-controller
       summary: Create new pair of Cookies (ct_access_token, ct_refresh_token) using old ct_refresh_token
       operationId: refreshTokenPair
+      security:
+        - CookieAuth: [ ]
       parameters:
         - name: ct_refresh_token
           in: cookie
@@ -253,6 +283,14 @@ components:
         lastName:
           type: string
           example: NewLastName
+    UserUpdatePasswordRequest:
+      type: object
+      required:
+        - newPassword
+      properties:
+        newPassword:
+          type: string
+          example: p@$$w0rd!
 
     ErrorResponse:
       description: Error
@@ -311,3 +349,13 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/ErrorResponse'
+
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+    CookieAuth:
+      type: apiKey
+      in: cookie
+      name: ct_refresh_token
+

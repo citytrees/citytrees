@@ -21,8 +21,16 @@ public interface UserRepository extends CrudRepository<User, UUID>, UserReposito
     @Modifying
     @Query("""
         UPDATE ct_user
-        SET email=:email, first_name=:firstName, last_name=:lastName
-        WHERE id=:id
+        SET email = :email, first_name = :firstName, last_name = :lastName
+        WHERE id = :id
         """)
     int update(UUID id, String email, String firstName, String lastName);
+
+    @Modifying
+    @Query("""
+        UPDATE ct_user
+        SET pwd = :pwd
+        WHERE id = :id
+        """)
+    int updatePassword(UUID id, String pwd);
 }

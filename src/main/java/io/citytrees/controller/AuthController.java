@@ -4,6 +4,7 @@ import io.citytrees.service.AuthService;
 import io.citytrees.v1.controller.AuthControllerApiDelegate;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -13,12 +14,14 @@ public class AuthController extends BaseController implements AuthControllerApiD
     private final AuthService authService;
 
     @Override
+    @PreAuthorize("permitAll()")
     public ResponseEntity<Void> handleBasicAuth(String authorization) {
         authService.handleBasicAuth(authorization, httpServletResponse);
         return ResponseEntity.ok(null);
     }
 
     @Override
+    @PreAuthorize("permitAll()")
     public ResponseEntity<Void> refreshTokenPair(String refreshToken) {
         authService.refreshTokenPair(refreshToken, httpServletResponse);
         return ResponseEntity.ok(null);
