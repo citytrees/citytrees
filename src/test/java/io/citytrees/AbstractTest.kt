@@ -48,6 +48,9 @@ abstract class AbstractTest {
     protected fun MockHttpServletRequestDsl.withAuthenticationAs(user: User) =
         header(HttpHeaders.AUTHORIZATION, "Bearer ${tokenService.generateNewPair(user).accessToken}")
 
+    protected fun MockHttpServletRequestDsl.withAccessTokenAuthHeader(accessToken: String) =
+        header(HttpHeaders.AUTHORIZATION, "Bearer $accessToken")
+
     protected fun MockHttpServletRequestDsl.withRefreshTokenCookie(refreshToken: String) =
         cookie(Cookie(CookieNames.REFRESH_TOKEN, refreshToken))
 
