@@ -74,12 +74,6 @@ public class UserService implements UserDetailsService {
         userRepository.updatePassword(securityService.getCurrentUserId(), hashedPassword);
     }
 
-    /* TO BE USED ONLY IN TESTS! */
-    @Deprecated
-    public void drop(UUID id) {
-        userRepository.deleteById(id);
-    }
-
     @SneakyThrows
     @SuppressWarnings("ParameterNumber")
     private UUID create(UUID id, String email, String pwd, Set<UserRole> roles, String firstName, String lastName) {

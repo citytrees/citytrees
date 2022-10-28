@@ -20,3 +20,9 @@ security:
   access-token-secret: ${ACCESS_TOKEN_SECRET:some_secret}
   refresh-token-duration: 365d
   refresh-token-secret: ${REFRESH_TOKEN_SECRET:some_other_secret}
+
+s3:
+  access-key: ${S3_ACCESS_KEY:access-key}
+  secret-key: ${S3_SECRET_KEY:secret-key}
+  region: ${S3_REGION:eu-south-1}
+  service-endpoint: ${S3_SERVICE_ENDPOINT:http://localhost:9090/}

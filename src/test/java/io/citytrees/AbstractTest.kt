@@ -2,7 +2,10 @@ package io.citytrees
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.citytrees.constants.CookieNames
+import io.citytrees.model.CtFile
 import io.citytrees.model.User
+import io.citytrees.repository.UserRepository
+import io.citytrees.service.FileService
 import io.citytrees.service.TokenService
 import io.citytrees.service.UserService
 import io.citytrees.v1.model.UserRole
@@ -13,11 +16,14 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.http.HttpHeaders
+import org.springframework.http.MediaType
+import org.springframework.mock.web.MockMultipartFile
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.servlet.MockHttpServletRequestDsl
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.result.JsonPathResultMatchersDsl
 import org.springframework.util.Base64Utils
+import org.springframework.util.DigestUtils
 import java.util.*
 import javax.servlet.http.Cookie
 import kotlin.collections.ArrayDeque
@@ -34,7 +40,13 @@ abstract class AbstractTest {
     protected lateinit var objectMapper: ObjectMapper
 
     @Autowired
+    protected lateinit var userRepository: UserRepository
+
+    @Autowired
     protected lateinit var userService: UserService
+
+    @Autowired
+    protected lateinit var fileService: FileService
 
     @Autowired
     protected lateinit var tokenService: TokenService
@@ -73,8 +85,39 @@ abstract class AbstractTest {
         .lastName(lastName)
         .build().also {
             userService.create(it)
-            CLEANUP_TASKS.addFirst { userService.drop(it.id) }
+            CLEANUP_TASKS.addFirst { userRepository.deleteById(it.id) }
         }
+
+    protected fun givenCtFile(
+        user: User,
+        id: UUID = UUID.randomUUID(),
+        name: String = "file",
+        originalFilename: String = "test.txt",
+        mediaType: String = MediaType.TEXT_PLAIN_VALUE,
+        content: ByteArray = "some content".toByteArray(),
+        saveToS3: Boolean = false
+    ): CtFile = when (saveToS3) {
+        false -> CtFile.builder()
+            .id(id)
+            .name(originalFilename)
+            .mimeType(mediaType)
+            .size(content.size.toLong())
+            .hash(DigestUtils.md5DigestAsHex(content))
+            .userId(user.id)
+            .build()
+
+        true -> fileService.saveToS3(
+            MockMultipartFile(
+                name,
+                originalFilename,
+                mediaType,
+                content
+            )
+        )
+    }.also {
+        fileService.save(it)
+        CLEANUP_TASKS.addFirst { fileService.delete(it.id) }
+    }
 
     companion object {
         private val CLEANUP_TASKS = ArrayDeque<Runnable>()

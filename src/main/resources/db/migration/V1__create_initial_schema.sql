@@ -9,3 +9,15 @@ create table ct_user
 );
 
 create unique index ct_user_email_uidx on ct_user (email);
+
+create table ct_file
+(
+    id        uuid not null primary key,
+    name      varchar(255),
+    mime_type varchar(64),
+    size      bigint,
+    hash      varchar(255),
+    user_id   uuid
+);
+
+create index ct_file_hash_index on ct_file (hash);
