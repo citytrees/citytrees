@@ -52,9 +52,23 @@ class FileControllerTest : AbstractTest() {
     fun `file delete by id should return 200`() {
         val user = givenTestUser("mail@example.com", "password")
         val file = givenCtFile(user)
-        mockMvc.delete("/api/v1/file/${file.id}")
+        mockMvc.delete("/api/v1/file/${file.id}") {
+            withAuthenticationAs(user)
+        }.andExpect {
+            status { isOk() }
+        }
+    }
+
+    @Test
+    fun `file download id should return 200`() {
+        val user = givenTestUser("mail@example.com", "password")
+        val content = "example text content"
+        val file = givenCtFile(user = user, content = content.toByteArray())
+
+        mockMvc.get("/api/v1/file/download/${file.id}")
             .andExpect {
                 status { isOk() }
+                content { string(content) }
             }
     }
 }

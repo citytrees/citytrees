@@ -4,11 +4,13 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import io.citytrees.model.CtFile;
+import io.citytrees.model.User;
 import io.citytrees.repository.FileRepository;
 import io.citytrees.service.exception.FileServiceException;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.commons.io.FileUtils;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
 import org.springframework.web.multipart.MultipartFile;
@@ -49,8 +51,12 @@ public class FileService {
         return save(s3File);
     }
 
-    @SneakyThrows
     public CtFile saveToS3(MultipartFile file) {
+        return saveToS3(file, null);
+    }
+
+    @SneakyThrows
+    public CtFile saveToS3(MultipartFile file, User user) {
         var fileBuilder = CtFile.builder();
 
         File tempFile = null;
@@ -75,7 +81,7 @@ public class FileService {
             fileBuilder.size(tempFile.length());
             fileBuilder.mimeType(file.getContentType());
             fileBuilder.hash(hash);
-            fileBuilder.userId(securityService.getCurrentUserId());
+            fileBuilder.userId(user != null ? user.getId() : securityService.getCurrentUserId());
         } catch (IOException e) {
             throw new FileServiceException(e.getMessage(), e);
         } finally {
@@ -85,6 +91,12 @@ public class FileService {
         }
 
         return fileBuilder.build();
+    }
+
+    @SneakyThrows
+    public ByteArrayResource loadFromS3(CtFile file) {
+        byte[] content = s3.getObject(BUCKET, file.getHash()).getObjectContent().readAllBytes();
+        return new ByteArrayResource(content);
     }
 
     public void delete(UUID id) {

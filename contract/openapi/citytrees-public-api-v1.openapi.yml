@@ -289,6 +289,34 @@ paths:
           $ref: '#/components/responses/Forbidden'
         500:
           $ref: '#/components/responses/InternalServerError'
+  /file/download/{id}:
+    get:
+      tags:
+        - file-controller
+      operationId: downloadFile
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        200:
+          description: Downloads file
+          content:
+            text/plain:
+              schema:
+                type: string
+                format: binary
+        400:
+          $ref: "#/components/responses/BadRequest"
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/Forbidden'
+        500:
+          $ref: '#/components/responses/InternalServerError'
 
 components:
   schemas:
@@ -416,7 +444,6 @@ components:
           type: string
           format: uuid
           example: 1a60dc75-6e43-4e62-becf-2683042b4818
-
 
     ErrorResponse:
       description: Error

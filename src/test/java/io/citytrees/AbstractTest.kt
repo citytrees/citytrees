@@ -23,7 +23,6 @@ import org.springframework.test.web.servlet.MockHttpServletRequestDsl
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.result.JsonPathResultMatchersDsl
 import org.springframework.util.Base64Utils
-import org.springframework.util.DigestUtils
 import java.util.*
 import javax.servlet.http.Cookie
 import kotlin.collections.ArrayDeque
@@ -90,31 +89,19 @@ abstract class AbstractTest {
 
     protected fun givenCtFile(
         user: User,
-        id: UUID = UUID.randomUUID(),
         name: String = "file",
         originalFilename: String = "test.txt",
         mediaType: String = MediaType.TEXT_PLAIN_VALUE,
-        content: ByteArray = "some content".toByteArray(),
-        saveToS3: Boolean = false
-    ): CtFile = when (saveToS3) {
-        false -> CtFile.builder()
-            .id(id)
-            .name(originalFilename)
-            .mimeType(mediaType)
-            .size(content.size.toLong())
-            .hash(DigestUtils.md5DigestAsHex(content))
-            .userId(user.id)
-            .build()
-
-        true -> fileService.saveToS3(
-            MockMultipartFile(
-                name,
-                originalFilename,
-                mediaType,
-                content
-            )
-        )
-    }.also {
+        content: ByteArray = "example text content".toByteArray(),
+    ): CtFile = fileService.saveToS3(
+        MockMultipartFile(
+            name,
+            originalFilename,
+            mediaType,
+            content,
+        ),
+        user,
+    ).also {
         fileService.save(it)
         CLEANUP_TASKS.addFirst { fileService.delete(it.id) }
     }
