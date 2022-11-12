@@ -1,13 +1,13 @@
-import React from 'react';
-import './App.css';
+import React from "react";
 
-function App() {
+import {BrowserRouter, Route, Routes,} from "react-router-dom";
 
+export default function App() {
   return (
-    <div className="App">
-      Hello world! Change to approve policies
-    </div>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<span>ROOT 1</span>}/>
+        </Routes>
+      </BrowserRouter>
   );
 }
-
-export default App;

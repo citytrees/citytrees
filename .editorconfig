@@ -21,3 +21,7 @@ ij_java_keep_simple_methods_in_one_line = true
 indent_size = 2
 tab_width = 2
 insert_final_newline = true
+
+[*.tsx]
+indent_size = 2
+tab_width = 2
