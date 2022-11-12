@@ -26,3 +26,4 @@ s3:
   secret-key: ${S3_SECRET_KEY:secret-key}
   region: ${S3_REGION:eu-south-1}
   service-endpoint: ${S3_SERVICE_ENDPOINT:http://localhost:9090/}
+  bucket: ${S3_BUCKET:ct_tree_bucket}

@@ -30,6 +30,9 @@ public class S3Properties {
     @NotEmpty
     String serviceEndpoint;
 
+    @NotEmpty
+    String bucket;
+
     @Bean
     public AmazonS3 s3Client() {
         return AmazonS3ClientBuilder

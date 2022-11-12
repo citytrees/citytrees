@@ -3,6 +3,7 @@ package io.citytrees.service;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.PutObjectRequest;
+import io.citytrees.configuration.properties.S3Properties;
 import io.citytrees.model.CtFile;
 import io.citytrees.model.User;
 import io.citytrees.repository.FileRepository;
@@ -25,7 +26,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class FileService {
 
-    private static final String BUCKET = "ct_tree_bucket";
+    private final S3Properties s3Properties;
 
     private final FileRepository fileRepository;
     private final SecurityService securityService;
@@ -71,7 +72,7 @@ public class FileService {
 
             if (savedFile.isEmpty()) {
                 s3.putObject(
-                    new PutObjectRequest(BUCKET, hash, tempFile)
+                    new PutObjectRequest(s3Properties.getBucket(), hash, tempFile)
                         .withCannedAcl(CannedAccessControlList.PublicRead)
                 );
             }
@@ -95,7 +96,7 @@ public class FileService {
 
     @SneakyThrows
     public ByteArrayResource loadFromS3(CtFile file) {
-        byte[] content = s3.getObject(BUCKET, file.getHash()).getObjectContent().readAllBytes();
+        byte[] content = s3.getObject(s3Properties.getBucket(), file.getHash()).getObjectContent().readAllBytes();
         return new ByteArrayResource(content);
     }
 
@@ -111,7 +112,7 @@ public class FileService {
     }
 
     private void deleteFromS3(CtFile fileToDelete) {
-        s3.deleteObject(BUCKET, fileToDelete.getHash());
+        s3.deleteObject(s3Properties.getBucket(), fileToDelete.getHash());
     }
 
     /* TO BE USED ONLY IN TESTS! */
