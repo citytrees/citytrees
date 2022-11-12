@@ -1,40 +1,35 @@
 package io.citytrees.model;
 
 import io.citytrees.constants.TableNames;
-import io.citytrees.v1.model.UserRole;
 import lombok.Builder;
 import lombok.Value;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
-import java.util.Set;
 import java.util.UUID;
 
 @Value
 @Builder
-@Table(TableNames.USER_TABLE)
-public class User {
+@Table(TableNames.FILE_TABLE)
+public class CtFile {
 
     @Id
     @NotNull
     UUID id;
 
     @NotNull
-    String email;
+    String name;
 
     @NotNull
-    @Column("pwd")
-    String password;
+    String mimeType;
 
     @NotNull
-    Set<UserRole> roles;
+    Long size;
 
-    @Nullable
-    String firstName;
+    @NotNull
+    String hash;
 
-    @Nullable
-    String lastName;
+    @NotNull
+    UUID userId;
 }

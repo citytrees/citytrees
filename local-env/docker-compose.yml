@@ -19,3 +19,11 @@ services:
     volumes:
       - ../frontend:/usr/src/app/citytrees-frontend
       - /usr/src/app/citytrees-frontend/node_modules
+
+  s3:
+    image: adobe/s3mock:2.1.29
+    environment:
+      initialBuckets: "ct_tree_bucket"
+    ports:
+      - "9090:9090"
+      - "9191:9191"

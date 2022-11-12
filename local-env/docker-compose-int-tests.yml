@@ -4,3 +4,8 @@ services:
     extends:
       file: docker-compose.yml
       service: database
+
+  s3:
+    extends:
+      file: docker-compose.yml
+      service: s3

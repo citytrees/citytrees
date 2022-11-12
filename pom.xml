@@ -18,6 +18,8 @@
         <self-default-v1.package>io.citytrees.v1</self-default-v1.package>
         <kotlin.version>1.7.10</kotlin.version>
         <java-jwt-version>4.0.0</java-jwt-version>
+        <commons-io.version>2.11.0</commons-io.version>
+        <aws-java-sdk-s3.version>1.12.329</aws-java-sdk-s3.version>
     </properties>
     <dependencies>
         <dependency>
@@ -81,6 +83,16 @@
             <artifactId>kotlin-test</artifactId>
             <version>${kotlin.version}</version>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>${commons-io.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.amazonaws</groupId>
+            <artifactId>aws-java-sdk-s3</artifactId>
+            <version>${aws-java-sdk-s3.version}</version>
         </dependency>
     </dependencies>
 

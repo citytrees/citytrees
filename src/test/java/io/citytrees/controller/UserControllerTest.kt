@@ -2,6 +2,7 @@ package io.citytrees.controller
 
 import io.citytrees.AbstractTest
 import io.citytrees.constants.CookieNames
+import io.citytrees.constants.TableNames
 import io.citytrees.v1.model.UserRole
 import org.junit.jupiter.api.Test
 import org.springframework.http.MediaType
@@ -16,7 +17,7 @@ import kotlin.test.assertEquals
 class UserControllerTest : AbstractTest() {
 
     @Test
-    @Sql(statements = ["DELETE FROM ct_user"], executionPhase = AFTER_TEST_METHOD)
+    @Sql(statements = ["DELETE FROM ${TableNames.USER_TABLE}"], executionPhase = AFTER_TEST_METHOD)
     fun `user register should return 200`() {
         val email = "test@example.com"
         val password = "pass"
