@@ -449,15 +449,9 @@ components:
       description: Error
       type: object
       required:
-        - id
         - code
         - message
       properties:
-        id:
-          description: Unique identifier of error
-          type: string
-          format: uuid
-          example: 6e612d3c-d7a3-4aa4-9ff0-a2fb667e02b1
         code:
           description: Error code, identifier for type of error
           type: string

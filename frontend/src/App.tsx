@@ -1,12 +1,14 @@
 import React from "react";
+import './App.css';
 
 import {BrowserRouter, Route, Routes,} from "react-router-dom";
+import RegistrationPage from "./pages/Registration";
 
 export default function App() {
   return (
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<span>ROOT 1</span>}/>
+          <Route path="/register" element={<RegistrationPage/>}/>
         </Routes>
       </BrowserRouter>
   );

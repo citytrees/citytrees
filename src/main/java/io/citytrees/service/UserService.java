@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.citytrees.configuration.security.JWTUserDetails;
 import io.citytrees.model.User;
 import io.citytrees.repository.UserRepository;
+import io.citytrees.service.exception.UserInputError;
 import io.citytrees.util.HashUtil;
 import io.citytrees.v1.model.UserRegisterRequest;
 import io.citytrees.v1.model.UserRole;
@@ -51,6 +52,14 @@ public class UserService implements UserDetailsService {
 
     public UUID create(User user) {
         return create(user.getId(), user.getEmail(), user.getPassword(), user.getRoles(), user.getFirstName(), user.getLastName());
+    }
+
+    public UUID register(UserRegisterRequest registerUserRequest) {
+        findByEmail(registerUserRequest.getEmail()).ifPresent(user -> {
+            throw new UserInputError(String.format("Email '%s' is already in use", user.getEmail()));
+        });
+
+        return create(registerUserRequest);
     }
 
     public Optional<User> findByEmail(String email) {

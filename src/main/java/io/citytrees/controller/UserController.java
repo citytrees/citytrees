@@ -26,7 +26,7 @@ public class UserController extends BaseController implements UserControllerApiD
     @PreAuthorize("permitAll()")
     public ResponseEntity<UserRegisterResponse> registerNewUser(UserRegisterRequest registerUserRequest) {
         var response = new UserRegisterResponse()
-            .userId(service.create(registerUserRequest));
+            .userId(service.register(registerUserRequest));
         return ResponseEntity.ok(response);
     }
 

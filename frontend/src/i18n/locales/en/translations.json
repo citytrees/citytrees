@@ -1,0 +1,13 @@
+{
+    "registration-page": {
+        "email": {
+            "label": "Email",
+            "emptyError": "Please input email"
+        },
+        "password": {
+            "label": "Password",
+            "emptyError": "Please input password"
+        },
+        "submit": "Register"
+    }
+}
