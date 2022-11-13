@@ -12,6 +12,9 @@ on:
 
   workflow_dispatch:
 
+paths-ignore:
+  - target
+
 jobs:
 
   build:
