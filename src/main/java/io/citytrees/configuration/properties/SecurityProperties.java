@@ -44,4 +44,9 @@ public class SecurityProperties {
     @NotNull
     Duration refreshTokenDuration;
 
+    @NotNull
+    String adminEmail;
+
+    @NotNull
+    String adminPassword;
 }

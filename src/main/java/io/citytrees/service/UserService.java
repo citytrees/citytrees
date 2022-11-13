@@ -54,6 +54,10 @@ public class UserService implements UserDetailsService {
         return create(user.getId(), user.getEmail(), user.getPassword(), user.getRoles(), user.getFirstName(), user.getLastName());
     }
 
+    public UUID createIfNotExists(User user) {
+        return findByEmail(user.getEmail()).map(User::getId).orElseGet(() -> create(user));
+    }
+
     public UUID register(UserRegisterRequest registerUserRequest) {
         findByEmail(registerUserRequest.getEmail()).ifPresent(user -> {
             throw new UserInputError(String.format("Email '%s' is already in use", user.getEmail()));
