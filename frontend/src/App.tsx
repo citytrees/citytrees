@@ -1,13 +1,15 @@
-import React from 'react';
+import React from "react";
 import './App.css';
 
-function App() {
+import {BrowserRouter, Route, Routes,} from "react-router-dom";
+import RegistrationPage from "./pages/Registration";
 
+export default function App() {
   return (
-    <div className="App">
-      Hello world! Change to approve policies
-    </div>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/register" element={<RegistrationPage/>}/>
+        </Routes>
+      </BrowserRouter>
   );
 }
-
-export default App;

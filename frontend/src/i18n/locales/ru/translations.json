@@ -1,0 +1,13 @@
+{
+    "registration-page": {
+        "email": {
+            "label": "Email",
+            "emptyError": "Пожалуйста введите email"
+        },
+        "password": {
+            "label": "Пароль",
+            "emptyError": "Пожалуйста введите пароль"
+        },
+        "submit": "Зарегистрироваться"
+    }
+}

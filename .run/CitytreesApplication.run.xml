@@ -3,6 +3,7 @@
     <option name="ACTIVE_PROFILES" value="dev" />
     <module name="citytrees" />
     <option name="SPRING_BOOT_MAIN_CLASS" value="io.citytrees.CityTreesApplication" />
+    <option name="UPDATE_ACTION_UPDATE_POLICY" value="UpdateClassesAndTriggerFile" />
     <method v="2">
       <option name="Make" enabled="true" />
     </method>
