@@ -1,5 +1,6 @@
 import {UserControllerApi} from "../generated/openapi";
 
-export default {
+const api = {
     user: new UserControllerApi()
 }
+export default api
