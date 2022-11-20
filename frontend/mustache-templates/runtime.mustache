@@ -146,6 +146,7 @@ export class BaseAPI {
 
         const init: RequestInit = {
             ...overridedInit,
+            credentials: "include",
             body:
                 isFormData(overridedInit.body) ||
                 overridedInit.body instanceof URLSearchParams ||

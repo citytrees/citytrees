@@ -1,13 +1,33 @@
 {
-    "registration-page": {
+    "signInPage": {
         "email": {
             "label": "Email",
-            "emptyError": "Please input email"
+            "emptyError": "Please input email",
+            "notValidError": "Email is not valid"
         },
         "password": {
             "label": "Password",
             "emptyError": "Please input password"
         },
-        "submit": "Register"
+        "submit": "Sign in",
+        "register": {
+            "label": "Register"
+        },
+        "signInError": "The email or password is incorrect"
+    },
+    "registrationPage": {
+        "email": {
+            "label": "Email",
+            "emptyError": "Please input email",
+            "notValidError": "Email is not valid"
+        },
+        "password": {
+            "label": "Password",
+            "notValidError": "Password must contain minimum 8 characters: upper/lower case letters, symbols and numbers"
+        },
+        "submit": "Register",
+        "signIn": {
+            "label": "Sign in"
+        }
     }
 }
