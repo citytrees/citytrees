@@ -16,7 +16,6 @@ function RegistrationPage() {
 
   const validatePassword = (rule: any, value: string, callback: any) => {
     let passwordPattern = /^(?=.*\d)(?=.*[_?,.!@#$%^&*])(?=.*[a-z])(?=.*[A-Z]).{8,}$/;
-    debugger
     if (value && passwordPattern.test(value)) {
       callback();
     } else {

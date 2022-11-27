@@ -5,8 +5,14 @@ import CenteredContainer from "../../components/forms";
 import api from "../../api";
 import React from "react";
 import AppRoutes from "../../constants/AppRoutes";
+import {useAppDispatch} from "../../app/hooks";
+import {setUser, User} from "../../features/user/userSlice";
+import jwt_decode from "jwt-decode";
+import Cookies from "js-cookie";
 
 function LoginPage() {
+  const dispatch = useAppDispatch();
+
   let navigate = useNavigate();
   const {t} = useTranslation();
   const [form] = Form.useForm();
@@ -53,6 +59,7 @@ function LoginPage() {
                 onClick={() =>
                     api.auth.handleBasicAuth({authorization: `Basic ${btoa(`${email}:${password}`)}`})
                         .then(() => {
+                          dispatch(setUser(jwt_decode<User>(Cookies.get("ct_access_token") as string)))
                           navigate(AppRoutes.MAIN)
                         })
                         .catch(error => {
