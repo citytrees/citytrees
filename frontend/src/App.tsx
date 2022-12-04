@@ -5,13 +5,14 @@ import RegistrationPage from "./pages/Registration";
 import LoginPage from "./pages/Login";
 import AppRoutes from "./constants/AppRoutes";
 import MainPage from "./pages/Main";
+import ProtectedRoute from "./components/route/ProtectedRoute";
 
 export default function App() {
   return (
       <BrowserRouter>
         <Routes>
-          <Route path={AppRoutes.LOGIN} element={<LoginPage/>}/>
-          <Route path={AppRoutes.REGISTER} element={<RegistrationPage/>}/>
+          <Route path={AppRoutes.LOGIN} element={<ProtectedRoute element={<LoginPage/>}/>}/>
+          <Route path={AppRoutes.REGISTER} element={<ProtectedRoute element={<RegistrationPage/>}/>}/>
           <Route path={AppRoutes.MAIN} element={<MainPage/>}/>
         </Routes>
       </BrowserRouter>

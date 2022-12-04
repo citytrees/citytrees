@@ -2,6 +2,7 @@ import {Action, configureStore, ThunkAction} from '@reduxjs/toolkit';
 import userReducer from '../features/user/userSlice';
 import storage from 'redux-persist/lib/storage'
 import {persistReducer, persistStore} from "redux-persist";
+import {FLUSH, PAUSE, PERSIST, PURGE, REGISTER, REHYDRATE} from "redux-persist/es/constants";
 
 
 const persisConfig = {
@@ -15,6 +16,12 @@ export const store = configureStore({
     reducer: {
         user: persistedUserReducer,
     },
+    middleware: (getDefaultMiddleware) =>
+        getDefaultMiddleware({
+            serializableCheck: {
+                ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
+            },
+        }),
 });
 
 export const Persistor = persistStore(store)
