@@ -65,8 +65,8 @@ function RegistrationPage() {
                 htmlType="submit"
                 onClick={() =>
                     api.user.registerNewUser({userRegisterRequest: {email: email, password: password}})
-                        .then(data => {
-                          console.log(data)
+                        .then(() => {
+                          navigate(AppRoutes.LOGIN)
                         })
                         .catch(error => {
                           error.response.json()

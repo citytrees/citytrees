@@ -56,6 +56,7 @@ public class UserController extends BaseController implements UserControllerApiD
     }
 
     @Override
+    @PreAuthorize("isAuthenticated() && hasPermission(@securityService.currentUserId, @Domains.USER, @Permissions.EDIT)")
     public ResponseEntity<Void> updateUserPassword(UserUpdatePasswordRequest userUpdatePasswordRequest) {
         service.updatePassword(userUpdatePasswordRequest);
         return ResponseEntity.ok().build();

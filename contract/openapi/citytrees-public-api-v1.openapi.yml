@@ -136,7 +136,6 @@ paths:
       parameters:
         - name: ct_refresh_token
           in: cookie
-          required: true
           schema:
             type: string
       responses:

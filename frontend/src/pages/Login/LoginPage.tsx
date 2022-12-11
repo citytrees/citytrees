@@ -8,7 +8,7 @@ import AppRoutes from "../../constants/AppRoutes";
 import {useAppDispatch} from "../../app/hooks";
 import {setUser, User} from "../../features/user/userSlice";
 import jwt_decode from "jwt-decode";
-import Cookies from "js-cookie";
+import {getAccessToken} from "../../helpers/cookies";
 
 function LoginPage() {
   const dispatch = useAppDispatch();
@@ -59,8 +59,11 @@ function LoginPage() {
                 onClick={() =>
                     api.auth.handleBasicAuth({authorization: `Basic ${btoa(`${email}:${password}`)}`})
                         .then(() => {
-                          dispatch(setUser(jwt_decode<User>(Cookies.get("ct_access_token") as string)))
-                          navigate(AppRoutes.MAIN)
+                          let accessToken = getAccessToken();
+                          if (accessToken) {
+                            dispatch(setUser(jwt_decode<User>(accessToken)))
+                            navigate(AppRoutes.MAIN)
+                          }
                         })
                         .catch(error => {
                           error.response.json()
