@@ -20,9 +20,7 @@ export const userSlice = createSlice({
     initialState,
     reducers: {
         setUser: (state, action: PayloadAction<User>) => {
-            let payload = action.payload;
-            if (payload == null) return
-            state.user = payload
+            state.user = action.payload
         }
     }
 });

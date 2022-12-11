@@ -13,7 +13,7 @@ import {getAccessToken} from "../../helpers/cookies";
 function LoginPage() {
   const dispatch = useAppDispatch();
 
-  let navigate = useNavigate();
+  const navigate = useNavigate();
   const {t} = useTranslation();
   const [form] = Form.useForm();
   const email = Form.useWatch('email', form);
