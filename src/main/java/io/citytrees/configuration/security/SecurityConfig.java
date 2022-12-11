@@ -25,6 +25,8 @@ public class SecurityConfig {
             .and()
             .authorizeRequests().anyRequest().permitAll()
             .and()
+            .cors()
+            .and()
             .addFilterBefore(new JWTFilter(tokenService), UsernamePasswordAuthenticationFilter.class)
             .build();
     }

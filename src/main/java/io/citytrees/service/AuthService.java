@@ -62,12 +62,28 @@ public class AuthService {
     private void setResponseCookies(TokenPair tokenPair, HttpServletResponse httpServletResponse) {
         var accessTokenCookie = new Cookie(ACCESS_TOKEN, tokenPair.getAccessToken());
         accessTokenCookie.setMaxAge(COOKIES_MAX_AGE);
+        accessTokenCookie.setPath("/");
 
         var refreshTokenCookie = new Cookie(REFRESH_TOKEN, tokenPair.getRefreshToken());
         refreshTokenCookie.setMaxAge(COOKIES_MAX_AGE);
         refreshTokenCookie.setHttpOnly(true);
+        refreshTokenCookie.setPath("/");
 
         httpServletResponse.addCookie(accessTokenCookie);
         httpServletResponse.addCookie(refreshTokenCookie);
+    }
+
+    public void logout(HttpServletResponse httpServletResponse) {
+        var refreshTokenCookie = new Cookie(REFRESH_TOKEN, null);
+        refreshTokenCookie.setHttpOnly(true);
+        refreshTokenCookie.setMaxAge(0);
+        refreshTokenCookie.setPath("/");
+
+        var accessTokenCookie = new Cookie(ACCESS_TOKEN, null);
+        accessTokenCookie.setMaxAge(0);
+        accessTokenCookie.setPath("/");
+
+        httpServletResponse.addCookie(refreshTokenCookie);
+        httpServletResponse.addCookie(accessTokenCookie);
     }
 }

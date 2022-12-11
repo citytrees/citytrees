@@ -26,4 +26,10 @@ public class AuthController extends BaseController implements AuthControllerApiD
         authService.refreshTokenPair(refreshToken, httpServletResponse);
         return ResponseEntity.ok(null);
     }
+
+    @Override
+    public ResponseEntity<Void> handleLogout(String ctRefreshToken) {
+        authService.logout(httpServletResponse);
+        return ResponseEntity.ok(null);
+    }
 }

@@ -1,6 +1,6 @@
 import styled from "styled-components";
 
-const StyledCenteredForm = styled.div({
+const CenteredContainer = styled.div({
     width: '30%',
     position: 'absolute',
     left: '50%',
@@ -8,4 +8,4 @@ const StyledCenteredForm = styled.div({
     transform: 'translate(-50%, -50%)'
 });
 
-export default StyledCenteredForm;
+export default CenteredContainer;

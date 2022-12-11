@@ -1,13 +1,33 @@
 {
-    "registration-page": {
+    "signInPage": {
         "email": {
             "label": "Email",
-            "emptyError": "Пожалуйста введите email"
+            "emptyError": "Пожалуйста введите email",
+            "notValidError": "Введен некорректный email"
         },
         "password": {
             "label": "Пароль",
             "emptyError": "Пожалуйста введите пароль"
         },
-        "submit": "Зарегистрироваться"
+        "submit": "Войти",
+        "register": {
+            "label": "Зарегистрироваться"
+        },
+        "signInError": "Введены неверные данные для входа"
+    },
+    "registrationPage": {
+        "email": {
+            "label": "Email",
+            "emptyError": "Пожалуйста введите email",
+            "notValidError": "Введен некорректный email"
+        },
+        "password": {
+            "label": "Пароль",
+            "notValidError": "Пароль должен быть длиной минимум 8 символов, состоять из букв латинского алфавита (A-z), арабских цифр (0-9) и специальных символов"
+        },
+        "submit": "Зарегистрироваться",
+        "signIn": {
+            "label": "Войти"
+        }
     }
 }

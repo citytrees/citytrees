@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test
 import org.springframework.test.web.servlet.post
 import java.time.Duration
 
-class AuthControllerTest: AbstractTest() {
+class AuthControllerTest : AbstractTest() {
 
     @Test
     fun `should throw 400 when required header not exist`() {
@@ -49,10 +49,20 @@ class AuthControllerTest: AbstractTest() {
     }
 
     @Test
-    fun `should return 400 when refresh called without token`() {
+    fun `should return 200 and set cookies age to zero`() {
+        givenTestUser("example@mail.ru", "123")
+
+        mockMvc.post("/api/v1/auth/logout")
+            .andExpect {
+                status { isOk() }
+            }
+    }
+
+    @Test
+    fun `should return 401 when refresh called without token`() {
         mockMvc.post("/api/v1/auth/jwt/refresh")
             .andExpect {
-                status { isBadRequest() }
+                status { isUnauthorized() }
             }
     }
 

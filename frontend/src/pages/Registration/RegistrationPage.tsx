@@ -1,37 +1,60 @@
 import React from "react";
 import {Button, Form, Input, notification} from 'antd';
-import StyledCenteredForm from "../../components/forms/StyledCenteredForm";
 import {useTranslation} from "react-i18next";
 import api from "../../api";
 import {ErrorResponse} from "../../generated/openapi";
+import {useNavigate} from "react-router-dom";
+import CenteredContainer from "../../components/forms";
+import AppRoutes from "../../constants/AppRoutes";
 
 function RegistrationPage() {
+  let navigate = useNavigate();
   const {t} = useTranslation();
   const [form] = Form.useForm();
   const email = Form.useWatch('email', form);
   const password = Form.useWatch('password', form);
 
+  const validatePassword = (rule: any, value: string, callback: any) => {
+    let passwordPattern = /^(?=.*\d)(?=.*[_?,.!@#$%^&*])(?=.*[a-z])(?=.*[A-Z]).{8,}$/;
+    if (value && passwordPattern.test(value)) {
+      callback();
+    } else {
+      callback(t('registrationPage.password.notValidError'));
+    }
+  };
+
   return (
-      <StyledCenteredForm>
+      <CenteredContainer>
         <Form
             form={form}
             name="basic"
             layout="vertical"
-            initialValues={{remember: true}}
             autoComplete="off"
         >
           <Form.Item
-              label={t('registration-page.email.label')}
+              label={t('registrationPage.email.label')}
               name="email"
-              rules={[{required: true, message: t<string>('registration-page.email.emptyError')}]}
+              rules={[
+                {
+                  type: 'email',
+                  required: true,
+                  message: t<string>('registrationPage.email.notValidError'),
+                }
+              ]}
           >
             <Input/>
           </Form.Item>
 
           <Form.Item
-              label={t('registration-page.password.label')}
+              label={t('registrationPage.password.label')}
               name="password"
-              rules={[{required: true, message: t<string>('registration-page.password.emptyError')}]}
+              rules={
+                [
+                  {validator: validatePassword},
+                  {required: true, message: t<string>('registrationPage.password.emptyError')}
+                ]
+              }
+              hasFeedback
           >
             <Input.Password/>
           </Form.Item>
@@ -42,24 +65,33 @@ function RegistrationPage() {
                 htmlType="submit"
                 onClick={() =>
                     api.user.registerNewUser({userRegisterRequest: {email: email, password: password}})
-                        .then(data => {
-                          console.log(data)
+                        .then(() => {
+                          navigate(AppRoutes.LOGIN)
                         })
                         .catch(error => {
                           error.response.json()
                               .then((body: ErrorResponse) => {
-                                notification.open({
-                                  message: body.message
-                                })
-                              })
+                                    notification.open({
+                                      message: body.message,
+                                      type: "error",
+                                      placement: "top"
+                                    })
+                                  }
+                              )
                         })
                 }
             >
-              {t('registration-page.submit')}
+              {t('registrationPage.submit')}
+            </Button>
+            <Button
+                type="link"
+                onClick={() => navigate(AppRoutes.LOGIN)}
+            >
+              {t('registrationPage.signIn.label')}
             </Button>
           </Form.Item>
         </Form>
-      </StyledCenteredForm>
+      </CenteredContainer>
   );
 }
 

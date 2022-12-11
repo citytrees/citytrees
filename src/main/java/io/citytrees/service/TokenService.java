@@ -2,6 +2,7 @@ package io.citytrees.service;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.exceptions.JWTVerificationException;
 import io.citytrees.configuration.properties.SecurityProperties;
 import io.citytrees.configuration.security.JWTUserDetails;
 import io.citytrees.model.TokenPair;
@@ -40,6 +41,10 @@ public class TokenService {
 
     @NotNull
     public String validateTokenAndExtractEmail(String refreshToken) {
+        if (refreshToken == null) {
+            throw new JWTVerificationException("Refresh token not present");
+        }
+
         var algorithm = Algorithm.HMAC512(securityProperties.getRefreshTokenSecret());
         var verifier = JWT.require(algorithm)
             .withIssuer(ISSUER)

@@ -136,7 +136,6 @@ paths:
       parameters:
         - name: ct_refresh_token
           in: cookie
-          required: true
           schema:
             type: string
       responses:
@@ -176,6 +175,30 @@ paths:
               schema:
                 type: string
                 example: ct_access_token=some_jwt; Path=/;
+        400:
+          $ref: "#/components/responses/BadRequest"
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/Forbidden'
+        500:
+          $ref: '#/components/responses/InternalServerError'
+  /auth/logout:
+    post:
+      tags:
+        - auth-controller
+      summary: Logout
+      operationId: handleLogout
+      security:
+        - CookieAuth: [ ]
+      parameters:
+        - name: ct_refresh_token
+          in: cookie
+          schema:
+            type: string
+      responses:
+        200:
+          description: Removes cookies
         400:
           $ref: "#/components/responses/BadRequest"
         401:
