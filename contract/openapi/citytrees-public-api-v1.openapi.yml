@@ -234,6 +234,117 @@ paths:
         500:
           $ref: '#/components/responses/InternalServerError'
 
+  /tree:
+    post:
+      tags:
+        - tree-controller
+      summary: Add new tree
+      operationId: createTree
+      security:
+        - BearerAuth: [ ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TreeCreateRequest"
+      responses:
+        200:
+          description: Tree successfully created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TreeCreateResponse"
+        400:
+          $ref: "#/components/responses/BadRequest"
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/Forbidden'
+        500:
+          $ref: '#/components/responses/InternalServerError'
+  /tree/{id}:
+    delete:
+      tags:
+        - tree-controller
+      operationId: deleteTree
+      security:
+        - BearerAuth: [ ]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        200:
+          description: OK
+        400:
+          $ref: "#/components/responses/BadRequest"
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/Forbidden'
+        500:
+          $ref: '#/components/responses/InternalServerError'
+
+  /trees:
+    post:
+      tags:
+        - trees-controller
+      summary: Load trees in region
+      operationId: loadTreesByRegion
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TreesByRegionRequest"
+      #    TODO #18
+      #    get:
+      #      parameters:
+      #        - name: x1
+      #          description: top left latitude
+      #          in: path
+      #          required: true
+      #          schema:
+      #            type: string
+      #        - name: y1
+      #          description: top left longitude
+      #          in: path
+      #          required: true
+      #          schema:
+      #            type: string
+      #        - name: x2
+      #          description: bottom right latitude
+      #          in: path
+      #          required: true
+      #          schema:
+      #            type: string
+      #        - name: y2
+      #          description: bottom right longitude
+      #          in: path
+      #          required: true
+      #          schema:
+      #            type: string
+      responses:
+        200:
+          description: Trees in specified region
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TreesGetResponse'
+        400:
+          $ref: "#/components/responses/BadRequest"
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/Forbidden'
+        500:
+          $ref: '#/components/responses/InternalServerError'
+
+
   /file/upload:
     post:
       tags:
@@ -421,6 +532,82 @@ components:
         newPassword:
           type: string
           example: p@$$w0rd!
+
+    TreeCreateRequest:
+      type: object
+      required:
+        - latitude
+        - longitude
+      properties:
+        latitude:
+          type: number
+          format: double
+          example: 0.0
+        longitude:
+          type: number
+          format: double
+          example: 0.0
+
+    TreeCreateResponse:
+      type: object
+      required:
+        - treeId
+      properties:
+        treeId:
+          type: string
+          format: uuid
+          example: ed156378-204b-473c-9d2a-886941a819ff
+
+    TreesByRegionRequest:
+      type: object
+      required:
+        - x1
+        - y1
+        - x2
+        - y2
+      properties:
+        x1:
+          type: number
+          format: double
+          example: 0.0
+        y1:
+          type: number
+          format: double
+          example: 0.0
+        x2:
+          type: number
+          format: double
+          example: 0.0
+        y2:
+          type: number
+          format: double
+          example: 0.0
+
+    TreesGetResponse:
+      type: array
+      items:
+        $ref: '#/components/schemas/TreesGetResponseTree'
+
+    TreesGetResponseTree:
+      type: object
+      required:
+        - id
+        - latitude
+        - longitude
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: ed156378-204b-473c-9d2a-886941a819ff
+        latitude:
+          type: number
+          format: double
+          example: 0.0
+        longitude:
+          type: number
+          format: double
+          example: 0.0
+
     FileUploadRequest:
       type: object
       properties:

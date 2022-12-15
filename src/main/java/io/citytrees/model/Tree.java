@@ -1,0 +1,29 @@
+package io.citytrees.model;
+
+import io.citytrees.constants.TableNames;
+import lombok.Builder;
+import lombok.Value;
+import org.jetbrains.annotations.NotNull;
+import org.locationtech.jts.geom.Point;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Column;
+import org.springframework.data.relational.core.mapping.Table;
+
+import java.util.UUID;
+
+@Value
+@Builder
+@Table(TableNames.TREE_TABLE)
+public class Tree {
+
+    @Id
+    @NotNull
+    UUID id;
+
+    @NotNull
+    @Column("geo_point")
+    Point geoPoint;
+
+    @NotNull
+    UUID userId;
+}

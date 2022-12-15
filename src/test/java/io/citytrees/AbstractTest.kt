@@ -3,15 +3,19 @@ package io.citytrees
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.citytrees.constants.CookieNames
 import io.citytrees.model.CtFile
+import io.citytrees.model.Tree
 import io.citytrees.model.User
 import io.citytrees.repository.UserRepository
 import io.citytrees.service.FileService
 import io.citytrees.service.TokenService
+import io.citytrees.service.TreeService
 import io.citytrees.service.UserService
 import io.citytrees.v1.model.UserRole
 import org.hamcrest.Matchers
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Tag
+import org.locationtech.jts.geom.Coordinate
+import org.locationtech.jts.geom.GeometryFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
@@ -49,6 +53,9 @@ abstract class AbstractTest {
 
     @Autowired
     protected lateinit var tokenService: TokenService
+
+    @Autowired
+    protected lateinit var treeService: TreeService
 
     @AfterEach
     protected fun cleanup() = CLEANUP_TASKS.forEach(Runnable::run)
@@ -106,7 +113,22 @@ abstract class AbstractTest {
         CLEANUP_TASKS.addFirst { fileService.delete(it.id) }
     }
 
+    protected fun givenTree(
+        userId: UUID,
+        latitude: Double,
+        longitude: Double,
+        id: UUID = UUID.randomUUID(),
+    ): Tree = Tree.builder()
+        .id(id)
+        .userId(userId)
+        .geoPoint(GEOMETRY_FACTORY.createPoint(Coordinate(latitude, longitude)))
+        .build().also {
+            treeService.create(it.id, it.userId, it.geoPoint)
+            CLEANUP_TASKS.addFirst { treeService.delete(it.id) }
+        }
+
     companion object {
         private val CLEANUP_TASKS = ArrayDeque<Runnable>()
+        private val GEOMETRY_FACTORY = GeometryFactory()
     }
 }

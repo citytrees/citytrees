@@ -21,3 +21,12 @@ create table ct_file
 );
 
 create index ct_file_hash_index on ct_file (hash);
+
+create table ct_tree
+(
+    id        uuid     not null primary key,
+    user_id   uuid     not null,
+    geo_point geometry not null
+);
+
+create unique index ct_tree_user_id_uidx on ct_tree (id);

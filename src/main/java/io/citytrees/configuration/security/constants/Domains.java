@@ -6,4 +6,5 @@ import org.springframework.stereotype.Component;
 public final class Domains {
     public static final String USER = "user";
     public static final String FILE = "file";
+    public static final String TREE = "tree";
 }
