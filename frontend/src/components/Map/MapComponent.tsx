@@ -1,10 +1,12 @@
-import React, {useEffect, useState} from "react";
-import {MapContainer, Marker, Popup, TileLayer, useMap, useMapEvents} from "react-leaflet";
-import 'leaflet/dist/leaflet.css';
-import {DragEndEvent, Icon} from "leaflet";
-import {TreesGetResponseTree} from "../../generated/openapi";
-import api from "../../api";
-import {Button, notification} from "antd";
+import React, {useEffect, useState} from "react"
+import {MapContainer, Marker, Popup, TileLayer, useMap, useMapEvents} from "react-leaflet"
+import 'leaflet/dist/leaflet.css'
+import {DragEndEvent, Icon, LatLng} from "leaflet"
+import {TreesGetResponseTree} from "../../generated/openapi"
+import api from "../../api"
+import {CtTree, ctTreeOf} from "./Models/CtTree"
+import {Button} from "antd";
+import CtTreeEditor from "./TreeEditor";
 
 const icon = new Icon({
   iconSize: [25, 41],
@@ -12,111 +14,120 @@ const icon = new Icon({
   popupAnchor: [2, -40],
   iconUrl: "https://unpkg.com/leaflet@1.6/dist/images/marker-icon.png",
   shadowUrl: "https://unpkg.com/leaflet@1.6/dist/images/marker-shadow.png"
-});
+})
 
 const InvalidateSize = () => {
   useMap().invalidateSize()
   return null
-};
-
-class Tree {
-  latitude: number;
-  longitude: number;
-
-  constructor(latitude: number, longitude: number) {
-    this.latitude = latitude;
-    this.longitude = longitude;
-  }
 }
 
 const TreeMap = () => {
-  const [updateCount, setUpdateCount] = useState(0) // TODO #18
-  const [newTree, setNewTree] = useState<Tree | null>(null)
+  const [updateCount, setUpdateCount] = useState(0)
+  const [newTree, setNewTree] = useState<CtTree | null>(null)
   const [trees, setTrees] = useState<TreesGetResponseTree[]>([])
+
+  const [isEditorOpen, setIsEditorOpen] = useState(false)
+  const [isEditable, setIsEditable] = useState(false)
+  const [editorValue, setEditorValue] = useState<CtTree | undefined>()
 
   const map = useMapEvents({
     click: (event) => {
-      let latlng = event.latlng;
-      setNewTree(new Tree(latlng.lat, latlng.lng))
+      let latlng = event.latlng
+      setNewTree({latitude: latlng.lat, longitude: latlng.lng})
     },
-    dragend: () => update(),
-    zoomend: () => update()
-  });
+    dragend: () => triggerUpdate(),
+    zoomend: () => triggerUpdate()
+  })
 
-  const update = () => {
+  // TODO #18 replace using map events
+  const triggerUpdate = () => {
     setUpdateCount(updateCount + 1)
   }
 
-  useEffect(() => {
-    notification.open({
-      message: `effect`,
-      type: "info",
-      placement: "top"
-    })
-    const updateMarkers = () => {
-      let bounds = map.getBounds()
-      let northWest = bounds.getNorthWest()
-      let southEast = bounds.getSouthEast()
-      api.trees.loadTreesByRegion({
-        treesByRegionRequest: {
-          x1: northWest.lat,
-          y1: northWest.lng,
-          x2: southEast.lat,
-          y2: southEast.lng
+  const onTreeCreate = (tree: CtTree) => {
+    api.tree.createTree({
+          treeCreateRequest:
+              {
+                latitude: tree.latitude,
+                longitude: tree.longitude
+              }
         }
-      }).then((responseTrees) => {
-        setTrees(responseTrees)
-        map.closePopup()
-      })
-    }
-    updateMarkers()
+    ).then(() => {
+      setIsEditorOpen(false);
+      setNewTree(null)
+      triggerUpdate()
+    })
+  }
+
+  useEffect(() => {
+    let bounds = map.getBounds()
+    let northWest = bounds.getNorthWest()
+    let southEast = bounds.getSouthEast()
+    api.trees.loadTreesByRegion({
+      treesByRegionRequest: {
+        x1: northWest.lat,
+        y1: northWest.lng,
+        x2: southEast.lat,
+        y2: southEast.lng
+      }
+    }).then((responseTrees) => {
+      setTrees(responseTrees)
+    })
   }, [map, updateCount])
+
+  const renderMarker = (id: string, tree: TreesGetResponseTree) =>
+      <Marker key={id} icon={icon} position={[tree.latitude, tree.longitude]}>
+        <Popup>
+          <Button
+              type="primary"
+              onClick={() => {
+                setIsEditable(false)
+                setIsEditorOpen(true)
+                setEditorValue(ctTreeOf(tree))
+              }}
+          >
+            Details
+          </Button>
+        </Popup>
+      </Marker>
+
+  const renderDraftMarker = (tree: CtTree) =>
+      <Marker
+          icon={icon}
+          position={[tree.latitude, tree.longitude]}
+          draggable={true}
+          eventHandlers={{
+            dragend: (event: DragEndEvent) => {
+              let latLng = event.target.getLatLng()
+              setNewTree({latitude: latLng.lat, longitude: latLng.lng})
+            },
+            popupopen: () => {
+              map.flyTo(new LatLng(tree.latitude, tree.longitude), 17)
+            }
+          }}>
+        <Popup>
+          <Button
+              type="primary"
+              onClick={() => {
+                setIsEditable(true)
+                setIsEditorOpen(true)
+                setEditorValue(tree)
+              }}
+          >Create tree</Button>
+        </Popup>
+      </Marker>
 
   return (
       <div>
-        {trees.map((tree, index) => {
-          return <Marker key={`tree${index}`} icon={icon} position={[tree.latitude, tree.longitude]}>
-            <Popup>
-              <span>[{tree.latitude}, {tree.longitude}]</span>
-              <Button
-                  onClick={() =>
-                      api.tree.deleteTree({id: tree.id}).then(() => update())
-                  }
-              >
-                Delete
-              </Button>
-            </Popup>
-          </Marker>;
-        })}
-        {newTree ?
-            <Marker
-                icon={icon}
-                position={[newTree.latitude, newTree.longitude]}
-                draggable={true}
-                eventHandlers={{
-                  dragend: (event: DragEndEvent) => {
-                    let latLng = event.target.getLatLng()
-                    setNewTree(new Tree(latLng.lat, latLng.lng))
-                  }
-                }}>
-              <Popup>
-                <span>[{newTree.latitude}, {newTree.longitude}]</span>
-                <Button
-                    onClick={() =>
-                        newTree
-                            ? api.tree.createTree({treeCreateRequest: {latitude: newTree.latitude, longitude: newTree.longitude}})
-                                .then(() => {
-                                  debugger
-                                  setNewTree(null)
-                                  update()
-                                })
-                            : null}
-                >
-                  Add
-                </Button>
-              </Popup>
-            </Marker>
-            : null}
+        {trees.map((tree, index) => renderMarker(`tree:${index}`, tree))}
+        {newTree ? renderDraftMarker(newTree) : null}
+        <CtTreeEditor
+            open={isEditorOpen}
+            isEditable={isEditable}
+            initial={editorValue}
+            onCreate={(tree: CtTree) => onTreeCreate(tree)}
+            onCancel={() => setIsEditorOpen(false)}
+        />
       </div>
   )
 }
@@ -153,4 +164,4 @@ const MapComponent = (
   )
 }
 
-export default MapComponent;
+export default MapComponent

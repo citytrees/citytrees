@@ -31,7 +31,7 @@ public class TreesController implements TreesControllerApiDelegate {
         return ResponseEntity.ok(responseTreeList);
     }
 
-    //    @Override TODO #18
+//    @Override TODO #18
 //    public ResponseEntity<List<TreesGetResponseTree>> loadTreesByRegion(String x1, String y1, String x2, String y2) {
 //        List<Tree> trees = treesService.loadByRegion(Double.valueOf(x1), Double.valueOf(y2), Double.valueOf(x2), Double.valueOf(y2));
 //        List<TreesGetResponseTree> responseTreeList = trees.stream()
