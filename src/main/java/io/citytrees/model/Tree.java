@@ -10,6 +10,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
+import java.util.Set;
 import java.util.UUID;
 
 @Value
@@ -30,4 +31,7 @@ public class Tree {
     @NotNull
     @Column("geo_point")
     Point geoPoint;
+
+    @NotNull
+    Set<UUID> fileIds;
 }

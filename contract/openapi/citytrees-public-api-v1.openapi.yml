@@ -289,6 +289,43 @@ paths:
         500:
           $ref: '#/components/responses/InternalServerError'
 
+  /tree/file/{treeId}:
+    post:
+      tags:
+        - tree-controller
+      summary: Attach file to tree
+      operationId: attachFile
+      security:
+        - BearerAuth: [ ]
+      parameters:
+        - name: treeId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/FileUploadRequest"
+      responses:
+        200:
+          description: File successfully uploaded. It's id is in response's body.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FileUploadResponse"
+        400:
+          $ref: "#/components/responses/BadRequest"
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/Forbidden'
+        500:
+          $ref: '#/components/responses/InternalServerError'
+
   /trees:
     post:
       tags:

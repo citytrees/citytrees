@@ -1,5 +1,7 @@
 package io.citytrees.repository.extension.rowmapper;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.citytrees.model.Tree;
 import io.citytrees.v1.model.TreeStatus;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +23,8 @@ import java.util.UUID;
 public class TreeRowMapper implements RowMapper<Tree> {
     private static final GeometryFactory GEOMETRY_FACTORY = new GeometryFactory();
 
+    private final ObjectMapper objectMapper;
+
     @Override
     @SneakyThrows
     public Tree mapRow(ResultSet rs, int rowNum) {
@@ -33,6 +37,7 @@ public class TreeRowMapper implements RowMapper<Tree> {
             .userId(rs.getObject("user_id", UUID.class))
             .status(TreeStatus.valueOf(rs.getObject("status", String.class)))
             .geoPoint(GEOMETRY_FACTORY.createPoint(new Coordinate(point.getX(), point.getY())))
+            .fileIds(objectMapper.readValue(rs.getString("file_ids"), new TypeReference<>() {}))
             .build();
     }
 }

@@ -125,6 +125,7 @@ abstract class AbstractTest {
         .userId(userId)
         .status(status)
         .geoPoint(GEOMETRY_FACTORY.createPoint(Coordinate(latitude, longitude)))
+        .fileIds(emptySet())
         .build().also {
             treeService.create(it.id, it.userId, it.geoPoint)
             CLEANUP_TASKS.addFirst { treeService.delete(it.id) }

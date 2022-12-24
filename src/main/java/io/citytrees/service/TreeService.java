@@ -10,6 +10,8 @@ import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Point;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -23,6 +25,7 @@ public class TreeService {
     private final GeoProperties geoProperties;
     private final SecurityService securityService;
     private final TreeRepository treeRepository;
+    private final FileService fileService;
 
     public UUID create(TreeCreateRequest request) {
         Point point = GEOMETRY_FACTORY.createPoint(new Coordinate(request.getLatitude(), request.getLongitude()));
@@ -40,6 +43,13 @@ public class TreeService {
 
     public Optional<Tree> getById(UUID treeId) {
         return treeRepository.findTreeById(treeId);
+    }
+
+    @Transactional
+    public UUID attachFile(UUID treeId, MultipartFile file) {
+        UUID fileId = fileService.upload(file);
+        treeRepository.attachFile(treeId, fileId);
+        return fileId;
     }
 
     private UUID create(UUID id, UUID userId, TreeStatus status, Point point) {

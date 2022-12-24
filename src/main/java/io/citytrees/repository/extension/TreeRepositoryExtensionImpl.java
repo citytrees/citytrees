@@ -3,6 +3,7 @@ package io.citytrees.repository.extension;
 import io.citytrees.model.Tree;
 import io.citytrees.repository.extension.rowmapper.TreeRowMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
@@ -46,5 +47,25 @@ public class TreeRepositoryExtensionImpl implements TreeRepositoryExtension {
         );
 
         return jdbcTemplate.query(sql, params, treeMapper);
+    }
+
+    @Override
+    @SneakyThrows
+    public void attachFile(UUID treeId, UUID fileId) {
+        // TODO #18
+        var fileIdElement = "[" + "\"" + fileId + "\"" + "]";
+
+        var sql = """
+            UPDATE ct_tree
+            SET file_ids = file_ids || :fileId::jsonb
+            WHERE id = :treeId;
+            """;
+
+        var params = Map.of(
+            "treeId", treeId,
+            "fileId", fileIdElement
+        );
+
+        jdbcTemplate.update(sql, params);
     }
 }
