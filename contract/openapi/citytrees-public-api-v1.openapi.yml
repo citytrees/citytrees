@@ -459,6 +459,14 @@ components:
       enum:
         - ADMIN
         - BASIC
+
+    TreeStatus:
+      type: string
+      enum:
+        - NEW
+        - TO_APPROVE
+        - APPROVED
+
     UserRegisterResponse:
       type: object
       required:
@@ -552,6 +560,7 @@ components:
       type: object
       required:
         - treeId
+        - status
       properties:
         treeId:
           type: string
@@ -607,6 +616,8 @@ components:
           type: number
           format: double
           example: 0.0
+        status:
+          $ref: '#/components/schemas/TreeStatus'
 
     FileUploadRequest:
       type: object

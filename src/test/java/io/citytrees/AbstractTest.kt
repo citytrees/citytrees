@@ -10,6 +10,7 @@ import io.citytrees.service.FileService
 import io.citytrees.service.TokenService
 import io.citytrees.service.TreeService
 import io.citytrees.service.UserService
+import io.citytrees.v1.model.TreeStatus
 import io.citytrees.v1.model.UserRole
 import org.hamcrest.Matchers
 import org.junit.jupiter.api.AfterEach
@@ -117,10 +118,12 @@ abstract class AbstractTest {
         userId: UUID,
         latitude: Double,
         longitude: Double,
+        status: TreeStatus = TreeStatus.NEW,
         id: UUID = UUID.randomUUID(),
     ): Tree = Tree.builder()
         .id(id)
         .userId(userId)
+        .status(status)
         .geoPoint(GEOMETRY_FACTORY.createPoint(Coordinate(latitude, longitude)))
         .build().also {
             treeService.create(it.id, it.userId, it.geoPoint)

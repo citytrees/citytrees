@@ -20,8 +20,8 @@ public class TreeController implements TreeControllerApiDelegate {
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<TreeCreateResponse> createTree(TreeCreateRequest treeCreateRequest) {
         UUID treeId = treeService.create(treeCreateRequest);
-        TreeCreateResponse response = new TreeCreateResponse();
-        response.setTreeId(treeId);
+        TreeCreateResponse response = new TreeCreateResponse()
+            .treeId(treeId);
         return ResponseEntity.ok(response);
     }
 

@@ -29,3 +29,6 @@ s3:
   region: ${S3_REGION:eu-south-1}
   service-endpoint: ${S3_SERVICE_ENDPOINT:http://localhost:9090/}
   bucket: ${S3_BUCKET:ct_tree_bucket}
+
+geo:
+  srid: ${GEO_SRID:4326}

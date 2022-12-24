@@ -2,6 +2,7 @@ package io.citytrees.repository;
 
 import io.citytrees.model.Tree;
 import io.citytrees.repository.extension.TreeRepositoryExtension;
+import io.citytrees.v1.model.TreeStatus;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.data.jdbc.repository.query.Modifying;
 import org.springframework.data.jdbc.repository.query.Query;
@@ -11,11 +12,11 @@ import java.util.UUID;
 
 public interface TreeRepository extends CrudRepository<Tree, UUID>, TreeRepositoryExtension {
     @Query("""
-        INSERT INTO ct_tree(id, user_id, geo_point)
-        VALUES (:id, :userId, ST_SetSRID(ST_MakePoint(:x, :y), :srid))
+        INSERT INTO ct_tree(id, user_id, status, geo_point)
+        VALUES (:id, :userId, :status, ST_SetSRID(ST_MakePoint(:x, :y), :srid))
         RETURNING id
         """)
-    UUID create(UUID id, UUID userId, double x, double y, Integer srid);
+    UUID create(UUID id, UUID userId, TreeStatus status, double x, double y, Integer srid);
 
     @Modifying
     @Query("DELETE FROM ct_tree where id = :id")

@@ -1,6 +1,7 @@
 package io.citytrees.repository.extension.rowmapper;
 
 import io.citytrees.model.Tree;
+import io.citytrees.v1.model.TreeStatus;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.locationtech.jts.geom.Coordinate;
@@ -30,6 +31,7 @@ public class TreeRowMapper implements RowMapper<Tree> {
         return builder
             .id(rs.getObject("id", UUID.class))
             .userId(rs.getObject("user_id", UUID.class))
+            .status(TreeStatus.valueOf(rs.getObject("status", String.class)))
             .geoPoint(GEOMETRY_FACTORY.createPoint(new Coordinate(point.getX(), point.getY())))
             .build();
     }

@@ -1,6 +1,7 @@
 package io.citytrees.model;
 
 import io.citytrees.constants.TableNames;
+import io.citytrees.v1.model.TreeStatus;
 import lombok.Builder;
 import lombok.Value;
 import org.jetbrains.annotations.NotNull;
@@ -21,9 +22,12 @@ public class Tree {
     UUID id;
 
     @NotNull
-    @Column("geo_point")
-    Point geoPoint;
+    UUID userId;
 
     @NotNull
-    UUID userId;
+    TreeStatus status;
+
+    @NotNull
+    @Column("geo_point")
+    Point geoPoint;
 }

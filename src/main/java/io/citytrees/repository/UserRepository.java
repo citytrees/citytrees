@@ -10,7 +10,6 @@ import java.util.UUID;
 
 public interface UserRepository extends CrudRepository<User, UUID>, UserRepositoryExtension {
 
-    @SuppressWarnings("ParameterNumber")
     @Query("""
         INSERT INTO ct_user(id, email, pwd, roles, first_name, last_name)
         VALUES (:id, :email, :pwd, :roles::jsonb, :firstName, :lastName)

@@ -25,6 +25,7 @@ public class TreesController implements TreesControllerApiDelegate {
                 .id(tree.getId())
                 .latitude(tree.getGeoPoint().getX())
                 .longitude(tree.getGeoPoint().getY())
+                .status(tree.getStatus())
             )
             .collect(Collectors.toList());
 
