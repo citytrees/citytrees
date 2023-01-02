@@ -6,10 +6,14 @@ function MainPage() {
   return (
       <div>
         <MapComponent
-            centerLat={56.8}
-            centerLng={60.6}
-            initialZoom={10}
+            url="http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            style={{height: "90vh"}}
+            center={[56.8, 60.6]}
+            zoom={10}
             minZoom={10}
+            maxZoom={20}
+            scrollWheelZoom={true}
+            doubleClickZoom={false}
         ></MapComponent>
       </div>
   )

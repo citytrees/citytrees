@@ -7,6 +7,8 @@ import api from "../../api"
 import {CtTree, ctTreeOf} from "./Models/CtTree"
 import {Button} from "antd";
 import CtTreeEditor from "./TreeEditor";
+import {MapContainerProps} from "react-leaflet/lib/MapContainer";
+import {TileLayerProps} from "react-leaflet/lib/TileLayer";
 
 const icon = new Icon({
   iconSize: [25, 41],
@@ -64,12 +66,10 @@ const TreeMap = () => {
     let northWest = bounds.getNorthWest()
     let southEast = bounds.getSouthEast()
     api.trees.loadTreesByRegion({
-      treesByRegionRequest: {
-        x1: northWest.lat,
-        y1: northWest.lng,
-        x2: southEast.lat,
-        y2: southEast.lng
-      }
+      x1: northWest.lat,
+      y1: northWest.lng,
+      x2: southEast.lat,
+      y2: southEast.lng
     }).then((responseTrees) => {
       setTrees(responseTrees)
     })
@@ -102,7 +102,8 @@ const TreeMap = () => {
               setNewTree({latitude: latLng.lat, longitude: latLng.lng})
             },
             popupopen: () => {
-              map.flyTo(new LatLng(tree.latitude, tree.longitude), 17)
+              // TODO #18 zoom to props
+              map.flyTo(new LatLng(tree.latitude, tree.longitude), 18)
             }
           }}>
         <Popup>
@@ -132,31 +133,18 @@ const TreeMap = () => {
   )
 }
 
-const MapComponent = (
-    {
-      centerLat,
-      centerLng,
-      initialZoom,
-      minZoom,
-    }: {
-      centerLat: number,
-      centerLng: number,
-      initialZoom: number,
-      minZoom: number
-    }
-) => {
+const MapComponent = ({...props}: MapContainerProps & TileLayerProps) => {
 
   return (
       <div>
         <MapContainer
-            style={{height: "90vh"}}
-            center={[centerLat, centerLng]}
-            zoom={initialZoom}
-            minZoom={minZoom}
-            scrollWheelZoom={true}
-            doubleClickZoom={false}
+            {...props}
         >
-          <TileLayer url="http://{s}.tile.osm.org/{z}/{x}/{y}.png"/>
+          <TileLayer
+              url={props.url}
+              maxNativeZoom={props.maxZoom}
+              maxZoom={props.maxZoom}
+          />
           <InvalidateSize/>
           <TreeMap/>
         </MapContainer>

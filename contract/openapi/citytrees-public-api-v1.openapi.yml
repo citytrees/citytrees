@@ -327,44 +327,36 @@ paths:
           $ref: '#/components/responses/InternalServerError'
 
   /trees:
-    post:
+    get:
       tags:
         - trees-controller
       summary: Load trees in region
       operationId: loadTreesByRegion
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/TreesByRegionRequest"
-      #    TODO #18
-      #    get:
-      #      parameters:
-      #        - name: x1
-      #          description: top left latitude
-      #          in: path
-      #          required: true
-      #          schema:
-      #            type: string
-      #        - name: y1
-      #          description: top left longitude
-      #          in: path
-      #          required: true
-      #          schema:
-      #            type: string
-      #        - name: x2
-      #          description: bottom right latitude
-      #          in: path
-      #          required: true
-      #          schema:
-      #            type: string
-      #        - name: y2
-      #          description: bottom right longitude
-      #          in: path
-      #          required: true
-      #          schema:
-      #            type: string
+      parameters:
+        - name: x1
+          description: top left latitude
+          in: query
+          required: true
+          schema:
+            type: number
+        - name: y1
+          description: top left longitude
+          in: query
+          required: true
+          schema:
+            type: number
+        - name: x2
+          description: bottom right latitude
+          in: query
+          required: true
+          schema:
+            type: number
+        - name: y2
+          description: bottom right longitude
+          in: query
+          required: true
+          schema:
+            type: number
       responses:
         200:
           description: Trees in specified region
