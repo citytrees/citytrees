@@ -8,7 +8,6 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface FileRepository extends CrudRepository<CtFile, UUID> {
-    @SuppressWarnings("ParameterNumber")
     @Query("""
         INSERT INTO ct_file(id, name, mime_type, size, hash, user_id)
         VALUES (:id, :name, :mimeType, :size, :hash, :userId)

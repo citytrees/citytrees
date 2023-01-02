@@ -5,7 +5,7 @@ import RegistrationPage from "./pages/Registration";
 import LoginPage from "./pages/Login";
 import AppRoutes from "./constants/AppRoutes";
 import MainPage from "./pages/Main";
-import ProtectedRoute from "./components/route/ProtectedRoute";
+import ProtectedRoute from "./components/Route/ProtectedRoute";
 import {setUser, User} from "./features/user/userSlice";
 import jwt_decode from "jwt-decode";
 import {useAppDispatch} from "./app/hooks";

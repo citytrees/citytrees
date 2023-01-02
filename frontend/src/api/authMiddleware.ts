@@ -13,7 +13,7 @@ const authMiddleware: Middleware = {
                     return context.fetch(context.url, context.init);
                 })
         } else {
-            return new Promise(() => context.response)
+            return Promise.resolve(context.response)
         }
     }
 }

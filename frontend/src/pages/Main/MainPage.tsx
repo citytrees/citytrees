@@ -1,33 +1,21 @@
-import CenteredContainer from "../../components/forms";
 import React from "react";
-import {useAppDispatch, useUser} from "../../app/hooks";
-import {Button} from "antd";
-import api from "../../api";
-import AppRoutes from "../../constants/AppRoutes";
-import {useNavigate} from "react-router-dom";
-import {setUser} from "../../features/user/userSlice";
-
+import 'leaflet/dist/leaflet.css';
+import MapComponent from "../../components/Map";
 
 function MainPage() {
-  const user = useUser();
-  const navigate = useNavigate();
-  const dispatch = useAppDispatch();
-
   return (
-      <CenteredContainer>
-        <div>Hello {user?.email}</div>
-        <Button
-            onClick={() => {
-              api.auth.handleLogout()
-                  .then(() => {
-                        dispatch(setUser(null))
-                        navigate(AppRoutes.LOGIN)
-                      }
-                  )
-            }}
-        >Logout
-        </Button>
-      </CenteredContainer>
+      <div>
+        <MapComponent
+            url="http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            style={{height: "90vh"}}
+            center={[56.8, 60.6]}
+            zoom={10}
+            minZoom={10}
+            maxZoom={20}
+            scrollWheelZoom={true}
+            doubleClickZoom={false}
+        ></MapComponent>
+      </div>
   )
 }
 

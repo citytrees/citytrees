@@ -234,6 +234,146 @@ paths:
         500:
           $ref: '#/components/responses/InternalServerError'
 
+  /tree:
+    post:
+      tags:
+        - tree-controller
+      summary: Add new tree
+      operationId: createTree
+      security:
+        - BearerAuth: [ ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TreeCreateRequest"
+      responses:
+        200:
+          description: Tree successfully created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TreeCreateResponse"
+        400:
+          $ref: "#/components/responses/BadRequest"
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/Forbidden'
+        500:
+          $ref: '#/components/responses/InternalServerError'
+  /tree/{id}:
+    delete:
+      tags:
+        - tree-controller
+      operationId: deleteTree
+      security:
+        - BearerAuth: [ ]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        200:
+          description: OK
+        400:
+          $ref: "#/components/responses/BadRequest"
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/Forbidden'
+        500:
+          $ref: '#/components/responses/InternalServerError'
+
+  /tree/file/{treeId}:
+    post:
+      tags:
+        - tree-controller
+      summary: Attach file to tree
+      operationId: attachFile
+      security:
+        - BearerAuth: [ ]
+      parameters:
+        - name: treeId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/FileUploadRequest"
+      responses:
+        200:
+          description: File successfully uploaded. It's id is in response's body.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FileUploadResponse"
+        400:
+          $ref: "#/components/responses/BadRequest"
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/Forbidden'
+        500:
+          $ref: '#/components/responses/InternalServerError'
+
+  /trees:
+    get:
+      tags:
+        - trees-controller
+      summary: Load trees in region
+      operationId: loadTreesByRegion
+      parameters:
+        - name: x1
+          description: top left latitude
+          in: query
+          required: true
+          schema:
+            type: number
+        - name: y1
+          description: top left longitude
+          in: query
+          required: true
+          schema:
+            type: number
+        - name: x2
+          description: bottom right latitude
+          in: query
+          required: true
+          schema:
+            type: number
+        - name: y2
+          description: bottom right longitude
+          in: query
+          required: true
+          schema:
+            type: number
+      responses:
+        200:
+          description: Trees in specified region
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TreesGetResponse'
+        400:
+          $ref: "#/components/responses/BadRequest"
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/Forbidden'
+        500:
+          $ref: '#/components/responses/InternalServerError'
+
+
   /file/upload:
     post:
       tags:
@@ -348,6 +488,14 @@ components:
       enum:
         - ADMIN
         - BASIC
+
+    TreeStatus:
+      type: string
+      enum:
+        - NEW
+        - TO_APPROVE
+        - APPROVED
+
     UserRegisterResponse:
       type: object
       required:
@@ -421,6 +569,85 @@ components:
         newPassword:
           type: string
           example: p@$$w0rd!
+
+    TreeCreateRequest:
+      type: object
+      required:
+        - latitude
+        - longitude
+      properties:
+        latitude:
+          type: number
+          format: double
+          example: 0.0
+        longitude:
+          type: number
+          format: double
+          example: 0.0
+
+    TreeCreateResponse:
+      type: object
+      required:
+        - treeId
+        - status
+      properties:
+        treeId:
+          type: string
+          format: uuid
+          example: ed156378-204b-473c-9d2a-886941a819ff
+
+    TreesByRegionRequest:
+      type: object
+      required:
+        - x1
+        - y1
+        - x2
+        - y2
+      properties:
+        x1:
+          type: number
+          format: double
+          example: 0.0
+        y1:
+          type: number
+          format: double
+          example: 0.0
+        x2:
+          type: number
+          format: double
+          example: 0.0
+        y2:
+          type: number
+          format: double
+          example: 0.0
+
+    TreesGetResponse:
+      type: array
+      items:
+        $ref: '#/components/schemas/TreesGetResponseTree'
+
+    TreesGetResponseTree:
+      type: object
+      required:
+        - id
+        - latitude
+        - longitude
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: ed156378-204b-473c-9d2a-886941a819ff
+        latitude:
+          type: number
+          format: double
+          example: 0.0
+        longitude:
+          type: number
+          format: double
+          example: 0.0
+        status:
+          $ref: '#/components/schemas/TreeStatus'
+
     FileUploadRequest:
       type: object
       properties:

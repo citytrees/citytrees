@@ -2,7 +2,7 @@
     "-//Puppy Crawl//DTD Check Configuration 1.3//EN"
     "http://www.puppycrawl.com/dtds/configuration_1_3.dtd">
 <module name="Checker">
-    <module name="SuppressWarningsFilter" />
+    <module name="SuppressWarningsFilter"/>
     <module name="TreeWalker">
         <module name="AbbreviationAsWordInName"/>
 
@@ -129,7 +129,7 @@
         </module>
 
         <module name="ParameterNumber">
-            <property name="max" value="5"/>
+            <property name="max" value="6"/>
             <property name="ignoreOverriddenMethods" value="true"/>
         </module>
 
@@ -164,7 +164,7 @@
         </module>
 
         <module name="StringLiteralEquality"/>
-        <module name="SuppressWarningsHolder" />
+        <module name="SuppressWarningsHolder"/>
         <module name="TrailingComment"/>
         <module name="TypecastParenPad"/>
 

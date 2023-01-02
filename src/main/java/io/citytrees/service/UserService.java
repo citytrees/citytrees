@@ -88,7 +88,6 @@ public class UserService implements UserDetailsService {
     }
 
     @SneakyThrows
-    @SuppressWarnings("ParameterNumber")
     private UUID create(UUID id, String email, String pwd, Set<UserRole> roles, String firstName, String lastName) {
         var rolesJson = objectMapper.writeValueAsString(roles);
         var hashedPassword = hashUtil.md5WithSalt(pwd);
