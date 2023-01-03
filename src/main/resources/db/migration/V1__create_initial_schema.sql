@@ -4,6 +4,7 @@ create table ct_user
     email      varchar(128) not null,
     pwd        varchar(128) not null,
     roles      jsonb        not null,
+    status     varchar(16)  not null,
     first_name varchar(128),
     last_name  varchar(128)
 );

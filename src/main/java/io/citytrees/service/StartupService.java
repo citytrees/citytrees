@@ -3,6 +3,7 @@ package io.citytrees.service;
 import io.citytrees.configuration.properties.SecurityProperties;
 import io.citytrees.model.User;
 import io.citytrees.v1.model.UserRole;
+import io.citytrees.v1.model.UserStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.EventListener;
@@ -28,6 +29,7 @@ public class StartupService {
                 .id(UUID.randomUUID())
                 .email(securityProperties.getAdminEmail())
                 .password(securityProperties.getAdminPassword())
+                .status(UserStatus.APPROVED)
                 .roles(Set.of(UserRole.ADMIN))
                 .build()
         );

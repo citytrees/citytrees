@@ -33,7 +33,7 @@ import javax.servlet.http.Cookie
 import kotlin.collections.ArrayDeque
 
 @Tag("integration")
-@SpringBootTest
+@SpringBootTest(properties = ["scheduling.enabled=false"])
 @ActiveProfiles("dev")
 @AutoConfigureMockMvc
 abstract class AbstractTest {

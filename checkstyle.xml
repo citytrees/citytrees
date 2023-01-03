@@ -8,6 +8,7 @@
 
         <module name="AnnotationUseStyle">
             <property name="elementStyle" value="compact"/>
+            <property name="trailingArrayComma" value="always"/>
         </module>
 
         <module name="ArrayTypeStyle"/>

@@ -2,6 +2,7 @@ package io.citytrees.model;
 
 import io.citytrees.constants.TableNames;
 import io.citytrees.v1.model.UserRole;
+import io.citytrees.v1.model.UserStatus;
 import lombok.Builder;
 import lombok.Value;
 import org.jetbrains.annotations.NotNull;
@@ -31,6 +32,9 @@ public class User {
 
     @NotNull
     Set<UserRole> roles;
+
+    @NotNull
+    UserStatus status;
 
     @Nullable
     String firstName;

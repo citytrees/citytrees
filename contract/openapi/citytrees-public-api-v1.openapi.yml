@@ -123,6 +123,29 @@ paths:
           $ref: '#/components/responses/Forbidden'
         500:
           $ref: '#/components/responses/InternalServerError'
+  /user/confirm:
+    put:
+      tags:
+        - user-controller
+      summary: Confirm user email
+      operationId: confirmUserEmail
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserUpdatePasswordRequest"
+      responses:
+        200:
+          description: OK
+        400:
+          $ref: "#/components/responses/BadRequest"
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/Forbidden'
+        500:
+          $ref: '#/components/responses/InternalServerError'
 
 
   /auth/jwt/refresh:
@@ -489,6 +512,13 @@ components:
         - ADMIN
         - BASIC
 
+    UserStatus:
+      type: string
+      enum:
+        - NEW
+        - TO_BE_APPROVED
+        - APPROVED
+
     TreeStatus:
       type: string
       enum:
@@ -569,6 +599,17 @@ components:
         newPassword:
           type: string
           example: p@$$w0rd!
+    UserEmailConfirmRequest:
+      type: object
+      required:
+        - userId
+        - confirmationId
+      properties:
+        userId:
+          type: string
+          format: uuid
+        confirmationId:
+          type: string
 
     TreeCreateRequest:
       type: object

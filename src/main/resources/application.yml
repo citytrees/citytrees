@@ -1,3 +1,6 @@
+application:
+  base-url: ${BASE_URL:http://localhost:8080}
+
 spring:
   application:
     name: citytrees
@@ -14,14 +17,32 @@ spring:
     connect-retries: 5
     connect-retries-interval: 1s
 
+scheduling:
+  enabled: true
+  user:
+    confirmation-email-delay: PT30S
+
 security:
   password-salt: ${PASSWORD_SALT:some_salt}
+  email-confirmation-salt: ${EMAIL_CONFIRMATION_SALT:some_salt}
   access-token-duration: 30m
   access-token-secret: ${ACCESS_TOKEN_SECRET:some_secret}
   refresh-token-duration: 365d
   refresh-token-secret: ${REFRESH_TOKEN_SECRET:some_other_secret}
   admin-email: ${ADMIN_EMAIL:admin@citytrees.io}
   admin-password: ${ADMIN_PASSWORD:admin@citytrees.io}
+
+email:
+  user: ${EMAIL_USER:citytrees}
+  sender-email: ${EMAIL_SENDER:citytrees@example.io}
+  password: ${EMAIL_PASSWORD:citytrees}
+  smtp-properties:
+    mail.smtp.host: smtp.zoho.com
+    mail.smtp.port: 465
+    mail.smtp.auth: true
+    mail.smtp.startssl.enable: true
+    mail.smtp.socketFactory.port: 465
+    mail.smtp.socketFactory.class: javax.net.ssl.SSLSocketFactory
 
 s3:
   access-key: ${S3_ACCESS_KEY:access-key}

@@ -21,6 +21,12 @@ public class SecurityProperties {
     String passwordSalt;
 
     /**
+     * Salt that is used in emailConfirmations.
+     */
+    @NotEmpty
+    String emailConfirmationSalt;
+
+    /**
      * Secret for generating and validating access tokens
      */
     @NotEmpty

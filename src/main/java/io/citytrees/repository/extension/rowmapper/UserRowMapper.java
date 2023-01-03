@@ -3,6 +3,7 @@ package io.citytrees.repository.extension.rowmapper;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.citytrees.model.User;
+import io.citytrees.v1.model.UserStatus;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.jdbc.core.RowMapper;
@@ -24,6 +25,7 @@ public class UserRowMapper implements RowMapper<User> {
             .id(rs.getObject("id", UUID.class))
             .email(rs.getString("email"))
             .password(rs.getString("pwd"))
+            .status(UserStatus.valueOf(rs.getString("status")))
             .roles(objectMapper.readValue(rs.getString("roles"), new TypeReference<>() {}))
             .firstName(rs.getString("first_name"))
             .lastName(rs.getString("last_name"))
