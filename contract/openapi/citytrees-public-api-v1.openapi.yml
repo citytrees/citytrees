@@ -134,7 +134,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/UserUpdatePasswordRequest"
+              $ref: "#/components/schemas/UserEmailConfirmRequest"
       responses:
         200:
           description: OK

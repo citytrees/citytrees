@@ -10,6 +10,7 @@ import {setUser, User} from "./features/user/userSlice";
 import jwt_decode from "jwt-decode";
 import {useAppDispatch} from "./app/hooks";
 import {getAccessToken} from "./helpers/cookies";
+import EmailConfirmationPage from "./pages/EmailConfirmation";
 
 export default function App() {
   const dispatch = useAppDispatch();
@@ -27,6 +28,7 @@ export default function App() {
           <Route path={AppRoutes.LOGIN} element={<ProtectedRoute element={<LoginPage/>}/>}/>
           <Route path={AppRoutes.REGISTER} element={<ProtectedRoute element={<RegistrationPage/>}/>}/>
           <Route path={AppRoutes.MAIN} element={<MainPage/>}/>
+          <Route path={AppRoutes.USER_EMAIL_CONFIRMATION} element={<EmailConfirmationPage/>}/>
         </Routes>
       </BrowserRouter>
   );

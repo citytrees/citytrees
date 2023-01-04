@@ -1,7 +1,9 @@
 package io.citytrees.controller;
 
+import io.citytrees.service.UserEmailConfirmationService;
 import io.citytrees.service.UserService;
 import io.citytrees.v1.controller.UserControllerApiDelegate;
+import io.citytrees.v1.model.UserEmailConfirmRequest;
 import io.citytrees.v1.model.UserGetResponse;
 import io.citytrees.v1.model.UserRegisterRequest;
 import io.citytrees.v1.model.UserRegisterResponse;
@@ -20,20 +22,21 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class UserController extends BaseController implements UserControllerApiDelegate {
 
-    private final UserService service;
+    private final UserService userService;
+    private final UserEmailConfirmationService userEmailConfirmationService;
 
     @Override
     @PreAuthorize("permitAll()")
     public ResponseEntity<UserRegisterResponse> registerNewUser(UserRegisterRequest registerUserRequest) {
         var response = new UserRegisterResponse()
-            .userId(service.register(registerUserRequest));
+            .userId(userService.register(registerUserRequest));
         return ResponseEntity.ok(response);
     }
 
     @Override
     @PreAuthorize("permitAll()")
     public ResponseEntity<UserGetResponse> getUserById(UUID id) {
-        var optionalUser = service.getById(id);
+        var optionalUser = userService.getById(id);
         if (optionalUser.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
@@ -51,14 +54,20 @@ public class UserController extends BaseController implements UserControllerApiD
     @Override
     @PreAuthorize("hasAnyRole(@Roles.ADMIN) || (isAuthenticated() && hasPermission(#id, @Domains.USER, @Permissions.EDIT))")
     public ResponseEntity<Void> updateUserById(UUID id, UserUpdateRequest userUpdateRequest) {
-        service.update(id, userUpdateRequest);
+        userService.update(id, userUpdateRequest);
         return ResponseEntity.ok().build();
     }
 
     @Override
     @PreAuthorize("isAuthenticated() && hasPermission(@securityService.currentUserId, @Domains.USER, @Permissions.EDIT)")
     public ResponseEntity<Void> updateUserPassword(UserUpdatePasswordRequest userUpdatePasswordRequest) {
-        service.updatePassword(userUpdatePasswordRequest);
+        userService.updatePassword(userUpdatePasswordRequest);
+        return ResponseEntity.ok().build();
+    }
+
+    @Override
+    public ResponseEntity<Void> confirmUserEmail(UserEmailConfirmRequest userEmailConfirmRequest) {
+        userEmailConfirmationService.confirmEmail(userEmailConfirmRequest.getUserId(), userEmailConfirmRequest.getConfirmationId());
         return ResponseEntity.ok().build();
     }
 }

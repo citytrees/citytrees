@@ -1,5 +1,5 @@
 application:
-  base-url: ${BASE_URL:http://localhost:8080}
+  base-url: ${BASE_URL:http://localhost:3000}
 
 spring:
   application:

@@ -5,11 +5,15 @@ import io.citytrees.configuration.properties.SecurityProperties;
 import io.citytrees.model.EmailMessage;
 import io.citytrees.model.User;
 import io.citytrees.repository.UserRepository;
+import io.citytrees.service.exception.UserEmailConfirmationException;
 import io.citytrees.util.HashUtil;
 import io.citytrees.v1.model.UserStatus;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
+import lombok.SneakyThrows;
+import org.apache.http.client.utils.URIBuilder;
 import org.springframework.stereotype.Service;
+
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -20,9 +24,6 @@ public class UserEmailConfirmationService {
     private final SecurityProperties securityProperties;
     private final EmailService emailService;
     private final UserRepository userRepository;
-
-    @Value("${openapi.citytreesPublic.base-path:/api/v1}")
-    private String apiPrefix;
 
     public void sendConfirmationEmail(User user) {
         EmailMessage message = EmailMessage.builder()
@@ -37,10 +38,26 @@ public class UserEmailConfirmationService {
         }
     }
 
-    private String generateText(User user) {
-        String confirmationString = hashUtil.md5WithSalt(user.getId().toString(), securityProperties.getEmailConfirmationSalt());
-        String link = applicationProperties.getBaseUrl() + apiPrefix + "/user/" + user.getId() + "/confirm?confirmationId=" + confirmationString;
+    public String generateConfirmationString(UUID userId) {
+        return hashUtil.md5WithSalt(userId.toString(), securityProperties.getEmailConfirmationSalt());
+    }
 
-        return String.format("<p>To confirm your email please open the <a href='%s'>link</a></p>", link);
+    public void confirmEmail(UUID userId, String confirmationId) {
+        if (!confirmationId.equals(generateConfirmationString(userId))) {
+            throw new UserEmailConfirmationException("Invalid parameters");
+        }
+        userRepository.updateStatus(userId, UserStatus.APPROVED);
+    }
+
+    @SneakyThrows
+    private String generateText(User user) {
+        String confirmationString = generateConfirmationString(user.getId());
+
+        var uri = new URIBuilder(applicationProperties.getBaseUrl());
+        uri.setPath("/user/confirm");
+        uri.addParameter("userId", user.getId().toString());
+        uri.addParameter("confirmationId", confirmationString);
+
+        return String.format("<p>To confirm your email please open the <a href='%s'>link</a></p>", uri);
     }
 }
