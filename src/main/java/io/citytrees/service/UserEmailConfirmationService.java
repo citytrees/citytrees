@@ -38,12 +38,18 @@ public class UserEmailConfirmationService {
         }
     }
 
-    public String generateConfirmationString(UUID userId) {
-        return hashUtil.md5WithSalt(userId.toString(), securityProperties.getEmailConfirmationSalt());
+    public String generateConfirmationString(User user) {
+        return hashUtil.md5WithSalt(user.getEmail(), securityProperties.getEmailConfirmationSalt());
     }
 
     public void confirmEmail(UUID userId, String confirmationId) {
-        if (!confirmationId.equals(generateConfirmationString(userId))) {
+        var optionalUser = userRepository.findByUserId(userId);
+        if (optionalUser.isEmpty()) {
+            throw new UserEmailConfirmationException("Invalid parameters");
+        }
+        User user = optionalUser.get();
+
+        if (!confirmationId.equals(generateConfirmationString(user))) {
             throw new UserEmailConfirmationException("Invalid parameters");
         }
         userRepository.updateStatus(userId, UserStatus.APPROVED);
@@ -51,7 +57,7 @@ public class UserEmailConfirmationService {
 
     @SneakyThrows
     private String generateText(User user) {
-        String confirmationString = generateConfirmationString(user.getId());
+        String confirmationString = generateConfirmationString(user);
 
         var uri = new URIBuilder(applicationProperties.getBaseUrl());
         uri.setPath("/user/confirm");
