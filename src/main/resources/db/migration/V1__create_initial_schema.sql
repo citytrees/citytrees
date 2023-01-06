@@ -4,6 +4,7 @@ create table ct_user
     email      varchar(128) not null,
     pwd        varchar(128) not null,
     roles      jsonb        not null,
+    status     varchar(16)  not null,
     first_name varchar(128),
     last_name  varchar(128)
 );
@@ -32,3 +33,13 @@ create table ct_tree
 );
 
 create unique index ct_tree_user_id_uidx on ct_tree (id);
+
+create table ct_user_password_reset
+(
+    user_id uuid         not null primary key,
+    email   varchar(128) not null,
+    token   varchar(128) not null,
+    status  varchar(16)  not null
+);
+
+create unique index ct_user_password_reset_email_uidx on ct_user_password_reset (email);

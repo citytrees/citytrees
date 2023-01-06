@@ -123,7 +123,74 @@ paths:
           $ref: '#/components/responses/Forbidden'
         500:
           $ref: '#/components/responses/InternalServerError'
-
+  /user/confirm:
+    put:
+      tags:
+        - user-controller
+      summary: Confirm user email
+      operationId: confirmUserEmail
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserEmailConfirmRequest"
+      responses:
+        200:
+          description: OK
+        400:
+          $ref: "#/components/responses/BadRequest"
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/Forbidden'
+        500:
+          $ref: '#/components/responses/InternalServerError'
+  /user/password/reset:
+    post:
+      tags:
+        - user-controller
+      summary: Request reset user password
+      operationId: requestPasswordReset
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserRequestPasswordResetRequest"
+      responses:
+        200:
+          description: OK
+        400:
+          $ref: "#/components/responses/BadRequest"
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/Forbidden'
+        500:
+          $ref: '#/components/responses/InternalServerError'
+    put:
+      tags:
+        - user-controller
+      summary: Reset user password
+      operationId: resetPassword
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserPasswordResetRequest"
+      responses:
+        200:
+          description: OK
+        400:
+          $ref: "#/components/responses/BadRequest"
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/Forbidden'
+        500:
+          $ref: '#/components/responses/InternalServerError'
 
   /auth/jwt/refresh:
     post:
@@ -489,6 +556,19 @@ components:
         - ADMIN
         - BASIC
 
+    UserStatus:
+      type: string
+      enum:
+        - NEW
+        - TO_BE_APPROVED
+        - APPROVED
+
+    UserPasswordResetStatus:
+      type: string
+      enum:
+        - NEW
+        - SENT
+
     TreeStatus:
       type: string
       enum:
@@ -569,6 +649,41 @@ components:
         newPassword:
           type: string
           example: p@$$w0rd!
+    UserEmailConfirmRequest:
+      type: object
+      required:
+        - userId
+        - confirmationId
+      properties:
+        userId:
+          type: string
+          format: uuid
+        confirmationId:
+          type: string
+    UserRequestPasswordResetRequest:
+      type: object
+      required:
+        - email
+      properties:
+        email:
+          type: string
+          format: email
+          example: mail@example.io
+    UserPasswordResetRequest:
+      type: object
+      required:
+        - email
+        - token
+        - newPassword
+      properties:
+        email:
+          type: string
+          format: email
+          example: mail@example.io
+        token:
+          type: string
+        newPassword:
+          type: string
 
     TreeCreateRequest:
       type: object

@@ -2,10 +2,12 @@ package io.citytrees.repository.extension;
 
 import io.citytrees.model.User;
 import io.citytrees.repository.extension.rowmapper.UserRowMapper;
+import io.citytrees.v1.model.UserStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
@@ -41,5 +43,22 @@ public class UserRepositoryExtensionImpl implements UserRepositoryExtension {
         var params = Map.of("email", email);
 
         return jdbcTemplate.query(sql, params, userRowMapper).stream().findFirst();
+    }
+
+    @Override
+    public List<User> findByStatus(UserStatus status, int limit) {
+        var sql = """
+            SELECT *
+            FROM ct_user
+            WHERE status = :status
+            LIMIT :limit
+            """;
+
+        var params = Map.of(
+            "status", status.name(),
+            "limit", limit
+        );
+
+        return jdbcTemplate.query(sql, params, userRowMapper);
     }
 }

@@ -7,7 +7,10 @@
         },
         "password": {
             "label": "Пароль",
-            "emptyError": "Пожалуйста введите пароль"
+            "emptyError": "Пожалуйста введите пароль",
+            "reset": {
+                "label": "Забыли пароль?"
+            }
         },
         "submit": "Войти",
         "register": {
@@ -28,6 +31,20 @@
         "submit": "Зарегистрироваться",
         "signIn": {
             "label": "Войти"
+        }
+    },
+    "passwordResetPage": {
+        "email": {
+            "label": "Email",
+            "emptyError": "Пожалуйста введите email",
+            "notValidError": "Введен некорректный email"
+        },
+        "signIn": {
+            "label": "Sign in"
+        },
+
+        "submit": {
+            "label": "Сбросить пароль"
         }
     }
 }

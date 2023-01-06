@@ -8,6 +8,7 @@ import io.citytrees.service.exception.UserInputError;
 import io.citytrees.util.HashUtil;
 import io.citytrees.v1.model.UserRegisterRequest;
 import io.citytrees.v1.model.UserRole;
+import io.citytrees.v1.model.UserStatus;
 import io.citytrees.v1.model.UserUpdatePasswordRequest;
 import io.citytrees.v1.model.UserUpdateRequest;
 import lombok.RequiredArgsConstructor;
@@ -45,13 +46,14 @@ public class UserService implements UserDetailsService {
         return create(UUID.randomUUID(),
             request.getEmail(),
             request.getPassword(),
+            UserStatus.NEW,
             Set.of(UserRole.BASIC),
             null,
             null);
     }
 
     public UUID create(User user) {
-        return create(user.getId(), user.getEmail(), user.getPassword(), user.getRoles(), user.getFirstName(), user.getLastName());
+        return create(user.getId(), user.getEmail(), user.getPassword(), user.getStatus(), user.getRoles(), user.getFirstName(), user.getLastName());
     }
 
     public UUID createIfNotExists(User user) {
@@ -83,14 +85,19 @@ public class UserService implements UserDetailsService {
     }
 
     public void updatePassword(UserUpdatePasswordRequest userUpdatePasswordRequest) {
-        var hashedPassword = hashUtil.md5WithSalt(userUpdatePasswordRequest.getNewPassword());
-        userRepository.updatePassword(securityService.getCurrentUserId(), hashedPassword);
+        updatePassword(securityService.getCurrentUserId(), userUpdatePasswordRequest.getNewPassword());
     }
 
+    public void updatePassword(UUID userId, String newPassword) {
+        var hashedPassword = hashUtil.md5WithSalt(newPassword);
+        userRepository.updatePassword(userId, hashedPassword);
+    }
+
+    @SuppressWarnings("checkstyle:ParameterNumber")
     @SneakyThrows
-    private UUID create(UUID id, String email, String pwd, Set<UserRole> roles, String firstName, String lastName) {
+    private UUID create(UUID id, String email, String pwd, UserStatus status, Set<UserRole> roles, String firstName, String lastName) {
         var rolesJson = objectMapper.writeValueAsString(roles);
         var hashedPassword = hashUtil.md5WithSalt(pwd);
-        return userRepository.create(id, email, hashedPassword, rolesJson, firstName, lastName);
+        return userRepository.create(id, email, hashedPassword, status, rolesJson, firstName, lastName);
     }
 }

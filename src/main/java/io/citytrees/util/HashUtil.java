@@ -12,6 +12,10 @@ public class HashUtil {
     private final SecurityProperties securityProperties;
 
     public String md5WithSalt(String source) {
-        return DigestUtils.md5DigestAsHex((source + securityProperties.getPasswordSalt()).getBytes());
+        return md5WithSalt(source, securityProperties.getPasswordSalt());
+    }
+
+    public String md5WithSalt(String source, String salt) {
+        return DigestUtils.md5DigestAsHex((source + salt).getBytes());
     }
 }

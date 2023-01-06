@@ -12,6 +12,7 @@ import io.citytrees.service.TreeService
 import io.citytrees.service.UserService
 import io.citytrees.v1.model.TreeStatus
 import io.citytrees.v1.model.UserRole
+import io.citytrees.v1.model.UserStatus
 import org.hamcrest.Matchers
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Tag
@@ -33,7 +34,7 @@ import javax.servlet.http.Cookie
 import kotlin.collections.ArrayDeque
 
 @Tag("integration")
-@SpringBootTest
+@SpringBootTest(properties = ["scheduling.enabled=false"])
 @ActiveProfiles("dev")
 @AutoConfigureMockMvc
 abstract class AbstractTest {
@@ -87,6 +88,7 @@ abstract class AbstractTest {
         .id(id)
         .email(email)
         .password(password)
+        .status(UserStatus.APPROVED)
         .roles(roles)
         .firstName(firstName)
         .lastName(lastName)
