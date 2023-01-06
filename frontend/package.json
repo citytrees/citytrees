@@ -12,7 +12,7 @@
     "@types/node": "^16.11.49",
     "@types/react": "^18.0.17",
     "@types/react-dom": "^18.0.6",
-    "antd": "^4.24.2",
+    "antd": "^5.1.2",
     "i18next": "^22.0.5",
     "js-cookie": "^3.0.1",
     "jwt-decode": "^3.1.2",
