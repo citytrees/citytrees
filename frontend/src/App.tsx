@@ -11,6 +11,7 @@ import jwt_decode from "jwt-decode";
 import {useAppDispatch} from "./app/hooks";
 import {getAccessToken} from "./helpers/cookies";
 import EmailConfirmationPage from "./pages/EmailConfirmation";
+import PasswordResetPage from "./pages/PasswordReset";
 
 export default function App() {
   const dispatch = useAppDispatch();
@@ -27,6 +28,7 @@ export default function App() {
         <Routes>
           <Route path={AppRoutes.LOGIN} element={<ProtectedRoute element={<LoginPage/>}/>}/>
           <Route path={AppRoutes.REGISTER} element={<ProtectedRoute element={<RegistrationPage/>}/>}/>
+          <Route path={AppRoutes.PASSWORD_RESET} element={<ProtectedRoute element={<PasswordResetPage/>}/>}/>
           <Route path={AppRoutes.MAIN} element={<MainPage/>}/>
           <Route path={AppRoutes.USER_EMAIL_CONFIRMATION} element={<EmailConfirmationPage/>}/>
         </Routes>

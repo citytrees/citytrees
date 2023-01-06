@@ -85,6 +85,12 @@ function LoginPage() {
             >
               {t('signInPage.register.label')}
             </Button>
+            <Button
+                type="link"
+                onClick={() => navigate(AppRoutes.PASSWORD_RESET)}
+            >
+              {t('signInPage.password.reset.label')}
+            </Button>
           </Form.Item>
         </Form>
       </CenteredContainer>

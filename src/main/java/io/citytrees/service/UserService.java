@@ -85,8 +85,12 @@ public class UserService implements UserDetailsService {
     }
 
     public void updatePassword(UserUpdatePasswordRequest userUpdatePasswordRequest) {
-        var hashedPassword = hashUtil.md5WithSalt(userUpdatePasswordRequest.getNewPassword());
-        userRepository.updatePassword(securityService.getCurrentUserId(), hashedPassword);
+        updatePassword(securityService.getCurrentUserId(), userUpdatePasswordRequest.getNewPassword());
+    }
+
+    public void updatePassword(UUID userId, String newPassword) {
+        var hashedPassword = hashUtil.md5WithSalt(newPassword);
+        userRepository.updatePassword(userId, hashedPassword);
     }
 
     @SuppressWarnings("checkstyle:ParameterNumber")

@@ -7,7 +7,10 @@
         },
         "password": {
             "label": "Password",
-            "emptyError": "Please input password"
+            "emptyError": "Please input password",
+            "reset": {
+                "label": "Forgot password?"
+            }
         },
         "submit": "Sign in",
         "register": {
@@ -28,6 +31,19 @@
         "submit": "Register",
         "signIn": {
             "label": "Sign in"
+        }
+    },
+    "passwordResetPage": {
+        "email": {
+            "label": "Email",
+            "emptyError": "Please input email",
+            "notValidError": "Email is not valid"
+        },
+        "signIn": {
+            "label": "Sign in"
+        },
+        "submit": {
+            "label": "Reset password"
         }
     }
 }

@@ -1,12 +1,15 @@
 package io.citytrees.controller;
 
 import io.citytrees.service.UserEmailConfirmationService;
+import io.citytrees.service.UserPasswordResetService;
 import io.citytrees.service.UserService;
 import io.citytrees.v1.controller.UserControllerApiDelegate;
 import io.citytrees.v1.model.UserEmailConfirmRequest;
 import io.citytrees.v1.model.UserGetResponse;
+import io.citytrees.v1.model.UserPasswordResetRequest;
 import io.citytrees.v1.model.UserRegisterRequest;
 import io.citytrees.v1.model.UserRegisterResponse;
+import io.citytrees.v1.model.UserRequestPasswordResetRequest;
 import io.citytrees.v1.model.UserUpdatePasswordRequest;
 import io.citytrees.v1.model.UserUpdateRequest;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +27,7 @@ public class UserController extends BaseController implements UserControllerApiD
 
     private final UserService userService;
     private final UserEmailConfirmationService userEmailConfirmationService;
+    private final UserPasswordResetService userPasswordResetService;
 
     @Override
     @PreAuthorize("permitAll()")
@@ -68,6 +72,18 @@ public class UserController extends BaseController implements UserControllerApiD
     @Override
     public ResponseEntity<Void> confirmUserEmail(UserEmailConfirmRequest userEmailConfirmRequest) {
         userEmailConfirmationService.confirmEmail(userEmailConfirmRequest.getUserId(), userEmailConfirmRequest.getConfirmationId());
+        return ResponseEntity.ok().build();
+    }
+
+    @Override
+    public ResponseEntity<Void> requestPasswordReset(UserRequestPasswordResetRequest userRequestPasswordResetRequest) {
+        userPasswordResetService.requestReset(userRequestPasswordResetRequest.getEmail());
+        return ResponseEntity.ok().build();
+    }
+
+    @Override
+    public ResponseEntity<Void> resetPassword(UserPasswordResetRequest userPasswordResetRequest) {
+        userPasswordResetService.reset(userPasswordResetRequest.getEmail(), userPasswordResetRequest.getToken(), userPasswordResetRequest.getNewPassword());
         return ResponseEntity.ok().build();
     }
 }

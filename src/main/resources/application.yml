@@ -20,7 +20,8 @@ spring:
 scheduling:
   enabled: true
   user:
-    confirmation-email-delay: PT30S
+    confirmation-email-delay: PT10S
+    password-reset-delay: PT10S
 
 security:
   password-salt: ${PASSWORD_SALT:some_salt}
