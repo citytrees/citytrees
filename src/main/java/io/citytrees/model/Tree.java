@@ -1,6 +1,8 @@
 package io.citytrees.model;
 
 import io.citytrees.constants.TableNames;
+import io.citytrees.v1.model.TreeCondition;
+import io.citytrees.v1.model.TreeState;
 import io.citytrees.v1.model.TreeStatus;
 import lombok.Builder;
 import lombok.Value;
@@ -34,6 +36,10 @@ public class Tree {
 
     @NotNull
     Set<UUID> fileIds;
+
+    TreeState state;
+
+    TreeCondition condition;
 
     String comment;
 }

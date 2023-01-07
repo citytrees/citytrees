@@ -634,6 +634,21 @@ components:
         - TO_APPROVE
         - APPROVED
 
+    TreeState:
+      type: string
+      enum:
+        - ALIVE
+        - DEAD
+
+    TreeCondition:
+      type: string
+      enum:
+        - VERY_BAD
+        - BAD
+        - NORMAL
+        - GREAT
+        - AWESOME
+
     UserRegisterResponse:
       type: object
       required:
@@ -777,6 +792,9 @@ components:
         - status
         - latitude
         - longitude
+        - state
+        - condition
+        - comment
       properties:
         id:
           type: string
@@ -796,6 +814,12 @@ components:
           type: number
           format: double
           example: 0.0
+        state:
+          $ref: '#/components/schemas/TreeState'
+        condition:
+          $ref: '#/components/schemas/TreeCondition'
+        comment:
+          type: string
 
     TreeUpdateRequest:
       type: object
@@ -804,6 +828,12 @@ components:
       properties:
         status:
           $ref: '#/components/schemas/TreeStatus'
+        state:
+          $ref: '#/components/schemas/TreeState'
+        condition:
+          $ref: '#/components/schemas/TreeCondition'
+        comment:
+          type: string
 
     TreesByRegionRequest:
       type: object

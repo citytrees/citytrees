@@ -44,7 +44,10 @@ public class TreeController implements TreeControllerApiDelegate {
             .userId(tree.getUserId())
             .status(tree.getStatus())
             .latitude(tree.getGeoPoint().getX())
-            .longitude(tree.getGeoPoint().getY());
+            .longitude(tree.getGeoPoint().getY())
+            .state(tree.getState())
+            .condition(tree.getCondition())
+            .comment(tree.getComment());
 
         return ResponseEntity.ok(response);
     }

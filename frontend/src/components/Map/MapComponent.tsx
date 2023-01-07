@@ -2,7 +2,7 @@ import React, {useEffect, useState} from "react"
 import {MapContainer, Marker, Popup, TileLayer, useMap, useMapEvents} from "react-leaflet"
 import 'leaflet/dist/leaflet.css'
 import {DragEndEvent, Icon, LatLng} from "leaflet"
-import {TreesGetResponseTree} from "../../generated/openapi"
+import {TreesGetResponseTree, TreeStatus} from "../../generated/openapi"
 import api from "../../api"
 import {CtTree, ctTreeOf} from "./Models/CtTree"
 import {Button, notification} from "antd";
@@ -134,6 +134,21 @@ const TreeMap = () => {
         </Popup>
       </Marker>
 
+  const updateTree = (tree: CtTree, status: TreeStatus, onSuccess: () => void) => {
+    debugger
+    api.tree.updateTreeById(
+        {
+          id: tree.id!!,
+          treeUpdateRequest: {
+            status: status,
+            state: tree.state,
+            condition: tree.condition,
+            comment: tree.comment
+          }
+        }
+    ).then(() => onSuccess())
+  }
+
   return (
       <div>
         {trees.map((tree, index) => renderMarker(`tree:${index}`, tree))}
@@ -141,26 +156,23 @@ const TreeMap = () => {
         <CtTreeView
             open={isTreeViewOpen}
             initial={treeViewValue!!}
-            onSave={(tree: CtTree) => {
-              api.tree.updateTreeById({id: tree.id!!, treeUpdateRequest: {status: "NEW"}})
-                  .then(() => notification.open({
-                    message: "Tree was saved",
+            onSave={(tree: CtTree) =>
+                updateTree(tree, TreeStatus.New, () => notification.open({
+                  message: "Tree was saved",
+                  type: "info",
+                  placement: "topRight"
+                }))}
+            onPublish={(tree: CtTree) =>
+                updateTree(tree, TreeStatus.ToApprove, () => {
+                  notification.open({
+                    message: "Tree was published!",
                     type: "info",
                     placement: "topRight"
-                  }))
-            }}
-            onPublish={(tree: CtTree) => {
-              api.tree.updateTreeById({id: tree.id!!, treeUpdateRequest: {status: "TO_APPROVE"}})
-                  .then(() => {
-                    notification.open({
-                      message: "Tree was published!",
-                      type: "info",
-                      placement: "topRight"
-                    });
-                    setIsTreeViewOpen(false)
-                    map.closePopup()
-                  })
-            }}
+                  });
+                  setIsTreeViewOpen(false)
+                  map.closePopup()
+                })
+            }
             onCancel={() => setIsTreeViewOpen(false)}
         />
       </div>

@@ -3,7 +3,9 @@ package io.citytrees.service;
 import io.citytrees.configuration.properties.GeoProperties;
 import io.citytrees.model.Tree;
 import io.citytrees.repository.TreeRepository;
+import io.citytrees.v1.model.TreeCondition;
 import io.citytrees.v1.model.TreeCreateRequest;
+import io.citytrees.v1.model.TreeState;
 import io.citytrees.v1.model.TreeStatus;
 import io.citytrees.v1.model.TreeUpdateRequest;
 import lombok.RequiredArgsConstructor;
@@ -47,11 +49,16 @@ public class TreeService {
     }
 
     public void update(UUID id, TreeUpdateRequest treeUpdateRequest) {
-        update(id, securityService.getCurrentUserId(), treeUpdateRequest.getStatus());
+        update(id, securityService.getCurrentUserId(), treeUpdateRequest.getStatus(), treeUpdateRequest.getState(), treeUpdateRequest.getCondition(), treeUpdateRequest.getComment());
     }
 
-    public void update(UUID id, UUID userId, TreeStatus status) {
-        treeRepository.update(id, userId, status);
+    public void update(UUID id,
+                       UUID userId,
+                       TreeStatus status,
+                       TreeState state,
+                       TreeCondition condition,
+                       String comment) {
+        treeRepository.update(id, userId, status, state, condition, comment);
     }
 
     @Transactional

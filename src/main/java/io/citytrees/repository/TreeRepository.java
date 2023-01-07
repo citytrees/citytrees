@@ -2,6 +2,8 @@ package io.citytrees.repository;
 
 import io.citytrees.model.Tree;
 import io.citytrees.repository.extension.TreeRepositoryExtension;
+import io.citytrees.v1.model.TreeCondition;
+import io.citytrees.v1.model.TreeState;
 import io.citytrees.v1.model.TreeStatus;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.data.jdbc.repository.query.Modifying;
@@ -21,10 +23,10 @@ public interface TreeRepository extends CrudRepository<Tree, UUID>, TreeReposito
     @Modifying
     @Query("""
         UPDATE ct_tree
-        SET status = :status
+        SET status = :status, state = :state, condition = :condition, comment = :comment
         WHERE id = :id
         """)
-    int update(UUID id, UUID userId, TreeStatus status);
+    int update(UUID id, UUID userId, TreeStatus status, TreeState state, TreeCondition condition, String comment);
 
     @Modifying
     @Query("DELETE FROM ct_tree where id = :id")

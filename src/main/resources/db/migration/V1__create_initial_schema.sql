@@ -30,6 +30,8 @@ create table ct_tree
     status    varchar(16) not null,
     geo_point geometry    not null,
     file_ids  jsonb       not null default '[]'::jsonb,
+    state     varchar(16),
+    condition varchar(16),
     comment   text
 );
 

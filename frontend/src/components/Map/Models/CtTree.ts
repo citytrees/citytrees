@@ -1,29 +1,25 @@
-import {instanceOfTreeGetResponse, TreeGetResponse, TreesGetResponseTree, TreeStatus} from "../../../generated/openapi";
+import {TreeCondition, TreeGetResponse, TreeState, TreeStatus} from "../../../generated/openapi";
 
 export interface CtTree {
     id: string,
     latitude: number
     longitude: number
     status: TreeStatus,
+    state?: TreeState,
+    condition?: TreeCondition,
+    comment?: string,
     files?: string[]
 }
 
-export const ctTreeOf: (tree: TreeGetResponse | TreesGetResponseTree) => CtTree = (tree: TreesGetResponseTree) => {
-    if (instanceOfTreeGetResponse(tree)) {
-        return {
-            id: tree.id,
-            latitude: tree.latitude,
-            longitude: tree.longitude,
-            status: tree.status,
-            files: []
-        }
-    } else {
-        return {
-            id: tree.id,
-            status: tree.status,
-            latitude: tree.latitude,
-            longitude: tree.longitude,
-            files: [],
-        }
+export const ctTreeOf: (tree: TreeGetResponse) => CtTree = (tree: TreeGetResponse) => {
+    return {
+        id: tree.id,
+        latitude: tree.latitude,
+        longitude: tree.longitude,
+        status: tree.status,
+        state: tree.state,
+        condition: tree.condition,
+        comment: tree.comment,
+        files: []
     }
 }
