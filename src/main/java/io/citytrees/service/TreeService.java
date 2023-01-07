@@ -5,6 +5,7 @@ import io.citytrees.model.Tree;
 import io.citytrees.repository.TreeRepository;
 import io.citytrees.v1.model.TreeCreateRequest;
 import io.citytrees.v1.model.TreeStatus;
+import io.citytrees.v1.model.TreeUpdateRequest;
 import lombok.RequiredArgsConstructor;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
@@ -43,6 +44,14 @@ public class TreeService {
 
     public Optional<Tree> getById(UUID treeId) {
         return treeRepository.findTreeById(treeId);
+    }
+
+    public void update(UUID id, TreeUpdateRequest treeUpdateRequest) {
+        update(id, securityService.getCurrentUserId(), treeUpdateRequest.getStatus());
+    }
+
+    public void update(UUID id, UUID userId, TreeStatus status) {
+        treeRepository.update(id, userId, status);
     }
 
     @Transactional

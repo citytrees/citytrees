@@ -11,7 +11,7 @@ function MainPage() {
             center={[56.8, 60.6]}
             zoom={10}
             minZoom={10}
-            maxZoom={20}
+            maxZoom={19}
             scrollWheelZoom={true}
             doubleClickZoom={false}
         ></MapComponent>

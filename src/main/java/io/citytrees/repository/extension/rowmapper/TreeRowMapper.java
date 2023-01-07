@@ -38,6 +38,7 @@ public class TreeRowMapper implements RowMapper<Tree> {
             .status(TreeStatus.valueOf(rs.getObject("status", String.class)))
             .geoPoint(GEOMETRY_FACTORY.createPoint(new Coordinate(point.getX(), point.getY())))
             .fileIds(objectMapper.readValue(rs.getString("file_ids"), new TypeReference<>() {}))
+            .comment(rs.getString("comment"))
             .build();
     }
 }

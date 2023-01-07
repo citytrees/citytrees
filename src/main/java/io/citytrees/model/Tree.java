@@ -34,4 +34,6 @@ public class Tree {
 
     @NotNull
     Set<UUID> fileIds;
+
+    String comment;
 }

@@ -29,7 +29,8 @@ create table ct_tree
     user_id   uuid        not null,
     status    varchar(16) not null,
     geo_point geometry    not null,
-    file_ids  jsonb       not null default '[]'::jsonb
+    file_ids  jsonb       not null default '[]'::jsonb,
+    comment   text
 );
 
 create unique index ct_tree_user_id_uidx on ct_tree (id);

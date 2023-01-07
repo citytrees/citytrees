@@ -331,6 +331,64 @@ paths:
         500:
           $ref: '#/components/responses/InternalServerError'
   /tree/{id}:
+    get:
+      tags:
+        - tree-controller
+      summary: Return tree information
+      operationId: getTreeById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        200:
+          description: Tree information
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TreeGetResponse'
+        400:
+          $ref: "#/components/responses/BadRequest"
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/Forbidden'
+        500:
+          $ref: '#/components/responses/InternalServerError'
+    put:
+      tags:
+        - tree-controller
+      summary: Update tree
+      operationId: updateTreeById
+      security:
+        - BearerAuth: [ ]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TreeUpdateRequest'
+      responses:
+        200:
+          description: OK
+        400:
+          $ref: "#/components/responses/BadRequest"
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/Forbidden'
+        500:
+          $ref: '#/components/responses/InternalServerError'
     delete:
       tags:
         - tree-controller
@@ -711,6 +769,42 @@ components:
           format: uuid
           example: ed156378-204b-473c-9d2a-886941a819ff
 
+    TreeGetResponse:
+      type: object
+      required:
+        - id
+        - userId
+        - status
+        - latitude
+        - longitude
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: ed156378-204b-473c-9d2a-886941a819ff
+        userId:
+          type: string
+          format: uuid
+          example: ed156378-204b-473c-9d2a-886941a819ff
+        status:
+          $ref: '#/components/schemas/TreeStatus'
+        latitude:
+          type: number
+          format: double
+          example: 0.0
+        longitude:
+          type: number
+          format: double
+          example: 0.0
+
+    TreeUpdateRequest:
+      type: object
+      required:
+        - status
+      properties:
+        status:
+          $ref: '#/components/schemas/TreeStatus'
+
     TreesByRegionRequest:
       type: object
       required:
@@ -747,6 +841,7 @@ components:
         - id
         - latitude
         - longitude
+        - status
       properties:
         id:
           type: string
