@@ -1,3 +1,5 @@
-import ProtectedRoute from './ProtectedRoute'
+import OnlyNotAuthenticatedRoute from './OnlyNotAuthenticatedRoute'
+import AdminRoute from "./AdminRoute";
+import OnlyAuthenticatedRoute from './OnlyAuthenticatedRoute';
 
-export default ProtectedRoute;
+export { OnlyNotAuthenticatedRoute, OnlyAuthenticatedRoute, AdminRoute };

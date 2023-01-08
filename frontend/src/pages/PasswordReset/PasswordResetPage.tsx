@@ -1,7 +1,6 @@
 import {useNavigate, useSearchParams} from "react-router-dom";
 import {useTranslation} from "react-i18next";
-import {Button, Form, Input} from "antd";
-import CenteredContainer from "../../components/forms";
+import {Button, Col, Form, Input, Row} from "antd";
 import React, {useState} from "react";
 import AppRoutes from "../../constants/AppRoutes";
 import api from "../../api";
@@ -138,9 +137,11 @@ function PasswordResetPage() {
   }
 
   return (
-      <CenteredContainer>
-        {content()}
-      </CenteredContainer>
+      <Row style={{minHeight: "100%"}} justify="center" align="middle" >
+        <Col xs={{span: 16}} lg={{span: 6}}>
+          {content()}
+        </Col>
+      </Row>
   )
 }
 

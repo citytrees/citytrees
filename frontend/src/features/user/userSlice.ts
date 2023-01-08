@@ -7,10 +7,12 @@ export type User = {
     roles: string[]
     firstName: string
     lastName: string
-} | null
+}
+
+export type NullableUser = User | null
 
 export type UserState = {
-    user: User
+    user: NullableUser
 }
 
 const initialState: UserState = {user: null};
@@ -19,7 +21,7 @@ export const userSlice = createSlice({
     name: 'user',
     initialState,
     reducers: {
-        setUser: (state, action: PayloadAction<User>) => {
+        setUser: (state, action: PayloadAction<NullableUser>) => {
             state.user = action.payload
         }
     }

@@ -1,10 +1,9 @@
 import React from "react";
-import {Button, Form, Input, notification} from 'antd';
+import {Button, Col, Form, Input, notification, Row} from 'antd';
 import {useTranslation} from "react-i18next";
 import api from "../../api";
 import {ErrorResponse} from "../../generated/openapi";
 import {useNavigate} from "react-router-dom";
-import CenteredContainer from "../../components/forms";
 import AppRoutes from "../../constants/AppRoutes";
 
 function RegistrationPage() {
@@ -24,7 +23,8 @@ function RegistrationPage() {
   };
 
   return (
-      <CenteredContainer>
+      <Row style={{minHeight: "100%"}} justify="center" align="middle" >
+        <Col xs={{span: 16}} lg={{span: 6}}>
         <Form
             form={form}
             name="basic"
@@ -91,7 +91,8 @@ function RegistrationPage() {
             </Button>
           </Form.Item>
         </Form>
-      </CenteredContainer>
+      </Col>
+    </Row>
   );
 }
 

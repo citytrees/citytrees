@@ -45,5 +45,17 @@
         "submit": {
             "label": "Reset password"
         }
+    },
+    "appHeader": {
+        "menuItems":{
+            "map": "Map",
+            "myTrees": "My trees",
+            "allTrees": "All trees",
+            "users": "Users"
+        },
+        "buttons": {
+            "signIn": "Sign in",
+            "logout": "Logout"
+        }
     }
 }

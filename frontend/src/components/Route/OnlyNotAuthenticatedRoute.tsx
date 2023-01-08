@@ -3,9 +3,8 @@ import {useUser} from "../../app/hooks";
 import React from "react";
 import AppRoutes from "../../constants/AppRoutes";
 
-
-const ProtectedRoute = ({element}: { element: any }) => {
+const OnlyNotAuthenticatedRoute = ({element}: { element: any }) => {
   return !useUser() ? element : <Navigate to={AppRoutes.MAIN}/>;
 }
 
-export default ProtectedRoute;
+export default OnlyNotAuthenticatedRoute;
