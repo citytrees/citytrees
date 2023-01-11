@@ -1,4 +1,5 @@
-import {TreeCondition, TreeGetResponse, TreeState, TreeStatus} from "../../../generated/openapi";
+import {TreeCondition, TreeGetAttachedFileResponse, TreeGetResponse, TreeState, TreeStatus} from "../../../generated/openapi";
+import {CtFile} from "./CtFile";
 
 export interface CtTree {
     id: string,
@@ -8,10 +9,10 @@ export interface CtTree {
     state?: TreeState,
     condition?: TreeCondition,
     comment?: string,
-    files?: string[]
+    files: CtFile[]
 }
 
-export const ctTreeOf: (tree: TreeGetResponse) => CtTree = (tree: TreeGetResponse) => {
+export const ctTreeOf: (tree: TreeGetResponse, files: TreeGetAttachedFileResponse[]) => CtTree = (tree, files) => {
     return {
         id: tree.id,
         latitude: tree.latitude,
@@ -20,6 +21,6 @@ export const ctTreeOf: (tree: TreeGetResponse) => CtTree = (tree: TreeGetRespons
         state: tree.state,
         condition: tree.condition,
         comment: tree.comment,
-        files: []
+        files: files.map(file => ({id: file.id, name: file.name, url: file.url}))
     }
 }

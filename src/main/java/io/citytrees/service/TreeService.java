@@ -1,6 +1,7 @@
 package io.citytrees.service;
 
 import io.citytrees.configuration.properties.GeoProperties;
+import io.citytrees.model.CtFile;
 import io.citytrees.model.Tree;
 import io.citytrees.repository.TreeRepository;
 import io.citytrees.v1.model.TreeCondition;
@@ -16,6 +17,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -49,16 +52,24 @@ public class TreeService {
     }
 
     public void update(UUID id, TreeUpdateRequest treeUpdateRequest) {
-        update(id, securityService.getCurrentUserId(), treeUpdateRequest.getStatus(), treeUpdateRequest.getState(), treeUpdateRequest.getCondition(), treeUpdateRequest.getComment());
+        update(id,
+            securityService.getCurrentUserId(),
+            treeUpdateRequest.getStatus(),
+            treeUpdateRequest.getState(),
+            treeUpdateRequest.getCondition(),
+            treeUpdateRequest.getComment(),
+            treeUpdateRequest.getFileIds());
     }
 
+    @SuppressWarnings("checkstyle:ParameterNumber")
     public void update(UUID id,
                        UUID userId,
                        TreeStatus status,
                        TreeState state,
                        TreeCondition condition,
-                       String comment) {
-        treeRepository.update(id, userId, status, state, condition, comment);
+                       String comment,
+                       List<UUID> fileIds) {
+        treeRepository.update(id, userId, status, state, condition, comment, fileIds);
     }
 
     @Transactional
@@ -66,6 +77,14 @@ public class TreeService {
         UUID fileId = fileService.upload(file);
         treeRepository.attachFile(treeId, fileId);
         return fileId;
+    }
+
+    public List<CtFile> getAttachedFiles(UUID treeId) {
+        // todo #18 in list
+        return treeRepository.findTreeById(treeId).map(tree -> tree.getFileIds().stream()
+            .map(fileService::getById)
+            .flatMap(Optional::stream)
+            .toList()).orElse(Collections.emptyList());
     }
 
     private UUID create(UUID id, UUID userId, TreeStatus status, Point point) {

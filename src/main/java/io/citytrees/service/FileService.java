@@ -3,6 +3,7 @@ package io.citytrees.service;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.PutObjectRequest;
+import io.citytrees.configuration.properties.ApplicationProperties;
 import io.citytrees.configuration.properties.S3Properties;
 import io.citytrees.model.CtFile;
 import io.citytrees.model.User;
@@ -11,6 +12,7 @@ import io.citytrees.service.exception.FileServiceException;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.commons.io.FileUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
@@ -26,11 +28,14 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class FileService {
 
-    private final S3Properties s3Properties;
-
-    private final FileRepository fileRepository;
-    private final SecurityService securityService;
+    private final ApplicationProperties applicationProperties;
     private final AmazonS3 s3;
+    private final FileRepository fileRepository;
+    private final S3Properties s3Properties;
+    private final SecurityService securityService;
+
+    @Value("${openapi.citytreesPublic.base-path:/api/v1}")
+    private String apiPrefix;
 
     public UUID save(CtFile file) {
         return fileRepository.save(
@@ -68,7 +73,7 @@ public class FileService {
 
             var hash = DigestUtils.md5DigestAsHex(FileUtils.readFileToByteArray(tempFile));
 
-            var savedFile = fileRepository.findCtFileByHash(hash);
+            var savedFile = fileRepository.findFirstByHash(hash);
 
             if (savedFile.isEmpty()) {
                 s3.putObject(
@@ -109,6 +114,11 @@ public class FileService {
 
                 fileRepository.deleteById(id);
             });
+    }
+
+    public String generateDownloadUrl(UUID id) {
+        // TODO #18 remove getBaseUrl()
+        return applicationProperties.getBaseUrl() + apiPrefix + "/file/download/" + id;
     }
 
     private void deleteFromS3(CtFile fileToDelete) {

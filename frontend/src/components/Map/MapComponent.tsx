@@ -82,7 +82,12 @@ const TreeMap = () => {
               onClick={() => {
                 // todo #18 implement catch()
                 api.tree.getTreeById({id: tree.id})
-                    .then(value => setTreeViewState(true, false, ctTreeOf(value)))
+                    .then(treeResponse => {
+                      api.treeFiles.getAllAttachedFiles({treeId: tree.id})
+                          .then((filesResponse) => {
+                            setTreeViewState(true, false, ctTreeOf(treeResponse, filesResponse));
+                          })
+                    })
                     .catch()
               }}
           >
@@ -126,7 +131,8 @@ const TreeMap = () => {
                     id: response.treeId,
                     latitude: tree.latitude,
                     longitude: tree.longitude,
-                    status: "NEW"
+                    status: "NEW",
+                    files: []
                   })
                 })
               }}
@@ -135,15 +141,16 @@ const TreeMap = () => {
       </Marker>
 
   const updateTree = (tree: CtTree, status: TreeStatus, onSuccess: () => void) => {
-    debugger
+    let treeId = tree.id
     api.tree.updateTreeById(
         {
-          id: tree.id!!,
+          id: treeId,
           treeUpdateRequest: {
             status: status,
             state: tree.state,
             condition: tree.condition,
-            comment: tree.comment
+            comment: tree.comment,
+            fileIds: tree.files.map(file => file.id)
           }
         }
     ).then(() => onSuccess())
@@ -153,9 +160,10 @@ const TreeMap = () => {
       <div>
         {trees.map((tree, index) => renderMarker(`tree:${index}`, tree))}
         {newTree && user ? renderDraftMarker(newTree) : null}
-        <CtTreeView
+        {treeViewValue ? <CtTreeView
+            centered={true}
             open={isTreeViewOpen}
-            initial={treeViewValue!!}
+            initial={treeViewValue}
             onSave={(tree: CtTree) =>
                 updateTree(tree, TreeStatus.New, () => notification.open({
                   message: "Tree was saved",
@@ -174,7 +182,7 @@ const TreeMap = () => {
                 })
             }
             onCancel={() => setIsTreeViewOpen(false)}
-        />
+        /> : null}
       </div>
   )
 }

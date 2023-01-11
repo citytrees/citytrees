@@ -414,10 +414,10 @@ paths:
         500:
           $ref: '#/components/responses/InternalServerError'
 
-  /tree/file/{treeId}:
+  /tree/{treeId}/file:
     post:
       tags:
-        - tree-controller
+        - tree-files-controller
       summary: Attach file to tree
       operationId: attachFile
       security:
@@ -442,6 +442,37 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/FileUploadResponse"
+        400:
+          $ref: "#/components/responses/BadRequest"
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/Forbidden'
+        500:
+          $ref: '#/components/responses/InternalServerError'
+
+  /tree/{treeId}/file/all:
+    get:
+      tags:
+        - tree-files-controller
+      summary: Load trees in region
+      operationId: getAllAttachedFiles
+      parameters:
+        - name: treeId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        200:
+          description: Return tree files
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TreeGetAttachedFileResponse'
         400:
           $ref: "#/components/responses/BadRequest"
         401:
@@ -795,6 +826,7 @@ components:
         - state
         - condition
         - comment
+        - fileIds
       properties:
         id:
           type: string
@@ -820,6 +852,31 @@ components:
           $ref: '#/components/schemas/TreeCondition'
         comment:
           type: string
+        fileIds:
+          type: array
+          items:
+            type: string
+
+    TreeGetAttachedFileResponse:
+      type: object
+      required:
+        - id
+        - size
+        - name
+        - url
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: ed156378-204b-473c-9d2a-886941a819ff
+        size:
+          type: number
+          format: int32
+          example: 0.0
+        name:
+          type: string
+        url:
+          type: string
 
     TreeUpdateRequest:
       type: object
@@ -834,6 +891,11 @@ components:
           $ref: '#/components/schemas/TreeCondition'
         comment:
           type: string
+        fileIds:
+          type: array
+          items:
+            type: string
+            format: uuid
 
     TreesByRegionRequest:
       type: object
@@ -890,6 +952,8 @@ components:
 
     FileUploadRequest:
       type: object
+      required:
+        - file
       properties:
         file:
           type: string
@@ -898,11 +962,15 @@ components:
       type: object
       required:
         - fileId
+        - url
       properties:
         fileId:
           type: string
           format: uuid
           example: 70c47221-2181-40fb-8909-4d7e3549c4d4
+        url:
+          type: string
+
     FileGetResponse:
       type: object
       required:

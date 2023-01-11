@@ -15,7 +15,7 @@ public interface FileRepository extends CrudRepository<CtFile, UUID> {
         """)
     UUID save(UUID id, String name, String mimeType, Long size, String hash, UUID userId);
 
-    Optional<CtFile> findCtFileByHash(String hash);
+    Optional<CtFile> findFirstByHash(String hash);
 
     long countByHash(String hash);
 }

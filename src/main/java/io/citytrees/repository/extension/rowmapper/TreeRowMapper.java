@@ -33,7 +33,6 @@ public class TreeRowMapper implements RowMapper<Tree> {
         Tree.TreeBuilder builder = Tree.builder();
         PGobject geoPoint = rs.getObject("geo_point", PGobject.class);
         Point point = (Point) PGgeometry.geomFromString(Objects.requireNonNull(geoPoint.getValue()));
-
         String state = rs.getObject("state", String.class);
         String condition = rs.getObject("condition", String.class);
 

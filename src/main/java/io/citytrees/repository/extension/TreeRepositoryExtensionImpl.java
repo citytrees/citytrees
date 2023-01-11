@@ -1,7 +1,11 @@
 package io.citytrees.repository.extension;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.citytrees.model.Tree;
 import io.citytrees.repository.extension.rowmapper.TreeRowMapper;
+import io.citytrees.v1.model.TreeCondition;
+import io.citytrees.v1.model.TreeState;
+import io.citytrees.v1.model.TreeStatus;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -17,6 +21,7 @@ import java.util.UUID;
 public class TreeRepositoryExtensionImpl implements TreeRepositoryExtension {
     private final NamedParameterJdbcTemplate jdbcTemplate;
     private final TreeRowMapper treeMapper;
+    private final ObjectMapper objectMapper;
 
     @Override
     public Optional<Tree> findTreeById(UUID id) {
@@ -52,8 +57,7 @@ public class TreeRepositoryExtensionImpl implements TreeRepositoryExtension {
     @Override
     @SneakyThrows
     public void attachFile(UUID treeId, UUID fileId) {
-        // TODO #18
-        var fileIdElement = "[" + "\"" + fileId + "\"" + "]";
+        var fileIdElement = objectMapper.writeValueAsString(List.of(fileId));
 
         var sql = """
             UPDATE ct_tree
@@ -64,6 +68,29 @@ public class TreeRepositoryExtensionImpl implements TreeRepositoryExtension {
         var params = Map.of(
             "treeId", treeId,
             "fileId", fileIdElement
+        );
+
+        jdbcTemplate.update(sql, params);
+    }
+
+    @SuppressWarnings("checkstyle:ParameterNumber")
+    @Override
+    @SneakyThrows
+    public void update(UUID id, UUID userId, TreeStatus status, TreeState state, TreeCondition condition, String comment, List<UUID> fileIds) {
+        var sql = """
+            UPDATE ct_tree
+            SET status = :status, state = :state, condition = :condition, comment = :comment, file_ids = :fileIds::jsonb
+            WHERE id = :id
+            """;
+
+        var params = Map.of(
+            "id", id,
+            "userId", userId,
+            "status", status.name(),
+            "state", state.name(),
+            "condition", condition.name(),
+            "comment", comment,
+            "fileIds", objectMapper.writeValueAsString(fileIds)
         );
 
         jdbcTemplate.update(sql, params);
