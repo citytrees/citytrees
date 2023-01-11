@@ -40,11 +40,23 @@
             "notValidError": "Введен некорректный email"
         },
         "signIn": {
-            "label": "Sign in"
+            "label": "Войти"
         },
 
         "submit": {
             "label": "Сбросить пароль"
+        }
+    },
+    "appHeader": {
+        "menuItems":{
+            "map": "Карта",
+            "myTrees": "Мои деревья",
+            "allTrees": "Все деревья",
+            "users": "Пользователи"
+        },
+        "buttons": {
+            "signIn": "Войти",
+            "logout": "Выйти"
         }
     }
 }

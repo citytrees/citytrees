@@ -1,8 +1,8 @@
 import React, {useEffect, useState} from "react";
 import 'leaflet/dist/leaflet.css';
-import CenteredContainer from "../../components/forms";
 import {useSearchParams} from "react-router-dom";
 import api from "../../api";
+import {Col, Row} from "antd";
 
 enum ConfirmationStatus {
   WAITING,
@@ -38,9 +38,11 @@ function EmailConfirmationPage() {
 
   return (
       <div>
-        <CenteredContainer>
-          {content()}
-        </CenteredContainer>
+        <Row style={{minHeight: "100%"}} justify="center" align="middle" >
+          <Col xs={{span: 16}} lg={{span: 6}}>
+            {content()}
+          </Col>
+        </Row>
       </div>
   )
 }
