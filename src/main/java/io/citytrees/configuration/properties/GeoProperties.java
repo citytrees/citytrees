@@ -14,4 +14,7 @@ import javax.validation.constraints.NotNull;
 public class GeoProperties {
     @NotNull
     Integer srid;
+
+    @NotNull
+    Double clusterDistance;
 }

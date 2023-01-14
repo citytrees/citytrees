@@ -392,6 +392,7 @@ paths:
     delete:
       tags:
         - tree-controller
+      summary: Delete tree by id
       operationId: deleteTree
       security:
         - BearerAuth: [ ]
@@ -455,7 +456,7 @@ paths:
     get:
       tags:
         - tree-files-controller
-      summary: Load trees in region
+      summary: Load all attached files
       operationId: getAllAttachedFiles
       parameters:
         - name: treeId
@@ -528,7 +529,55 @@ paths:
           $ref: '#/components/responses/Forbidden'
         500:
           $ref: '#/components/responses/InternalServerError'
-
+  /trees/clusters:
+    get:
+      deprecated: true
+      tags:
+        - trees-controller
+      summary: Load trees clusters in region
+      operationId: loadTreesClustersByRegion
+      parameters:
+        - name: x1
+          description: top left latitude
+          in: query
+          required: true
+          schema:
+            type: number
+        - name: y1
+          description: top left longitude
+          in: query
+          required: true
+          schema:
+            type: number
+        - name: x2
+          description: bottom right latitude
+          in: query
+          required: true
+          schema:
+            type: number
+        - name: y2
+          description: bottom right longitude
+          in: query
+          required: true
+          schema:
+            type: number
+      responses:
+        200:
+          description: Trees clusters in specified region
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TreesClusterGetResponse'
+        400:
+          $ref: "#/components/responses/BadRequest"
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/Forbidden'
+        500:
+          $ref: '#/components/responses/InternalServerError'
 
   /file/upload:
     post:
@@ -871,7 +920,7 @@ components:
           example: ed156378-204b-473c-9d2a-886941a819ff
         size:
           type: number
-          format: int32
+          format: integer
           example: 0.0
         name:
           type: string
@@ -949,6 +998,25 @@ components:
           example: 0.0
         status:
           $ref: '#/components/schemas/TreeStatus'
+
+    TreesClusterGetResponse:
+      type: object
+      required:
+        - latitude
+        - longitude
+        - count
+      properties:
+        latitude:
+          type: number
+          format: double
+          example: 0.0
+        longitude:
+          type: number
+          format: double
+          example: 0.0
+        count:
+          type: number
+          format: integer
 
     FileUploadRequest:
       type: object

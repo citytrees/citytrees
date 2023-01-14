@@ -10,8 +10,6 @@ import io.citytrees.v1.model.TreeState;
 import io.citytrees.v1.model.TreeStatus;
 import io.citytrees.v1.model.TreeUpdateRequest;
 import lombok.RequiredArgsConstructor;
-import org.locationtech.jts.geom.Coordinate;
-import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Point;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,15 +24,14 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class TreeService {
 
-    private static final GeometryFactory GEOMETRY_FACTORY = new GeometryFactory();
-
     private final GeoProperties geoProperties;
+    private final GeometryService geometryService;
     private final SecurityService securityService;
     private final TreeRepository treeRepository;
     private final FileService fileService;
 
     public UUID create(TreeCreateRequest request) {
-        Point point = GEOMETRY_FACTORY.createPoint(new Coordinate(request.getLatitude(), request.getLongitude()));
+        Point point = geometryService.createPoint(request.getLatitude(), request.getLongitude());
         point.setSRID(geoProperties.getSrid());
         return create(UUID.randomUUID(), securityService.getCurrentUserId(), point);
     }

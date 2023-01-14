@@ -6,6 +6,7 @@ import {CtTree} from "../Models/CtTree";
 import {FrownOutlined, MehOutlined, PlusOutlined, SmileOutlined} from '@ant-design/icons';
 import {TreeCondition, TreeState} from "../../../generated/openapi";
 import api from "../../../api";
+import TextArea from "antd/es/input/TextArea";
 
 interface TreeEditorProps {
   initial: CtTree,
@@ -23,7 +24,7 @@ const availableTreeConditionValues = [
 ]
 
 // todo #18 optimize
-const CtTreeView = ({...props}: ModalProps & TreeEditorProps) => {
+const TreeView = ({...props}: ModalProps & TreeEditorProps) => {
   const [form]: [FormInstance<CtTree>] = useForm()
 
   const [fileList, setFileList] = useState<UploadFile[]>([])
@@ -120,8 +121,9 @@ const CtTreeView = ({...props}: ModalProps & TreeEditorProps) => {
           </Form.Item>
 
           <Form.Item name="comment" label="Comment">
-            <Input/>
+            <TextArea rows={2} maxLength={150} showCount/>
           </Form.Item>
+
           <Form.Item label="Files">
             <Upload
                 listType="picture-card"
@@ -155,4 +157,4 @@ const CtTreeView = ({...props}: ModalProps & TreeEditorProps) => {
   )
 }
 
-export default CtTreeView
+export default TreeView

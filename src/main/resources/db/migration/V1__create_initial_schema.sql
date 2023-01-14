@@ -46,3 +46,5 @@ create table ct_user_password_reset
 );
 
 create unique index ct_user_password_reset_email_uidx on ct_user_password_reset (email);
+
+-- todo #18 add enums, indexes
