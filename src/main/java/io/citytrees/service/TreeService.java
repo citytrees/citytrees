@@ -79,7 +79,7 @@ public class TreeService {
     public List<CtFile> getAttachedFiles(UUID treeId) {
         // todo #18 in list
         return treeRepository.findTreeById(treeId).map(tree -> tree.getFileIds().stream()
-            .map(fileService::getById)
+            .map(fileService::getFile)
             .flatMap(Optional::stream)
             .toList()).orElse(Collections.emptyList());
     }

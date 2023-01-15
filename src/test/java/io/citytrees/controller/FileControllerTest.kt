@@ -33,8 +33,8 @@ class FileControllerTest : AbstractTest() {
 
     @Test
     fun `file get by id should return 200`() {
-        val user = givenTestUser("mail@example.com", "password")
-        val file = givenCtFile(user)
+        withSpringSecurityAuthentication(givenTestUser("mail@example.com", "password"))
+        val file = givenCtFile()
 
         mockMvc.get("/api/v1/file/${file.id}")
             .andExpect {
@@ -51,7 +51,8 @@ class FileControllerTest : AbstractTest() {
     @Test
     fun `file delete by id should return 200`() {
         val user = givenTestUser("mail@example.com", "password")
-        val file = givenCtFile(user)
+        withSpringSecurityAuthentication(user)
+        val file = givenCtFile()
         mockMvc.delete("/api/v1/file/${file.id}") {
             withAuthenticationAs(user)
         }.andExpect {
@@ -61,9 +62,9 @@ class FileControllerTest : AbstractTest() {
 
     @Test
     fun `file download id should return 200`() {
-        val user = givenTestUser("mail@example.com", "password")
+        withSpringSecurityAuthentication(givenTestUser("mail@example.com", "password"))
         val content = "example text content"
-        val file = givenCtFile(user = user, content = content.toByteArray())
+        val file = givenCtFile(content = content.toByteArray())
 
         mockMvc.get("/api/v1/file/download/${file.id}")
             .andExpect {
