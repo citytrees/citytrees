@@ -23,6 +23,15 @@ create table ct_file
 
 create index ct_file_hash_index on ct_file (hash);
 
+create table ct_file_content
+(
+    id      uuid         not null primary key,
+    content bytea        not null,
+    hash    varchar(255) not null
+);
+
+create unique index ct_file_content_hash_unique_index on ct_file_content (hash);
+
 create table ct_tree
 (
     id        uuid        not null primary key,

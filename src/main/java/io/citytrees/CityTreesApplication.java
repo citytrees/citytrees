@@ -2,6 +2,7 @@ package io.citytrees;
 
 import io.citytrees.configuration.properties.ApplicationProperties;
 import io.citytrees.configuration.properties.EmailProperties;
+import io.citytrees.configuration.properties.FileStorageProperties;
 import io.citytrees.configuration.properties.GeoProperties;
 import io.citytrees.configuration.properties.S3Properties;
 import io.citytrees.configuration.properties.SchedulingProperties;
@@ -18,6 +19,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
     SchedulingProperties.class,
     EmailProperties.class,
     ApplicationProperties.class,
+    FileStorageProperties.class,
 })
 public class CityTreesApplication {
 

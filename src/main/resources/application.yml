@@ -45,6 +45,9 @@ email:
     mail.smtp.socketFactory.port: 465
     mail.smtp.socketFactory.class: javax.net.ssl.SSLSocketFactory
 
+file-storage:
+  type: ${DB_TYPE:database}
+
 s3:
   access-key: ${S3_ACCESS_KEY:access-key}
   secret-key: ${S3_SECRET_KEY:secret-key}

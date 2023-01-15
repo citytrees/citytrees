@@ -1,7 +1,7 @@
 package io.citytrees.controller;
 
 import io.citytrees.model.CtFile;
-import io.citytrees.service.FileService;
+import io.citytrees.service.FileDownloadService;
 import io.citytrees.service.TreeService;
 import io.citytrees.v1.controller.TreeFilesControllerApiDelegate;
 import io.citytrees.v1.model.FileUploadResponse;
@@ -19,7 +19,7 @@ import java.util.UUID;
 @Component
 @RequiredArgsConstructor
 public class TreeFilesController implements TreeFilesControllerApiDelegate {
-    private final FileService fileService;
+    private final FileDownloadService fileDownloadService;
     private final TreeService treeService;
 
     @Override
@@ -28,7 +28,7 @@ public class TreeFilesController implements TreeFilesControllerApiDelegate {
         var fileId = treeService.attachFile(treeId, file);
         var response = new FileUploadResponse()
             .fileId(fileId)
-            .url(fileService.generateDownloadUrl(fileId));
+            .url(fileDownloadService.generateDownloadUrl(fileId));
 
         return ResponseEntity.ok(response);
     }
@@ -42,7 +42,7 @@ public class TreeFilesController implements TreeFilesControllerApiDelegate {
                 .id(file.getId())
                 .name(file.getName())
                 .size(BigDecimal.valueOf(file.getSize()))
-                .url(fileService.generateDownloadUrl(file.getId())))
+                .url(fileDownloadService.generateDownloadUrl(file.getId())))
             .toList();
 
         return ResponseEntity.ok(response);

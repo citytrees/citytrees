@@ -1,10 +1,13 @@
 package io.citytrees.controller;
 
+import io.citytrees.service.FileDownloadService;
 import io.citytrees.service.FileService;
+import io.citytrees.service.SecurityService;
 import io.citytrees.v1.controller.FileControllerApiDelegate;
 import io.citytrees.v1.model.FileGetResponse;
 import io.citytrees.v1.model.FileUploadResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -22,11 +25,13 @@ import java.util.UUID;
 public class FileController extends BaseController implements FileControllerApiDelegate {
 
     private final FileService fileService;
+    private final FileDownloadService fileDownloadService;
+    private final SecurityService securityService;
 
     @Override
     @PreAuthorize("permitAll()")
     public ResponseEntity<FileGetResponse> getFile(UUID id) {
-        var optionalCtFile = fileService.getById(id);
+        var optionalCtFile = fileService.getFile(id);
         if (optionalCtFile.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
@@ -49,7 +54,7 @@ public class FileController extends BaseController implements FileControllerApiD
         var fileId = fileService.upload(file);
         var response = new FileUploadResponse()
             .fileId(fileId)
-            .url(fileService.generateDownloadUrl(fileId));
+            .url(fileDownloadService.generateDownloadUrl(fileId));
 
         return ResponseEntity.ok(response);
     }
@@ -64,11 +69,16 @@ public class FileController extends BaseController implements FileControllerApiD
     @Override
     @PreAuthorize("permitAll()")
     public ResponseEntity<Resource> downloadFile(UUID id) {
-        var optionalFile = fileService.getById(id);
+        var optionalFile = fileService.getFile(id);
         if (optionalFile.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
         var file = optionalFile.get();
+        var optionalFileContent = fileService.getFileContent(file.getHash());
+        if (optionalFileContent.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        }
+        var fileContent = optionalFileContent.get();
         return ResponseEntity
             .ok()
             .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + file.getName())
@@ -77,6 +87,6 @@ public class FileController extends BaseController implements FileControllerApiD
             .header(HttpHeaders.EXPIRES, "0")
             .contentLength(file.getSize())
             .contentType(MediaType.APPLICATION_OCTET_STREAM)
-            .body(fileService.loadFromS3(file));
+            .body(new ByteArrayResource(fileContent.getContent()));
     }
 }

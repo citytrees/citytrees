@@ -1,6 +1,7 @@
 package io.citytrees
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import io.citytrees.configuration.security.JWTUserDetails
 import io.citytrees.constants.CookieNames
 import io.citytrees.model.CtFile
 import io.citytrees.model.Tree
@@ -24,6 +25,8 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.http.HttpHeaders
 import org.springframework.http.MediaType
 import org.springframework.mock.web.MockMultipartFile
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
+import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.servlet.MockHttpServletRequestDsl
 import org.springframework.test.web.servlet.MockMvc
@@ -77,6 +80,21 @@ abstract class AbstractTest {
     protected fun JsonPathResultMatchersDsl.hasSize(size: Int) =
         value(Matchers.hasSize<Collection<*>>(size))
 
+    protected fun withSpringSecurityAuthentication(user: User) {
+        val userDetails = JWTUserDetails.builder()
+            .id(user.id)
+            .roles(user.roles)
+            .email(user.email)
+            .build()
+
+        val context = SecurityContextHolder.getContext()
+        context.authentication = UsernamePasswordAuthenticationToken(userDetails, null, userDetails.authorities)
+
+        CLEANUP_TASKS.addFirst {
+            context.authentication = null
+        }
+    }
+
     protected fun givenTestUser(
         email: String,
         password: String,
@@ -98,22 +116,14 @@ abstract class AbstractTest {
         }
 
     protected fun givenCtFile(
-        user: User,
         name: String = "file",
         originalFilename: String = "test.txt",
         mediaType: String = MediaType.TEXT_PLAIN_VALUE,
         content: ByteArray = "example text content".toByteArray(),
-    ): CtFile = fileService.saveToS3(
-        MockMultipartFile(
-            name,
-            originalFilename,
-            mediaType,
-            content,
-        ),
-        user,
-    ).also {
-        fileService.save(it)
-        CLEANUP_TASKS.addFirst { fileService.delete(it.id) }
+    ): CtFile {
+        val fileId = fileService.upload(MockMultipartFile(name, originalFilename, mediaType, content))
+        CLEANUP_TASKS.addFirst { fileService.delete(fileId) }
+        return fileService.getFile(fileId).get()
     }
 
     protected fun givenTree(
