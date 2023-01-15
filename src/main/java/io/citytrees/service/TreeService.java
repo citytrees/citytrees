@@ -1,18 +1,22 @@
 package io.citytrees.service;
 
 import io.citytrees.configuration.properties.GeoProperties;
+import io.citytrees.model.CtFile;
 import io.citytrees.model.Tree;
 import io.citytrees.repository.TreeRepository;
+import io.citytrees.v1.model.TreeCondition;
 import io.citytrees.v1.model.TreeCreateRequest;
+import io.citytrees.v1.model.TreeState;
 import io.citytrees.v1.model.TreeStatus;
+import io.citytrees.v1.model.TreeUpdateRequest;
 import lombok.RequiredArgsConstructor;
-import org.locationtech.jts.geom.Coordinate;
-import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Point;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -20,15 +24,14 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class TreeService {
 
-    private static final GeometryFactory GEOMETRY_FACTORY = new GeometryFactory();
-
     private final GeoProperties geoProperties;
+    private final GeometryService geometryService;
     private final SecurityService securityService;
     private final TreeRepository treeRepository;
     private final FileService fileService;
 
     public UUID create(TreeCreateRequest request) {
-        Point point = GEOMETRY_FACTORY.createPoint(new Coordinate(request.getLatitude(), request.getLongitude()));
+        Point point = geometryService.createPoint(request.getLatitude(), request.getLongitude());
         point.setSRID(geoProperties.getSrid());
         return create(UUID.randomUUID(), securityService.getCurrentUserId(), point);
     }
@@ -45,11 +48,40 @@ public class TreeService {
         return treeRepository.findTreeById(treeId);
     }
 
+    public void update(UUID id, TreeUpdateRequest treeUpdateRequest) {
+        update(id,
+            securityService.getCurrentUserId(),
+            treeUpdateRequest.getStatus(),
+            treeUpdateRequest.getState(),
+            treeUpdateRequest.getCondition(),
+            treeUpdateRequest.getComment(),
+            treeUpdateRequest.getFileIds());
+    }
+
+    @SuppressWarnings("checkstyle:ParameterNumber")
+    public void update(UUID id,
+                       UUID userId,
+                       TreeStatus status,
+                       TreeState state,
+                       TreeCondition condition,
+                       String comment,
+                       List<UUID> fileIds) {
+        treeRepository.update(id, userId, status, state, condition, comment, fileIds);
+    }
+
     @Transactional
     public UUID attachFile(UUID treeId, MultipartFile file) {
         UUID fileId = fileService.upload(file);
         treeRepository.attachFile(treeId, fileId);
         return fileId;
+    }
+
+    public List<CtFile> getAttachedFiles(UUID treeId) {
+        // todo #18 in list
+        return treeRepository.findTreeById(treeId).map(tree -> tree.getFileIds().stream()
+            .map(fileService::getById)
+            .flatMap(Optional::stream)
+            .toList()).orElse(Collections.emptyList());
     }
 
     private UUID create(UUID id, UUID userId, TreeStatus status, Point point) {

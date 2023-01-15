@@ -29,7 +29,10 @@ create table ct_tree
     user_id   uuid        not null,
     status    varchar(16) not null,
     geo_point geometry    not null,
-    file_ids  jsonb       not null default '[]'::jsonb
+    file_ids  jsonb       not null default '[]'::jsonb,
+    state     varchar(16),
+    condition varchar(16),
+    comment   text
 );
 
 create unique index ct_tree_user_id_uidx on ct_tree (id);
@@ -43,3 +46,5 @@ create table ct_user_password_reset
 );
 
 create unique index ct_user_password_reset_email_uidx on ct_user_password_reset (email);
+
+-- todo #18 add enums, indexes

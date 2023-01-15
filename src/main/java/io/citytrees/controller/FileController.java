@@ -6,7 +6,9 @@ import io.citytrees.v1.model.FileGetResponse;
 import io.citytrees.v1.model.FileUploadResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
@@ -46,13 +48,14 @@ public class FileController extends BaseController implements FileControllerApiD
     public ResponseEntity<FileUploadResponse> uploadFile(MultipartFile file) {
         var fileId = fileService.upload(file);
         var response = new FileUploadResponse()
-            .fileId(fileId);
+            .fileId(fileId)
+            .url(fileService.generateDownloadUrl(fileId));
 
         return ResponseEntity.ok(response);
     }
 
     @Override
-    @PreAuthorize("hasAnyRole(@Roles.ADMIN) || (isAuthenticated() && hasPermission(#id, @Domains.FILE, @Permissions.DELETE))")
+    @PreAuthorize("hasAuthority(@Roles.ADMIN) || (isAuthenticated() && hasPermission(#id, @Domains.FILE, @Permissions.DELETE))")
     public ResponseEntity<Void> deleteFile(UUID id) {
         fileService.delete(id);
         return ResponseEntity.ok().build();
@@ -66,6 +69,14 @@ public class FileController extends BaseController implements FileControllerApiD
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
         var file = optionalFile.get();
-        return ResponseEntity.ok(fileService.loadFromS3(file));
+        return ResponseEntity
+            .ok()
+            .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + file.getName())
+            .header(HttpHeaders.CACHE_CONTROL, "no-cache, no-store, must-revalidate")
+            .header(HttpHeaders.PRAGMA, "no-cache")
+            .header(HttpHeaders.EXPIRES, "0")
+            .contentLength(file.getSize())
+            .contentType(MediaType.APPLICATION_OCTET_STREAM)
+            .body(fileService.loadFromS3(file));
     }
 }

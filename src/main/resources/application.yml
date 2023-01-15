@@ -54,3 +54,4 @@ s3:
 
 geo:
   srid: ${GEO_SRID:4326}
+  cluster-distance: ${CLUSTER_DISTANCE:0.001}

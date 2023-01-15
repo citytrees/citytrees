@@ -56,7 +56,7 @@ public class UserController extends BaseController implements UserControllerApiD
     }
 
     @Override
-    @PreAuthorize("hasAnyRole(@Roles.ADMIN) || (isAuthenticated() && hasPermission(#id, @Domains.USER, @Permissions.EDIT))")
+    @PreAuthorize("hasAuthority(@Roles.ADMIN) || (isAuthenticated() && hasPermission(#id, @Domains.USER, @Permissions.EDIT))")
     public ResponseEntity<Void> updateUserById(UUID id, UserUpdateRequest userUpdateRequest) {
         userService.update(id, userUpdateRequest);
         return ResponseEntity.ok().build();

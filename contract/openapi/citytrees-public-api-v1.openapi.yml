@@ -331,9 +331,68 @@ paths:
         500:
           $ref: '#/components/responses/InternalServerError'
   /tree/{id}:
+    get:
+      tags:
+        - tree-controller
+      summary: Return tree information
+      operationId: getTreeById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        200:
+          description: Tree information
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TreeGetResponse'
+        400:
+          $ref: "#/components/responses/BadRequest"
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/Forbidden'
+        500:
+          $ref: '#/components/responses/InternalServerError'
+    put:
+      tags:
+        - tree-controller
+      summary: Update tree
+      operationId: updateTreeById
+      security:
+        - BearerAuth: [ ]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TreeUpdateRequest'
+      responses:
+        200:
+          description: OK
+        400:
+          $ref: "#/components/responses/BadRequest"
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/Forbidden'
+        500:
+          $ref: '#/components/responses/InternalServerError'
     delete:
       tags:
         - tree-controller
+      summary: Delete tree by id
       operationId: deleteTree
       security:
         - BearerAuth: [ ]
@@ -356,10 +415,10 @@ paths:
         500:
           $ref: '#/components/responses/InternalServerError'
 
-  /tree/file/{treeId}:
+  /tree/{treeId}/file:
     post:
       tags:
-        - tree-controller
+        - tree-files-controller
       summary: Attach file to tree
       operationId: attachFile
       security:
@@ -384,6 +443,37 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/FileUploadResponse"
+        400:
+          $ref: "#/components/responses/BadRequest"
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/Forbidden'
+        500:
+          $ref: '#/components/responses/InternalServerError'
+
+  /tree/{treeId}/file/all:
+    get:
+      tags:
+        - tree-files-controller
+      summary: Load all attached files
+      operationId: getAllAttachedFiles
+      parameters:
+        - name: treeId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        200:
+          description: Return tree files
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TreeGetAttachedFileResponse'
         400:
           $ref: "#/components/responses/BadRequest"
         401:
@@ -439,7 +529,55 @@ paths:
           $ref: '#/components/responses/Forbidden'
         500:
           $ref: '#/components/responses/InternalServerError'
-
+  /trees/clusters:
+    get:
+      deprecated: true
+      tags:
+        - trees-controller
+      summary: Load trees clusters in region
+      operationId: loadTreesClustersByRegion
+      parameters:
+        - name: x1
+          description: top left latitude
+          in: query
+          required: true
+          schema:
+            type: number
+        - name: y1
+          description: top left longitude
+          in: query
+          required: true
+          schema:
+            type: number
+        - name: x2
+          description: bottom right latitude
+          in: query
+          required: true
+          schema:
+            type: number
+        - name: y2
+          description: bottom right longitude
+          in: query
+          required: true
+          schema:
+            type: number
+      responses:
+        200:
+          description: Trees clusters in specified region
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TreesClusterGetResponse'
+        400:
+          $ref: "#/components/responses/BadRequest"
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/Forbidden'
+        500:
+          $ref: '#/components/responses/InternalServerError'
 
   /file/upload:
     post:
@@ -576,6 +714,21 @@ components:
         - TO_APPROVE
         - APPROVED
 
+    TreeState:
+      type: string
+      enum:
+        - ALIVE
+        - DEAD
+
+    TreeCondition:
+      type: string
+      enum:
+        - VERY_BAD
+        - BAD
+        - NORMAL
+        - GREAT
+        - AWESOME
+
     UserRegisterResponse:
       type: object
       required:
@@ -711,6 +864,88 @@ components:
           format: uuid
           example: ed156378-204b-473c-9d2a-886941a819ff
 
+    TreeGetResponse:
+      type: object
+      required:
+        - id
+        - userId
+        - status
+        - latitude
+        - longitude
+        - state
+        - condition
+        - comment
+        - fileIds
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: ed156378-204b-473c-9d2a-886941a819ff
+        userId:
+          type: string
+          format: uuid
+          example: ed156378-204b-473c-9d2a-886941a819ff
+        status:
+          $ref: '#/components/schemas/TreeStatus'
+        latitude:
+          type: number
+          format: double
+          example: 0.0
+        longitude:
+          type: number
+          format: double
+          example: 0.0
+        state:
+          $ref: '#/components/schemas/TreeState'
+        condition:
+          $ref: '#/components/schemas/TreeCondition'
+        comment:
+          type: string
+        fileIds:
+          type: array
+          items:
+            type: string
+
+    TreeGetAttachedFileResponse:
+      type: object
+      required:
+        - id
+        - size
+        - name
+        - url
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: ed156378-204b-473c-9d2a-886941a819ff
+        size:
+          type: number
+          format: integer
+          example: 0.0
+        name:
+          type: string
+        url:
+          type: string
+
+    TreeUpdateRequest:
+      type: object
+      required:
+        - status
+      properties:
+        status:
+          $ref: '#/components/schemas/TreeStatus'
+        state:
+          $ref: '#/components/schemas/TreeState'
+        condition:
+          $ref: '#/components/schemas/TreeCondition'
+        comment:
+          type: string
+        fileIds:
+          type: array
+          items:
+            type: string
+            format: uuid
+
     TreesByRegionRequest:
       type: object
       required:
@@ -747,6 +982,7 @@ components:
         - id
         - latitude
         - longitude
+        - status
       properties:
         id:
           type: string
@@ -763,8 +999,29 @@ components:
         status:
           $ref: '#/components/schemas/TreeStatus'
 
+    TreesClusterGetResponse:
+      type: object
+      required:
+        - latitude
+        - longitude
+        - count
+      properties:
+        latitude:
+          type: number
+          format: double
+          example: 0.0
+        longitude:
+          type: number
+          format: double
+          example: 0.0
+        count:
+          type: number
+          format: integer
+
     FileUploadRequest:
       type: object
+      required:
+        - file
       properties:
         file:
           type: string
@@ -773,11 +1030,15 @@ components:
       type: object
       required:
         - fileId
+        - url
       properties:
         fileId:
           type: string
           format: uuid
           example: 70c47221-2181-40fb-8909-4d7e3549c4d4
+        url:
+          type: string
+
     FileGetResponse:
       type: object
       required:
