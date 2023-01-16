@@ -34,14 +34,16 @@ create unique index ct_file_content_hash_unique_index on ct_file_content (hash);
 
 create table ct_tree
 (
-    id        uuid        not null primary key,
-    user_id   uuid        not null,
-    status    varchar(16) not null,
-    geo_point geometry    not null,
-    file_ids  jsonb       not null default '[]'::jsonb,
-    state     varchar(16),
-    condition varchar(16),
-    comment   text
+    id             uuid        not null primary key,
+    user_id        uuid        not null,
+    status         varchar(16) not null,
+    geo_point      geometry    not null,
+    file_ids       jsonb       not null default '[]'::jsonb,
+    state          varchar(16),
+    condition      varchar(16),
+    bark_condition jsonb,
+    branches_condition jsonb,
+    comment        text
 );
 
 create unique index ct_tree_user_id_uidx on ct_tree (id);

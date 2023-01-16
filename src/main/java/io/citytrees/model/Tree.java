@@ -1,6 +1,8 @@
 package io.citytrees.model;
 
 import io.citytrees.constants.TableNames;
+import io.citytrees.v1.model.TreeBarkCondition;
+import io.citytrees.v1.model.TreeBranchCondition;
 import io.citytrees.v1.model.TreeCondition;
 import io.citytrees.v1.model.TreeState;
 import io.citytrees.v1.model.TreeStatus;
@@ -40,6 +42,10 @@ public class Tree {
     TreeState state;
 
     TreeCondition condition;
+
+    Set<TreeBarkCondition> barkCondition;
+
+    Set<TreeBranchCondition> branchesCondition;
 
     String comment;
 }

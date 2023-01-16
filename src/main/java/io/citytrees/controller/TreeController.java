@@ -47,6 +47,8 @@ public class TreeController implements TreeControllerApiDelegate {
             .fileIds(tree.getFileIds().stream().map(UUID::toString).toList())
             .state(tree.getState())
             .condition(tree.getCondition())
+            .barkCondition(tree.getBarkCondition().stream().toList())
+            .branchesCondition(tree.getBranchesCondition().stream().toList())
             .comment(tree.getComment());
 
         return ResponseEntity.ok(response);

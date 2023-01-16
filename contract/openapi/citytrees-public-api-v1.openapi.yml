@@ -729,6 +729,22 @@ components:
         - GREAT
         - AWESOME
 
+    TreeBarkCondition:
+      type: string
+      enum:
+        - HOLLOW
+        - GROWTH
+        - CRACK
+        - MECHANICAL_DAMAGE
+
+    TreeBranchCondition:
+      type: string
+      enum:
+        - DEAD
+        - BROKEN
+        - CUT
+        - DANGEROUSLY_OVERHANGING
+
     UserRegisterResponse:
       type: object
       required:
@@ -899,6 +915,14 @@ components:
           $ref: '#/components/schemas/TreeState'
         condition:
           $ref: '#/components/schemas/TreeCondition'
+        barkCondition:
+          type: array
+          items:
+            $ref: '#/components/schemas/TreeBarkCondition'
+        branchesCondition:
+          type: array
+          items:
+            $ref: '#/components/schemas/TreeBranchCondition'
         comment:
           type: string
         fileIds:
@@ -938,6 +962,14 @@ components:
           $ref: '#/components/schemas/TreeState'
         condition:
           $ref: '#/components/schemas/TreeCondition'
+        barkCondition:
+          type: array
+          items:
+            $ref: '#/components/schemas/TreeBarkCondition'
+        branchesCondition:
+          type: array
+          items:
+            $ref: '#/components/schemas/TreeBranchCondition'
         comment:
           type: string
         fileIds:

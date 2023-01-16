@@ -132,6 +132,8 @@ const TreeMap = ({...props}: TreeMapProps & MapContainerProps) => {
             status: status,
             state: tree.state,
             condition: tree.condition,
+            barkCondition: tree.barkCondition,
+            branchesCondition: tree.branchesCondition,
             comment: tree.comment,
             fileIds: tree.files.map(file => file.id)
           }

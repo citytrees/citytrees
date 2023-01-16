@@ -1,10 +1,10 @@
 import React, {useEffect, useState} from "react";
-import {Button, Dropdown, Form, FormInstance, Input, Modal, Rate, Select, Space, Upload, UploadFile} from "antd";
+import {Button, Checkbox, Dropdown, Form, FormInstance, Input, Modal, Rate, Select, Space, Upload, UploadFile} from "antd";
 import {ModalProps} from "antd/lib/modal/Modal";
 import {useForm} from "antd/es/form/Form";
 import {CtTree} from "../Models/CtTree";
 import {FrownOutlined, MehOutlined, PlusOutlined, SmileOutlined} from '@ant-design/icons';
-import {TreeCondition, TreeState} from "../../../generated/openapi";
+import {TreeBarkCondition, TreeBranchCondition, TreeCondition, TreeState} from "../../../generated/openapi";
 import api from "../../../api";
 import TextArea from "antd/es/input/TextArea";
 
@@ -51,13 +51,16 @@ const TreeView = ({...props}: ModalProps & TreeEditorProps) => {
       condition = availableTreeConditionValues[conditionNumber - 1]
     }
 
+    let value = props.initial;
     return {
-      id: props.initial.id,
-      latitude: props.initial.latitude,
-      longitude: props.initial.longitude,
-      status: props.initial.status,
+      id: value.id,
+      latitude: value.latitude,
+      longitude: value.longitude,
+      status: value.status,
       state: form.getFieldValue("state"),
       condition: condition,
+      barkCondition: form.getFieldValue("barkCondition"),
+      branchesCondition: form.getFieldValue("branchesCondition"),
       comment: comment,
       files: fileList.map(file => ({id: file.uid, name: file.name, url: file.url}))
     }
@@ -118,6 +121,22 @@ const TreeView = ({...props}: ModalProps & TreeEditorProps) => {
 
           <Form.Item name="condition" label="Visual condition">
             <Rate character={({index}: { index?: number }) => rateIcons[index!!]}/>
+          </Form.Item>
+
+          <Form.Item name="barkCondition" label="Bark condition">
+            <Checkbox.Group>
+              {Object.keys(TreeBarkCondition).map(item =>
+                  <Checkbox value={item.toUpperCase()}>{item}</Checkbox>
+              )}
+            </Checkbox.Group>
+          </Form.Item>
+
+          <Form.Item name="branchesCondition" label="Branches condition">
+            <Checkbox.Group>
+              {Object.keys(TreeBranchCondition).map(item =>
+                  <Checkbox value={item.toUpperCase()}>{item}</Checkbox>
+              )}
+            </Checkbox.Group>
           </Form.Item>
 
           <Form.Item name="comment" label="Comment">

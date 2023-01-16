@@ -4,6 +4,8 @@ import io.citytrees.configuration.properties.GeoProperties;
 import io.citytrees.model.CtFile;
 import io.citytrees.model.Tree;
 import io.citytrees.repository.TreeRepository;
+import io.citytrees.v1.model.TreeBarkCondition;
+import io.citytrees.v1.model.TreeBranchCondition;
 import io.citytrees.v1.model.TreeCondition;
 import io.citytrees.v1.model.TreeCreateRequest;
 import io.citytrees.v1.model.TreeState;
@@ -16,8 +18,10 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 @Service
@@ -54,6 +58,8 @@ public class TreeService {
             treeUpdateRequest.getStatus(),
             treeUpdateRequest.getState(),
             treeUpdateRequest.getCondition(),
+            new HashSet<>(treeUpdateRequest.getBarkCondition()),
+            new HashSet<>(treeUpdateRequest.getBranchesCondition()),
             treeUpdateRequest.getComment(),
             treeUpdateRequest.getFileIds());
     }
@@ -64,9 +70,19 @@ public class TreeService {
                        TreeStatus status,
                        TreeState state,
                        TreeCondition condition,
+                       Set<TreeBarkCondition> barkCondition,
+                       Set<TreeBranchCondition> branchesCondition,
                        String comment,
                        List<UUID> fileIds) {
-        treeRepository.update(id, userId, status, state, condition, comment, fileIds);
+        treeRepository.update(id,
+            userId,
+            status,
+            state,
+            condition,
+            barkCondition,
+            branchesCondition,
+            comment,
+            fileIds);
     }
 
     @Transactional

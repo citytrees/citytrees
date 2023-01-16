@@ -5,6 +5,8 @@ import io.citytrees.model.Tree;
 import io.citytrees.model.TreesCluster;
 import io.citytrees.repository.extension.rowmapper.TreeRowMapper;
 import io.citytrees.repository.extension.rowmapper.TreesClusterRowMapper;
+import io.citytrees.v1.model.TreeBarkCondition;
+import io.citytrees.v1.model.TreeBranchCondition;
 import io.citytrees.v1.model.TreeCondition;
 import io.citytrees.v1.model.TreeState;
 import io.citytrees.v1.model.TreeStatus;
@@ -18,6 +20,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 @Repository
@@ -84,13 +87,30 @@ public class TreeRepositoryExtensionImpl implements TreeRepositoryExtension {
     @SuppressWarnings("checkstyle:ParameterNumber")
     @Override
     @SneakyThrows
-    public void update(UUID id, UUID userId, TreeStatus status, TreeState state, TreeCondition condition, String comment, List<UUID> fileIds) {
+    public void update(UUID id,
+                       UUID userId,
+                       TreeStatus status,
+                       TreeState state,
+                       TreeCondition condition,
+                       Set<TreeBarkCondition> barkCondition,
+                       Set<TreeBranchCondition> branchesCondition,
+                       String comment,
+                       List<UUID> fileIds
+    ) {
         @Language("SQL")
         var sql = """
             UPDATE ct_tree
-            SET status = :status, state = :state, condition = :condition, comment = :comment, file_ids = :fileIds::jsonb
+            SET
+            status = :status,
+            state = :state,
+            condition = :condition,
+            bark_condition = :barkCondition::jsonb,
+            branches_condition = :branchesCondition::jsonb,
+            comment = :comment,
+            file_ids = :fileIds::jsonb
             WHERE id = :id
             """;
+
         // todo #18 fix enums
         Map<String, Object> params = new HashMap<>();
         params.put("id", id);
@@ -98,6 +118,8 @@ public class TreeRepositoryExtensionImpl implements TreeRepositoryExtension {
         params.put("status", status != null ? status.getValue() : null);
         params.put("state", state != null ? state.getValue() : null);
         params.put("condition", condition != null ? condition.getValue() : null);
+        params.put("barkCondition", barkCondition != null ? objectMapper.writeValueAsString(barkCondition) : null);
+        params.put("branchesCondition", branchesCondition != null ? objectMapper.writeValueAsString(branchesCondition) : null);
         params.put("comment", comment);
         params.put("fileIds", objectMapper.writeValueAsString(fileIds));
 
