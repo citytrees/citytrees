@@ -5,12 +5,13 @@ export interface CtTree {
     id: string,
     latitude: number
     longitude: number
-    status: TreeStatus,
-    state?: TreeState,
-    condition?: TreeCondition,
-    barkCondition?: TreeBarkCondition[],
-    branchesCondition?: TreeBranchCondition[],
-    comment?: string,
+    woodTypeId?: string
+    status: TreeStatus
+    state?: TreeState
+    condition?: TreeCondition
+    barkCondition?: TreeBarkCondition[]
+    branchesCondition?: TreeBranchCondition[]
+    comment?: string
     files: CtFile[]
 }
 
@@ -19,6 +20,7 @@ export const ctTreeOf: (tree: TreeGetResponse, files: TreeGetAttachedFileRespons
         id: tree.id,
         latitude: tree.latitude,
         longitude: tree.longitude,
+        woodTypeId: tree.woodTypeId,
         status: tree.status,
         state: tree.state,
         condition: tree.condition,

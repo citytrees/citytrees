@@ -53,20 +53,26 @@ public class TreeService {
     }
 
     public void update(UUID id, TreeUpdateRequest treeUpdateRequest) {
+        List<TreeBarkCondition> barkCondition = treeUpdateRequest.getBarkCondition();
+        List<TreeBranchCondition> branchesCondition = treeUpdateRequest.getBranchesCondition();
+        List<UUID> fileIds = treeUpdateRequest.getFileIds();
+
         update(id,
             securityService.getCurrentUserId(),
+            treeUpdateRequest.getWoodTypeId(),
             treeUpdateRequest.getStatus(),
             treeUpdateRequest.getState(),
             treeUpdateRequest.getCondition(),
-            new HashSet<>(treeUpdateRequest.getBarkCondition()),
-            new HashSet<>(treeUpdateRequest.getBranchesCondition()),
+            barkCondition != null ? new HashSet<>(barkCondition) : Collections.emptySet(),
+            branchesCondition != null ? new HashSet<>(branchesCondition) : Collections.emptySet(),
             treeUpdateRequest.getComment(),
-            treeUpdateRequest.getFileIds());
+            fileIds != null ? fileIds : Collections.emptyList());
     }
 
     @SuppressWarnings("checkstyle:ParameterNumber")
     public void update(UUID id,
                        UUID userId,
+                       UUID woodTypeId,
                        TreeStatus status,
                        TreeState state,
                        TreeCondition condition,
@@ -76,6 +82,7 @@ public class TreeService {
                        List<UUID> fileIds) {
         treeRepository.update(id,
             userId,
+            woodTypeId,
             status,
             state,
             condition,

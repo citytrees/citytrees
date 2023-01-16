@@ -17,13 +17,16 @@ export const treeIcon = () => divIcon({
     html: `<div style="
                 width: 15px;
                 height: 15px;
+                position: relative;
+                top: -3px;
+                left: 3px;
                 border: 1px solid darkgreen;
                 border-radius: 20px;
                 background-color:rgba(110,204,57,0.6);
             "></div>`,
     className: "circle-div-icon",
     iconSize: [15, 15],
-    popupAnchor: [1, 0]
+    popupAnchor: [4, 0]
 })
 
 export const newTreeIcon = new Icon({

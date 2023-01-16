@@ -24,6 +24,7 @@ public interface TreeRepositoryExtension {
     @SuppressWarnings("checkstyle:ParameterNumber")
     void update(UUID id,
                 UUID userId,
+                UUID woodTypeId,
                 TreeStatus status,
                 TreeState state,
                 TreeCondition condition,

@@ -23,11 +23,17 @@ const availableTreeConditionValues = [
   TreeCondition.Awesome,
 ]
 
+interface WoodType {
+  id: string,
+  name: string,
+}
+
 // todo #18 optimize
 const TreeView = ({...props}: ModalProps & TreeEditorProps) => {
   const [form]: [FormInstance<CtTree>] = useForm()
 
   const [fileList, setFileList] = useState<UploadFile[]>([])
+  const [woodTypes, setWoodTypes] = useState<WoodType[]>([])
 
   useEffect(() => {
     form.resetFields()
@@ -37,6 +43,11 @@ const TreeView = ({...props}: ModalProps & TreeEditorProps) => {
       form.setFieldsValue(initialValue)
       form.setFieldValue("condition", initialValue.condition ? availableTreeConditionValues.indexOf(initialValue.condition) + 1 : null)
     }
+
+    api.woodType.getAllWoodTypes()
+        .then((responce) => {
+          setWoodTypes(responce.map(type => ({id: type.id, name: type.name})))
+        })
   }, [form, props.initial])
 
   const getCtTree: () => CtTree = () => {
@@ -56,6 +67,7 @@ const TreeView = ({...props}: ModalProps & TreeEditorProps) => {
       id: value.id,
       latitude: value.latitude,
       longitude: value.longitude,
+      woodTypeId: form.getFieldValue("woodTypeId"),
       status: value.status,
       state: form.getFieldValue("state"),
       condition: condition,
@@ -116,6 +128,12 @@ const TreeView = ({...props}: ModalProps & TreeEditorProps) => {
             <Select allowClear>
               <Select.Option value={TreeState.Alive}>Alive</Select.Option>
               <Select.Option value={TreeState.Dead}>Dead</Select.Option>
+            </Select>
+          </Form.Item>
+
+          <Form.Item name="woodTypeId" label="Type of wood">
+            <Select allowClear>
+              {woodTypes.map(type => <Select.Option value={type.id}>{type.name}</Select.Option>)}
             </Select>
           </Form.Item>
 

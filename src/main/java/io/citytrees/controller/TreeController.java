@@ -38,12 +38,14 @@ public class TreeController implements TreeControllerApiDelegate {
         }
 
         var tree = optionalTree.get();
+
         var response = new TreeGetResponse()
             .id(tree.getId())
             .userId(tree.getUserId())
             .status(tree.getStatus())
             .latitude(tree.getGeoPoint().getX())
             .longitude(tree.getGeoPoint().getY())
+            .woodTypeId(tree.getWoodTypeId())
             .fileIds(tree.getFileIds().stream().map(UUID::toString).toList())
             .state(tree.getState())
             .condition(tree.getCondition())

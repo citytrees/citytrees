@@ -34,19 +34,18 @@ public class TreeRowMapper implements RowMapper<Tree> {
         Point point = (Point) PGgeometry.geomFromString(Objects.requireNonNull(geoPoint.getValue()));
         String state = rs.getObject("state", String.class);
         String condition = rs.getObject("condition", String.class);
-        String barkCondition = rs.getString("bark_condition");
-        String branchesCondition = rs.getString("branches_condition");
 
         return builder
             .id(rs.getObject("id", UUID.class))
             .userId(rs.getObject("user_id", UUID.class))
             .status(TreeStatus.valueOf(rs.getObject("status", String.class)))
             .geoPoint(geometryService.createPoint(point.getX(), point.getY()))
+            .woodTypeId(rs.getObject("wood_type_id", UUID.class))
             .fileIds(objectMapper.readValue(rs.getString("file_ids"), new TypeReference<>() {}))
             .state(state != null ? TreeState.valueOf(state) : null)
             .condition(condition != null ? TreeCondition.valueOf(condition) : null)
-            .barkCondition(barkCondition != null ? objectMapper.readValue(barkCondition, new TypeReference<>() {}) : null)
-            .branchesCondition(branchesCondition != null ? objectMapper.readValue(branchesCondition, new TypeReference<>() {}) : null)
+            .barkCondition(objectMapper.readValue(rs.getString("bark_condition"), new TypeReference<>() {}))
+            .branchesCondition(objectMapper.readValue(rs.getString("branches_condition"), new TypeReference<>() {}))
             .comment(rs.getString("comment"))
             .build();
     }

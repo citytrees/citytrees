@@ -89,6 +89,7 @@ public class TreeRepositoryExtensionImpl implements TreeRepositoryExtension {
     @SneakyThrows
     public void update(UUID id,
                        UUID userId,
+                       UUID woodTypeId,
                        TreeStatus status,
                        TreeState state,
                        TreeCondition condition,
@@ -101,6 +102,7 @@ public class TreeRepositoryExtensionImpl implements TreeRepositoryExtension {
         var sql = """
             UPDATE ct_tree
             SET
+            wood_type_id = :woodTypeId,
             status = :status,
             state = :state,
             condition = :condition,
@@ -115,6 +117,7 @@ public class TreeRepositoryExtensionImpl implements TreeRepositoryExtension {
         Map<String, Object> params = new HashMap<>();
         params.put("id", id);
         params.put("userId", userId);
+        params.put("woodTypeId", woodTypeId);
         params.put("status", status != null ? status.getValue() : null);
         params.put("state", state != null ? state.getValue() : null);
         params.put("condition", condition != null ? condition.getValue() : null);

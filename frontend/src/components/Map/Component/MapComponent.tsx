@@ -129,6 +129,7 @@ const TreeMap = ({...props}: TreeMapProps & MapContainerProps) => {
         {
           id: tree.id,
           treeUpdateRequest: {
+            woodTypeId: tree.woodTypeId,
             status: status,
             state: tree.state,
             condition: tree.condition,

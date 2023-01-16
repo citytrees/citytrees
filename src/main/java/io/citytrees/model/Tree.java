@@ -36,6 +36,8 @@ public class Tree {
     @Column("geo_point")
     Point geoPoint;
 
+    UUID woodTypeId;
+
     @NotNull
     Set<UUID> fileIds;
 
@@ -43,8 +45,10 @@ public class Tree {
 
     TreeCondition condition;
 
+    @NotNull
     Set<TreeBarkCondition> barkCondition;
 
+    @NotNull
     Set<TreeBranchCondition> branchesCondition;
 
     String comment;
