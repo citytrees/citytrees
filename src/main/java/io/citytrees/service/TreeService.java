@@ -39,11 +39,7 @@ public class TreeService {
     public UUID create(TreeCreateRequest request) {
         Point point = geometryService.createPoint(request.getLatitude(), request.getLongitude());
         point.setSRID(geoProperties.getSrid());
-        return create(UUID.randomUUID(), securityService.getCurrentUserId(), point);
-    }
-
-    public UUID create(UUID id, UUID userId, Point point) {
-        return create(id, userId, TreeStatus.NEW, point);
+        return create(UUID.randomUUID(), securityService.getCurrentUserId(), TreeStatus.NEW, point);
     }
 
     public void delete(UUID id) {
@@ -118,5 +114,9 @@ public class TreeService {
 
     private UUID create(UUID id, UUID userId, TreeStatus status, Point point) {
         return treeRepository.create(id, userId, status, point.getX(), point.getY(), geoProperties.getSrid());
+    }
+
+    public void updateStatus(UUID id, TreeStatus status) {
+        treeRepository.updateStatus(id, status);
     }
 }

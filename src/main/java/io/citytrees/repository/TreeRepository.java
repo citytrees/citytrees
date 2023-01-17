@@ -21,4 +21,12 @@ public interface TreeRepository extends CrudRepository<Tree, UUID>, TreeReposito
     @Modifying
     @Query("DELETE FROM ct_tree where id = :id")
     void deleteById(@NotNull UUID id);
+
+    @Modifying
+    @Query("""
+        UPDATE ct_tree
+        SET status = :status
+        WHERE id = :id
+        """)
+    int updateStatus(UUID id, TreeStatus status);
 }

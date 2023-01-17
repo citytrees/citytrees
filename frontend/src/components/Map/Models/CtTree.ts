@@ -14,6 +14,7 @@ export interface CtTree {
     branchesCondition?: TreeBranchCondition[]
     plantingType?: TreePlantingType
     comment?: string
+    userId?: string
     files: CtFile[]
 }
 
@@ -31,6 +32,7 @@ export const ctTreeOf: (tree: TreeGetResponse, files: TreeGetAttachedFileRespons
         branchesCondition: tree.branchesCondition,
         plantingType: tree.plantingType,
         comment: tree.comment,
+        userId: tree.userId,
         files: files.map(file => ({id: file.id, name: file.name, url: file.url}))
     }
 }

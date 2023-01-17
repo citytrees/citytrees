@@ -5,6 +5,7 @@ import io.citytrees.v1.controller.TreeControllerApiDelegate;
 import io.citytrees.v1.model.TreeCreateRequest;
 import io.citytrees.v1.model.TreeCreateResponse;
 import io.citytrees.v1.model.TreeGetResponse;
+import io.citytrees.v1.model.TreeStatus;
 import io.citytrees.v1.model.TreeUpdateRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -32,6 +33,7 @@ public class TreeController implements TreeControllerApiDelegate {
     }
 
     @Override
+    @PreAuthorize("permitAll()")
     public ResponseEntity<TreeGetResponse> getTreeById(UUID id) {
         var optionalTree = treeService.getById(id);
         if (optionalTree.isEmpty()) {
@@ -71,6 +73,12 @@ public class TreeController implements TreeControllerApiDelegate {
     @PreAuthorize("hasAuthority(@Roles.ADMIN) || (isAuthenticated() && hasPermission(#id, @Domains.TREE, @Permissions.DELETE))")
     public ResponseEntity<Void> deleteTree(UUID id) {
         treeService.delete(id);
+        return ResponseEntity.ok().build();
+    }
+
+    @Override
+    public ResponseEntity<Void> approveTree(UUID treeId) {
+        treeService.updateStatus(treeId, TreeStatus.APPROVED);
         return ResponseEntity.ok().build();
     }
 }

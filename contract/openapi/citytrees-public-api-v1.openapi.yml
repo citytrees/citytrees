@@ -415,6 +415,33 @@ paths:
         500:
           $ref: '#/components/responses/InternalServerError'
 
+  /tree/{treeId}/approve:
+    post:
+      tags:
+        - tree-controller
+      summary: Approve tree
+      operationId: approveTree
+      security:
+        - BearerAuth: [ ]
+      parameters:
+        - name: treeId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        200:
+          description: OK
+        400:
+          $ref: "#/components/responses/BadRequest"
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/Forbidden'
+        500:
+          $ref: '#/components/responses/InternalServerError'
+
   /tree/{treeId}/file:
     post:
       tags:
@@ -928,7 +955,6 @@ components:
       type: object
       required:
         - treeId
-        - status
       properties:
         treeId:
           type: string

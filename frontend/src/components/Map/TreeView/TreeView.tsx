@@ -10,6 +10,7 @@ import TextArea from "antd/es/input/TextArea";
 
 interface TreeEditorProps {
   initial: CtTree,
+  editable: boolean,
   onCancel?: () => void,
   onSave?: (tree: CtTree) => void,
   onPublish?: (tree: CtTree) => void,
@@ -91,7 +92,7 @@ const TreeView = ({...props}: ModalProps & TreeEditorProps) => {
   return (
       <Modal
           {...props}
-          footer={[
+          footer={props.editable ? [
             <Space>
               <Dropdown.Button
                   type="primary"
@@ -115,9 +116,9 @@ const TreeView = ({...props}: ModalProps & TreeEditorProps) => {
                 Close
               </Button>
             </Space>
-          ]}
+          ] : null}
       >
-        <Form form={form} layout="vertical">
+        <Form form={form} disabled={!props.editable} layout="vertical">
           <Form.Item name="latitude" label="Latitude">
             <Input disabled={true}/>
           </Form.Item>
@@ -153,7 +154,7 @@ const TreeView = ({...props}: ModalProps & TreeEditorProps) => {
           </Form.Item>
 
           <Form.Item name="condition" label="Visual condition">
-            <Rate character={({index}: { index?: number }) => rateIcons[index!!]}/>
+            <Rate disabled={!props.editable} character={({index}: { index?: number }) => rateIcons[index!!]}/>
           </Form.Item>
 
           <Form.Item name="barkCondition" label="Bark condition">
@@ -201,7 +202,7 @@ const TreeView = ({...props}: ModalProps & TreeEditorProps) => {
                   setFileList(newFileList);
                 }}
             >
-              <PlusOutlined/>
+              {props.editable && <PlusOutlined/>}
             </Upload>
           </Form.Item>
         </Form>

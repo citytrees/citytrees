@@ -57,9 +57,12 @@ const TreeMap = ({...props}: TreeMapProps & MapContainerProps) => {
 
   const [treeViewOpen, setTreeViewOpen] = useState(false)
   const [treeViewValue, setTreeViewValue] = useState<CtTree | undefined>()
-  const setTreeViewState = (isOpen: boolean, isEditable: boolean, value: CtTree) => {
-    setTreeViewOpen(isOpen)
+  const [treeViesEditable, setTreeViewEditable] = useState(false)
+  const setTreeViewState = (isOpen: boolean, value: CtTree) => {
+    setTreeViewEditable(user !== null && value.userId === user.sub && value.status !== TreeStatus.Approved)
+    debugger
     setTreeViewValue(value)
+    setTreeViewOpen(isOpen)
   }
 
   const createTreeMarker = (tree: TreesGetResponseTree) =>
@@ -77,7 +80,7 @@ const TreeMap = ({...props}: TreeMapProps & MapContainerProps) => {
                     .then(treeResponse => {
                       api.treeFiles.getAllAttachedFiles({treeId: tree.id})
                           .then((filesResponse) => {
-                            setTreeViewState(true, false, ctTreeOf(treeResponse, filesResponse));
+                            setTreeViewState(true, ctTreeOf(treeResponse, filesResponse));
                           })
                     })
                     .catch()
@@ -109,16 +112,11 @@ const TreeMap = ({...props}: TreeMapProps & MapContainerProps) => {
           <Button
               type="primary"
               onClick={() => {
-                api.tree.createTree({treeCreateRequest: tree}).then((response) => {
-                  setNewTree(null)
-                  setTreeViewState(true, true, {
-                    id: response.treeId,
-                    latitude: tree.latitude,
-                    longitude: tree.longitude,
-                    status: TreeStatus.New,
-                    files: []
-                  })
-                })
+                api.tree.createTree({treeCreateRequest: tree}).then((response) =>
+                    api.tree.getTreeById({id: response.treeId}).then(tree => {
+                      setNewTree(null)
+                      setTreeViewState(true, ctTreeOf(tree, []))
+                    }))
               }}
           >Create tree</Button>
         </Popup>
@@ -167,15 +165,16 @@ const TreeMap = ({...props}: TreeMapProps & MapContainerProps) => {
         >
           {trees.map((tree) => createTreeMarker(tree))}
         </MarkerClusterGroup>
-        {newTree && user ? createDraftTreeMarker(newTree) : null}
-        {treeViewValue ? <TreeView
+        {newTree && user && createDraftTreeMarker(newTree)}
+        {treeViewValue && <TreeView
             centered={true}
+            editable={treeViesEditable}
             open={treeViewOpen}
             initial={treeViewValue}
             onSave={onSave}
             onPublish={onPublish}
             onCancel={() => setTreeViewOpen(false)}
-        /> : null}
+        />}
       </div>
   )
 }
