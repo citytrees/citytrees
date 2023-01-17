@@ -5,6 +5,7 @@ import io.citytrees.model.TreesCluster;
 import io.citytrees.v1.model.TreeBarkCondition;
 import io.citytrees.v1.model.TreeBranchCondition;
 import io.citytrees.v1.model.TreeCondition;
+import io.citytrees.v1.model.TreePlantingType;
 import io.citytrees.v1.model.TreeState;
 import io.citytrees.v1.model.TreeStatus;
 
@@ -27,9 +28,11 @@ public interface TreeRepositoryExtension {
                 UUID woodTypeId,
                 TreeStatus status,
                 TreeState state,
+                Integer age,
                 TreeCondition condition,
                 Set<TreeBarkCondition> barkCondition,
                 Set<TreeBranchCondition> branchesCondition,
+                TreePlantingType plantingType,
                 String comment,
                 List<UUID> fileIds);
 

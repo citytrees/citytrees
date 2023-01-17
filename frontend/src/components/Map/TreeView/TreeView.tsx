@@ -1,10 +1,10 @@
 import React, {useEffect, useState} from "react";
-import {Button, Checkbox, Dropdown, Form, FormInstance, Input, Modal, Rate, Select, Space, Upload, UploadFile} from "antd";
+import {Button, Checkbox, Dropdown, Form, FormInstance, Input, InputNumber, Modal, Rate, Select, Space, Upload, UploadFile} from "antd";
 import {ModalProps} from "antd/lib/modal/Modal";
 import {useForm} from "antd/es/form/Form";
 import {CtTree} from "../Models/CtTree";
 import {FrownOutlined, MehOutlined, PlusOutlined, SmileOutlined} from '@ant-design/icons';
-import {TreeBarkCondition, TreeBranchCondition, TreeCondition, TreeState} from "../../../generated/openapi";
+import {TreeBarkCondition, TreeBranchCondition, TreeCondition, TreePlantingType, TreeState} from "../../../generated/openapi";
 import api from "../../../api";
 import TextArea from "antd/es/input/TextArea";
 
@@ -70,9 +70,11 @@ const TreeView = ({...props}: ModalProps & TreeEditorProps) => {
       woodTypeId: form.getFieldValue("woodTypeId"),
       status: value.status,
       state: form.getFieldValue("state"),
+      age: form.getFieldValue("age"),
       condition: condition,
       barkCondition: form.getFieldValue("barkCondition"),
       branchesCondition: form.getFieldValue("branchesCondition"),
+      plantingType: form.getFieldValue("plantingType"),
       comment: comment,
       files: fileList.map(file => ({id: file.uid, name: file.name, url: file.url}))
     }
@@ -126,8 +128,17 @@ const TreeView = ({...props}: ModalProps & TreeEditorProps) => {
 
           <Form.Item name="state" label="Alive / dead">
             <Select allowClear>
-              <Select.Option value={TreeState.Alive}>Alive</Select.Option>
-              <Select.Option value={TreeState.Dead}>Dead</Select.Option>
+              {Object.keys(TreeState).map(item =>
+                  <Select.Option value={item.toUpperCase()}>{item}</Select.Option>
+              )}
+            </Select>
+          </Form.Item>
+
+          <Form.Item name="plantingType" label="Planting type">
+            <Select allowClear>
+              {Object.values(TreePlantingType).map(item =>
+                  <Select.Option value={item}>{item}</Select.Option>
+              )}
             </Select>
           </Form.Item>
 
@@ -137,22 +148,26 @@ const TreeView = ({...props}: ModalProps & TreeEditorProps) => {
             </Select>
           </Form.Item>
 
+          <Form.Item name="age" label="Age">
+            <InputNumber/>
+          </Form.Item>
+
           <Form.Item name="condition" label="Visual condition">
             <Rate character={({index}: { index?: number }) => rateIcons[index!!]}/>
           </Form.Item>
 
           <Form.Item name="barkCondition" label="Bark condition">
             <Checkbox.Group>
-              {Object.keys(TreeBarkCondition).map(item =>
-                  <Checkbox value={item.toUpperCase()}>{item}</Checkbox>
+              {Object.values(TreeBarkCondition).map(item =>
+                  <Checkbox value={item}>{item}</Checkbox>
               )}
             </Checkbox.Group>
           </Form.Item>
 
           <Form.Item name="branchesCondition" label="Branches condition">
             <Checkbox.Group>
-              {Object.keys(TreeBranchCondition).map(item =>
-                  <Checkbox value={item.toUpperCase()}>{item}</Checkbox>
+              {Object.values(TreeBranchCondition).map(item =>
+                  <Checkbox value={item}>{item}</Checkbox>
               )}
             </Checkbox.Group>
           </Form.Item>

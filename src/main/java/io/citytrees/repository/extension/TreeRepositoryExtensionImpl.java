@@ -8,6 +8,7 @@ import io.citytrees.repository.extension.rowmapper.TreesClusterRowMapper;
 import io.citytrees.v1.model.TreeBarkCondition;
 import io.citytrees.v1.model.TreeBranchCondition;
 import io.citytrees.v1.model.TreeCondition;
+import io.citytrees.v1.model.TreePlantingType;
 import io.citytrees.v1.model.TreeState;
 import io.citytrees.v1.model.TreeStatus;
 import lombok.RequiredArgsConstructor;
@@ -92,9 +93,11 @@ public class TreeRepositoryExtensionImpl implements TreeRepositoryExtension {
                        UUID woodTypeId,
                        TreeStatus status,
                        TreeState state,
+                       Integer age,
                        TreeCondition condition,
                        Set<TreeBarkCondition> barkCondition,
                        Set<TreeBranchCondition> branchesCondition,
+                       TreePlantingType plantingType,
                        String comment,
                        List<UUID> fileIds
     ) {
@@ -105,9 +108,11 @@ public class TreeRepositoryExtensionImpl implements TreeRepositoryExtension {
             wood_type_id = :woodTypeId,
             status = :status,
             state = :state,
+            age = :age,
             condition = :condition,
             bark_condition = :barkCondition::jsonb,
             branches_condition = :branchesCondition::jsonb,
+            planting_type = :plantingType,
             comment = :comment,
             file_ids = :fileIds::jsonb
             WHERE id = :id
@@ -120,9 +125,11 @@ public class TreeRepositoryExtensionImpl implements TreeRepositoryExtension {
         params.put("woodTypeId", woodTypeId);
         params.put("status", status != null ? status.getValue() : null);
         params.put("state", state != null ? state.getValue() : null);
+        params.put("age", age);
         params.put("condition", condition != null ? condition.getValue() : null);
         params.put("barkCondition", barkCondition != null ? objectMapper.writeValueAsString(barkCondition) : null);
         params.put("branchesCondition", branchesCondition != null ? objectMapper.writeValueAsString(branchesCondition) : null);
+        params.put("plantingType", plantingType != null ? plantingType.getValue() : null);
         params.put("comment", comment);
         params.put("fileIds", objectMapper.writeValueAsString(fileIds));
 

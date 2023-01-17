@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.citytrees.model.Tree;
 import io.citytrees.service.GeometryService;
 import io.citytrees.v1.model.TreeCondition;
+import io.citytrees.v1.model.TreePlantingType;
 import io.citytrees.v1.model.TreeState;
 import io.citytrees.v1.model.TreeStatus;
 import lombok.RequiredArgsConstructor;
@@ -34,6 +35,7 @@ public class TreeRowMapper implements RowMapper<Tree> {
         Point point = (Point) PGgeometry.geomFromString(Objects.requireNonNull(geoPoint.getValue()));
         String state = rs.getObject("state", String.class);
         String condition = rs.getObject("condition", String.class);
+        String plantingType = rs.getObject("planting_type", String.class);
 
         return builder
             .id(rs.getObject("id", UUID.class))
@@ -43,9 +45,11 @@ public class TreeRowMapper implements RowMapper<Tree> {
             .woodTypeId(rs.getObject("wood_type_id", UUID.class))
             .fileIds(objectMapper.readValue(rs.getString("file_ids"), new TypeReference<>() {}))
             .state(state != null ? TreeState.valueOf(state) : null)
+            .age(rs.getObject("age", Integer.class))
             .condition(condition != null ? TreeCondition.valueOf(condition) : null)
             .barkCondition(objectMapper.readValue(rs.getString("bark_condition"), new TypeReference<>() {}))
             .branchesCondition(objectMapper.readValue(rs.getString("branches_condition"), new TypeReference<>() {}))
+            .plantingType(plantingType != null ? TreePlantingType.valueOf(plantingType) : null)
             .comment(rs.getString("comment"))
             .build();
     }

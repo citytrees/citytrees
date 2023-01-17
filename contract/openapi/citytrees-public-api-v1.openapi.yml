@@ -767,6 +767,7 @@ components:
       enum:
         - ALIVE
         - DEAD
+        - STUMP
 
     TreeCondition:
       type: string
@@ -792,6 +793,12 @@ components:
         - BROKEN
         - CUT
         - DANGEROUSLY_OVERHANGING
+
+    TreePlantingType:
+      type: string
+      enum:
+        - SELF_SEEDING
+        - CULTURAL_SEEDING
 
     UserRegisterResponse:
       type: object
@@ -961,6 +968,9 @@ components:
           format: uuid
         state:
           $ref: '#/components/schemas/TreeState'
+        age:
+          type: number
+          format: integer
         condition:
           $ref: '#/components/schemas/TreeCondition'
         barkCondition:
@@ -971,6 +981,8 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/TreeBranchCondition'
+        plantingType:
+          $ref: '#/components/schemas/TreePlantingType'
         comment:
           type: string
         fileIds:
@@ -1011,6 +1023,9 @@ components:
           $ref: '#/components/schemas/TreeStatus'
         state:
           $ref: '#/components/schemas/TreeState'
+        age:
+          type: number
+          format: integer
         condition:
           $ref: '#/components/schemas/TreeCondition'
         barkCondition:
@@ -1021,6 +1036,8 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/TreeBranchCondition'
+        plantingType:
+          $ref: '#/components/schemas/TreePlantingType'
         comment:
           type: string
         fileIds:

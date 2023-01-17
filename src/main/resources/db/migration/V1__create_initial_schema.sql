@@ -41,9 +41,11 @@ create table ct_tree
     file_ids           jsonb       not null default '[]'::jsonb,
     wood_type_id       uuid,
     state              varchar(16),
+    age                integer,
     condition          varchar(16),
     bark_condition     jsonb       not null default '[]'::jsonb,
     branches_condition jsonb       not null default '[]'::jsonb,
+    planting_type      varchar(16),
     comment            text
 );
 

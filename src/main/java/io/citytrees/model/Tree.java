@@ -4,6 +4,7 @@ import io.citytrees.constants.TableNames;
 import io.citytrees.v1.model.TreeBarkCondition;
 import io.citytrees.v1.model.TreeBranchCondition;
 import io.citytrees.v1.model.TreeCondition;
+import io.citytrees.v1.model.TreePlantingType;
 import io.citytrees.v1.model.TreeState;
 import io.citytrees.v1.model.TreeStatus;
 import lombok.Builder;
@@ -43,6 +44,8 @@ public class Tree {
 
     TreeState state;
 
+    Integer age;
+
     TreeCondition condition;
 
     @NotNull
@@ -50,6 +53,8 @@ public class Tree {
 
     @NotNull
     Set<TreeBranchCondition> branchesCondition;
+
+    TreePlantingType plantingType;
 
     String comment;
 }

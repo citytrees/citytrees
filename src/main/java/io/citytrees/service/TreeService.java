@@ -8,6 +8,7 @@ import io.citytrees.v1.model.TreeBarkCondition;
 import io.citytrees.v1.model.TreeBranchCondition;
 import io.citytrees.v1.model.TreeCondition;
 import io.citytrees.v1.model.TreeCreateRequest;
+import io.citytrees.v1.model.TreePlantingType;
 import io.citytrees.v1.model.TreeState;
 import io.citytrees.v1.model.TreeStatus;
 import io.citytrees.v1.model.TreeUpdateRequest;
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -56,15 +58,18 @@ public class TreeService {
         List<TreeBarkCondition> barkCondition = treeUpdateRequest.getBarkCondition();
         List<TreeBranchCondition> branchesCondition = treeUpdateRequest.getBranchesCondition();
         List<UUID> fileIds = treeUpdateRequest.getFileIds();
+        BigDecimal age = treeUpdateRequest.getAge();
 
         update(id,
             securityService.getCurrentUserId(),
             treeUpdateRequest.getWoodTypeId(),
             treeUpdateRequest.getStatus(),
             treeUpdateRequest.getState(),
+            age != null ? age.intValue() : null,
             treeUpdateRequest.getCondition(),
             barkCondition != null ? new HashSet<>(barkCondition) : Collections.emptySet(),
             branchesCondition != null ? new HashSet<>(branchesCondition) : Collections.emptySet(),
+            treeUpdateRequest.getPlantingType(),
             treeUpdateRequest.getComment(),
             fileIds != null ? fileIds : Collections.emptyList());
     }
@@ -75,9 +80,11 @@ public class TreeService {
                        UUID woodTypeId,
                        TreeStatus status,
                        TreeState state,
+                       Integer age,
                        TreeCondition condition,
                        Set<TreeBarkCondition> barkCondition,
                        Set<TreeBranchCondition> branchesCondition,
+                       TreePlantingType plantingType,
                        String comment,
                        List<UUID> fileIds) {
         treeRepository.update(id,
@@ -85,9 +92,11 @@ public class TreeService {
             woodTypeId,
             status,
             state,
+            age,
             condition,
             barkCondition,
             branchesCondition,
+            plantingType,
             comment,
             fileIds);
     }

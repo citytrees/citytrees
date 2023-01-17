@@ -13,6 +13,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.math.BigDecimal;
 import java.util.UUID;
 
 @Component
@@ -39,6 +40,7 @@ public class TreeController implements TreeControllerApiDelegate {
 
         var tree = optionalTree.get();
 
+        Integer age = tree.getAge();
         var response = new TreeGetResponse()
             .id(tree.getId())
             .userId(tree.getUserId())
@@ -48,9 +50,11 @@ public class TreeController implements TreeControllerApiDelegate {
             .woodTypeId(tree.getWoodTypeId())
             .fileIds(tree.getFileIds().stream().map(UUID::toString).toList())
             .state(tree.getState())
+            .age(age != null ? BigDecimal.valueOf(age) : null)
             .condition(tree.getCondition())
             .barkCondition(tree.getBarkCondition().stream().toList())
             .branchesCondition(tree.getBranchesCondition().stream().toList())
+            .plantingType(tree.getPlantingType())
             .comment(tree.getComment());
 
         return ResponseEntity.ok(response);

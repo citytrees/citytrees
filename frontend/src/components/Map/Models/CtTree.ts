@@ -1,4 +1,4 @@
-import {TreeBarkCondition, TreeBranchCondition, TreeCondition, TreeGetAttachedFileResponse, TreeGetResponse, TreeState, TreeStatus} from "../../../generated/openapi";
+import {TreeBarkCondition, TreeBranchCondition, TreeCondition, TreeGetAttachedFileResponse, TreeGetResponse, TreePlantingType, TreeState, TreeStatus} from "../../../generated/openapi";
 import {CtFile} from "./CtFile";
 
 export interface CtTree {
@@ -8,9 +8,11 @@ export interface CtTree {
     woodTypeId?: string
     status: TreeStatus
     state?: TreeState
+    age?: number,
     condition?: TreeCondition
     barkCondition?: TreeBarkCondition[]
     branchesCondition?: TreeBranchCondition[]
+    plantingType?: TreePlantingType
     comment?: string
     files: CtFile[]
 }
@@ -23,9 +25,11 @@ export const ctTreeOf: (tree: TreeGetResponse, files: TreeGetAttachedFileRespons
         woodTypeId: tree.woodTypeId,
         status: tree.status,
         state: tree.state,
+        age: tree.age,
         condition: tree.condition,
         barkCondition: tree.barkCondition,
         branchesCondition: tree.branchesCondition,
+        plantingType: tree.plantingType,
         comment: tree.comment,
         files: files.map(file => ({id: file.id, name: file.name, url: file.url}))
     }
