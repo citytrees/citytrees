@@ -137,6 +137,8 @@ abstract class AbstractTest {
         .userId(userId)
         .status(status)
         .geoPoint(GEOMETRY_FACTORY.createPoint(Coordinate(latitude, longitude)))
+        .barkCondition(emptySet())
+        .branchesCondition(emptySet())
         .fileIds(emptySet())
         .build().also {
             treeService.create(it.id, it.userId, it.geoPoint)

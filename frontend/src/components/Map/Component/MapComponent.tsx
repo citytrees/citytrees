@@ -78,7 +78,7 @@ const TreeMap = ({...props}: TreeMapProps & MapContainerProps) => {
                 // todo #18 implement catch()
                 api.tree.getTreeById({id: tree.id})
                     .then(treeResponse => {
-                      api.treeFiles.getAllAttachedFiles({treeId: tree.id})
+                      api.tree.getAllAttachedFiles({treeId: tree.id})
                           .then((filesResponse) => {
                             setTreeViewState(true, ctTreeOf(treeResponse, filesResponse));
                           })

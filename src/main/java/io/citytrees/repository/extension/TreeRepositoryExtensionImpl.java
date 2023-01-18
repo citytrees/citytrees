@@ -17,6 +17,7 @@ import org.intellij.lang.annotations.Language;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -44,6 +45,24 @@ public class TreeRepositoryExtensionImpl implements TreeRepositoryExtension {
         var params = Map.of("id", id);
 
         return jdbcTemplate.query(sql, params, treeMapper).stream().findFirst();
+    }
+
+    @Override
+    public List<Tree> findAllTrees(BigDecimal limit, BigDecimal offset) {
+        @Language("SQL")
+        var sql = """
+            SELECT *
+            FROM ct_tree
+            LIMIT :limit
+            OFFSET :offset
+            """;
+
+        var params = Map.of(
+            "limit", limit,
+            "offset", offset
+        );
+
+        return jdbcTemplate.query(sql, params, treeMapper);
     }
 
     @Override

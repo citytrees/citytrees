@@ -445,7 +445,7 @@ paths:
   /tree/{treeId}/file:
     post:
       tags:
-        - tree-files-controller
+        - tree-controller
       summary: Attach file to tree
       operationId: attachFile
       security:
@@ -482,7 +482,7 @@ paths:
   /tree/{treeId}/file/all:
     get:
       tags:
-        - tree-files-controller
+        - tree-controller
       summary: Load all attached files
       operationId: getAllAttachedFiles
       parameters:
@@ -597,6 +597,41 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/TreesClusterGetResponse'
+        400:
+          $ref: "#/components/responses/BadRequest"
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/Forbidden'
+        500:
+          $ref: '#/components/responses/InternalServerError'
+  /tree/all/{limit}/{offset}:
+    get:
+      tags:
+        - tree-controller
+      summary: Get all trees
+      operationId: getAll
+      parameters:
+        - name: limit
+          in: path
+          required: true
+          schema:
+            type: number
+            maximum: 20
+        - name: offset
+          in: path
+          required: true
+          schema:
+            type: number
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TreeGetResponse'
         400:
           $ref: "#/components/responses/BadRequest"
         401:
@@ -767,6 +802,7 @@ components:
       type: string
       enum:
         - ADMIN
+        - MODERATOR
         - BASIC
 
     UserStatus:
