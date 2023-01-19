@@ -90,7 +90,7 @@ public class TreeController implements TreeControllerApiDelegate {
     @Override
     @PreAuthorize("permitAll()")
     public ResponseEntity<List<TreeGetAttachedFileResponse>> getAllAttachedFiles(UUID treeId) {
-        List<CtFile> files = treeService.getAttachedFiles(treeId);
+        List<CtFile> files = treeService.listAttachedFiles(treeId);
 
         List<TreeGetAttachedFileResponse> response = files.stream()
             .map(file -> new TreeGetAttachedFileResponse()
@@ -105,8 +105,8 @@ public class TreeController implements TreeControllerApiDelegate {
 
     @Override
     @PreAuthorize("permitAll()")
-    public ResponseEntity<List<TreeGetResponse>> getAll(BigDecimal limit, BigDecimal offset) {
-        var response = treeService.getAll(limit, offset).stream()
+    public ResponseEntity<List<TreeGetResponse>> getAll(BigDecimal page, BigDecimal size) {
+        var response = treeService.listAll(page.intValue(), size.intValue()).stream()
             .map(TreeController::responseFromTree)
             .toList();
 

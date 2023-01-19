@@ -60,7 +60,6 @@ const TreeMap = ({...props}: TreeMapProps & MapContainerProps) => {
   const [treeViesEditable, setTreeViewEditable] = useState(false)
   const setTreeViewState = (isOpen: boolean, value: CtTree) => {
     setTreeViewEditable(user !== null && value.userId === user.sub && value.status !== TreeStatus.Approved)
-    debugger
     setTreeViewValue(value)
     setTreeViewOpen(isOpen)
   }

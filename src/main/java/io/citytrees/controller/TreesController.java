@@ -19,7 +19,7 @@ public class TreesController implements TreesControllerApiDelegate {
 
     @Override
     public ResponseEntity<List<TreesGetResponseTree>> loadTreesByRegion(BigDecimal x1, BigDecimal y1, BigDecimal x2, BigDecimal y2) {
-        List<TreesGetResponseTree> responseTreeList = treesService.loadByRegion(x1.doubleValue(), y1.doubleValue(), x2.doubleValue(), y2.doubleValue())
+        List<TreesGetResponseTree> responseTreeList = treesService.listByRegion(x1.doubleValue(), y1.doubleValue(), x2.doubleValue(), y2.doubleValue())
             .stream()
             .map(tree -> new TreesGetResponseTree()
                 .id(tree.getId())
@@ -35,7 +35,7 @@ public class TreesController implements TreesControllerApiDelegate {
     @Override
     @Deprecated
     public ResponseEntity<List<TreesClusterGetResponse>> loadTreesClustersByRegion(BigDecimal x1, BigDecimal y1, BigDecimal x2, BigDecimal y2) {
-        List<TreesClusterGetResponse> response = treesService.loadClustersByRegion(x1.doubleValue(), y1.doubleValue(), x2.doubleValue(), y2.doubleValue())
+        List<TreesClusterGetResponse> response = treesService.listClustersByRegion(x1.doubleValue(), y1.doubleValue(), x2.doubleValue(), y2.doubleValue())
             .stream()
             .map(cluster -> new TreesClusterGetResponse()
                 .latitude(cluster.getGeoPoint().getX())

@@ -1,5 +1,6 @@
 package io.citytrees;
 
+import io.citytrees.configuration.cache.CaffeineCacheSpecificProperties;
 import io.citytrees.configuration.properties.ApplicationProperties;
 import io.citytrees.configuration.properties.EmailProperties;
 import io.citytrees.configuration.properties.FileStorageProperties;
@@ -20,6 +21,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
     EmailProperties.class,
     ApplicationProperties.class,
     FileStorageProperties.class,
+    CaffeineCacheSpecificProperties.class,
 })
 public class CityTreesApplication {
 

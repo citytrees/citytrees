@@ -1,7 +1,6 @@
 package io.citytrees.repository.extension;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.citytrees.model.Tree;
 import io.citytrees.model.TreesCluster;
 import io.citytrees.repository.extension.rowmapper.TreeRowMapper;
 import io.citytrees.repository.extension.rowmapper.TreesClusterRowMapper;
@@ -17,11 +16,9 @@ import org.intellij.lang.annotations.Language;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
-import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
@@ -32,57 +29,6 @@ public class TreeRepositoryExtensionImpl implements TreeRepositoryExtension {
     private final TreeRowMapper treeMapper;
     private final TreesClusterRowMapper treesClusterRowMapper;
     private final ObjectMapper objectMapper;
-
-    @Override
-    public Optional<Tree> findTreeById(UUID id) {
-        @Language("SQL")
-        var sql = """
-            SELECT *
-            FROM ct_tree
-            WHERE id = :id
-            """;
-
-        var params = Map.of("id", id);
-
-        return jdbcTemplate.query(sql, params, treeMapper).stream().findFirst();
-    }
-
-    @Override
-    public List<Tree> findAllTrees(BigDecimal limit, BigDecimal offset) {
-        @Language("SQL")
-        var sql = """
-            SELECT *
-            FROM ct_tree
-            LIMIT :limit
-            OFFSET :offset
-            """;
-
-        var params = Map.of(
-            "limit", limit,
-            "offset", offset
-        );
-
-        return jdbcTemplate.query(sql, params, treeMapper);
-    }
-
-    @Override
-    public List<Tree> findByRegion(Double x1, Double y1, Double x2, Double y2, Integer srid) {
-        @Language("SQL")
-        var sql = """
-            SELECT * FROM ct_tree
-            WHERE ST_Within(ct_tree.geo_point, ST_MakeEnvelope(:x2, :y2, :x1, :y1, :srid))
-            """;
-
-        var params = Map.of(
-            "x1", x1,
-            "y1", y1,
-            "x2", x2,
-            "y2", y2,
-            "srid", srid
-        );
-
-        return jdbcTemplate.query(sql, params, treeMapper);
-    }
 
     @Override
     @SneakyThrows

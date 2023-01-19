@@ -13,6 +13,7 @@ import io.citytrees.v1.model.UserUpdatePasswordRequest;
 import io.citytrees.v1.model.UserUpdateRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -33,7 +34,7 @@ public class UserService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return findByEmail(username)
+        return getByEmail(username)
             .map(user -> JWTUserDetails.builder()
                 .id(user.getId())
                 .email(user.getEmail())
@@ -57,23 +58,23 @@ public class UserService implements UserDetailsService {
     }
 
     public UUID createIfNotExists(User user) {
-        return findByEmail(user.getEmail()).map(User::getId).orElseGet(() -> create(user));
+        return getByEmail(user.getEmail()).map(User::getId).orElseGet(() -> create(user));
     }
 
     public UUID register(UserRegisterRequest registerUserRequest) {
-        findByEmail(registerUserRequest.getEmail()).ifPresent(user -> {
+        getByEmail(registerUserRequest.getEmail()).ifPresent(user -> {
             throw new UserInputError(String.format("Email '%s' is already in use", user.getEmail()));
         });
 
         return create(registerUserRequest);
     }
 
-    public Optional<User> findByEmail(String email) {
-        return userRepository.findByEmail(email);
+    public Optional<User> getByEmail(String email) {
+        return userRepository.findFirstByEmail(email);
     }
 
     public Optional<User> getById(UUID id) {
-        return userRepository.findByUserId(id);
+        return userRepository.findFirstById(id);
     }
 
     public void update(UUID id, UserUpdateRequest request) {
@@ -91,6 +92,11 @@ public class UserService implements UserDetailsService {
     public void updatePassword(UUID userId, String newPassword) {
         var hashedPassword = hashUtil.md5WithSalt(newPassword);
         userRepository.updatePassword(userId, hashedPassword);
+    }
+
+    @Cacheable("isUserExistsByIdCache")
+    public boolean isUserExists(UUID userId) {
+        return userRepository.findFirstById(userId).isPresent();
     }
 
     @SuppressWarnings("checkstyle:ParameterNumber")

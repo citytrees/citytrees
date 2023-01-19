@@ -1,15 +1,23 @@
 package io.citytrees.repository;
 
 import io.citytrees.model.User;
-import io.citytrees.repository.extension.UserRepositoryExtension;
 import io.citytrees.v1.model.UserStatus;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jdbc.repository.query.Modifying;
 import org.springframework.data.jdbc.repository.query.Query;
 import org.springframework.data.repository.CrudRepository;
 
+import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
-public interface UserRepository extends CrudRepository<User, UUID>, UserRepositoryExtension {
+public interface UserRepository extends CrudRepository<User, UUID> {
+
+    Optional<User> findFirstById(UUID id);
+
+    Optional<User> findFirstByEmail(String email);
+
+    List<User> findByStatus(UserStatus status, Pageable pageable);
 
     @SuppressWarnings("checkstyle:ParameterNumber")
     @Query("""

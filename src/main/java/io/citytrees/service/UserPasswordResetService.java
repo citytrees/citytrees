@@ -28,7 +28,7 @@ public class UserPasswordResetService {
     private final UserService userService;
 
     public void requestReset(String userEmail) {
-        var optionalUser = userRepository.findByEmail(userEmail);
+        var optionalUser = userRepository.findFirstByEmail(userEmail);
         if (optionalUser.isEmpty()) {
             return;
         }
@@ -38,7 +38,7 @@ public class UserPasswordResetService {
 
     @Transactional
     public void reset(String userEmail, String token, String newPassword) {
-        var optionalUser = userRepository.findByEmail(userEmail);
+        var optionalUser = userRepository.findFirstByEmail(userEmail);
         if (optionalUser.isEmpty()) {
             throw new UserPasswordResetException("Password reset request not found");
         }

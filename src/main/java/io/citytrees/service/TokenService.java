@@ -10,7 +10,9 @@ import io.citytrees.model.User;
 import io.citytrees.v1.model.UserRole;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -30,6 +32,7 @@ public class TokenService {
     private static final String ROLES_SPLITTER = ",";
 
     private final SecurityProperties securityProperties;
+    private final UserService userService;
 
     @NotNull
     public TokenPair generateNewPair(User user) {
@@ -68,8 +71,12 @@ public class TokenService {
             .map(UserRole::valueOf)
             .collect(Collectors.toSet());
 
+        UUID id = UUID.fromString(decodedJWT.getSubject());
+        if (!userService.isUserExists(id)) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+        }
         return JWTUserDetails.builder()
-            .id(UUID.fromString(decodedJWT.getSubject()))
+            .id(id)
             .roles(roles)
             .email(decodedJWT.getClaim(EMAIL_CLAIM).asString())
             .build();

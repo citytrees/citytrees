@@ -605,24 +605,24 @@ paths:
           $ref: '#/components/responses/Forbidden'
         500:
           $ref: '#/components/responses/InternalServerError'
-  /tree/all/{limit}/{offset}:
+  /tree/all/{page}/{size}:
     get:
       tags:
         - tree-controller
       summary: Get all trees
       operationId: getAll
       parameters:
-        - name: limit
+        - name: page
+          in: path
+          required: true
+          schema:
+            type: number
+        - name: size
           in: path
           required: true
           schema:
             type: number
             maximum: 20
-        - name: offset
-          in: path
-          required: true
-          schema:
-            type: number
       responses:
         200:
           description: OK
