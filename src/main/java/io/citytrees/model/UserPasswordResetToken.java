@@ -12,7 +12,7 @@ import java.util.UUID;
 
 @Value
 @Builder
-@Table(TableNames.USER_PASSWORD_RESET)
+@Table(TableNames.USER_PASSWORD_RESET_TABLE)
 public class UserPasswordResetToken {
 
     @Id

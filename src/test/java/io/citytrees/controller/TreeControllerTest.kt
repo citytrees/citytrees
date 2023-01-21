@@ -1,11 +1,11 @@
 package io.citytrees.controller
 
 import io.citytrees.AbstractTest
-import io.citytrees.constants.TableNames
+import io.citytrees.v1.model.TreeCreateResponse
+import io.citytrees.v1.model.TreeGetResponse
 import org.junit.jupiter.api.Test
 import org.springframework.http.MediaType
 import org.springframework.mock.web.MockMultipartFile
-import org.springframework.test.context.jdbc.Sql
 import org.springframework.test.web.servlet.delete
 import org.springframework.test.web.servlet.get
 import org.springframework.test.web.servlet.multipart
@@ -14,11 +14,10 @@ import org.springframework.test.web.servlet.post
 class TreeControllerTest : AbstractTest() {
 
     @Test
-    @Sql(statements = ["DELETE FROM ${TableNames.TREE_TABLE}"], executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     fun `create tree should return 200`() {
         val user = givenTestUser("any@mail.io", "password")
 
-        mockMvc.post("/api/v1/tree") {
+        val content = mockMvc.post("/api/v1/tree") {
             withAuthenticationAs(user)
 
             contentType = MediaType.APPLICATION_JSON
@@ -28,8 +27,11 @@ class TreeControllerTest : AbstractTest() {
             }
         }.andExpect {
             status { isOk() }
-            jsonPath("treeId") { isNotEmpty() }
-        }
+            jsonPath(TreeCreateResponse::treeId.name) { isNotEmpty() }
+        }.andReturn().response.contentAsString
+
+        val response = objectMapper.readValue(content, TreeCreateResponse::class.java)
+        treeRepository.deleteById(response.treeId)
     }
 
     @Test
@@ -40,7 +42,7 @@ class TreeControllerTest : AbstractTest() {
         mockMvc.get("/api/v1/tree/${tree.id}")
             .andExpect {
                 status { isOk() }
-                jsonPath("id") { value(tree.id.toString()) }
+                jsonPath(TreeGetResponse::id.name) { value(tree.id.toString()) }
             }
     }
 
