@@ -48,7 +48,7 @@ public class TreeService {
     }
 
     public void delete(UUID id) {
-        treeRepository.deleteById(id);
+        treeRepository.updateStatus(id, TreeStatus.DELETED);
     }
 
     public Optional<Tree> getById(UUID treeId) {

@@ -846,6 +846,7 @@ components:
         - NEW
         - TO_APPROVE
         - APPROVED
+        - DELETED
 
     TreeState:
       type: string

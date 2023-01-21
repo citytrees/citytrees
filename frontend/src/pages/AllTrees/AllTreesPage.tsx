@@ -23,13 +23,17 @@ const AllTreesPage: React.FC = () => {
       dataIndex: 'status',
       render: (_, record: CtTree) => {
         const status = record.status;
-        let color: PresetStatusColorType = "default"
+        let color: PresetStatusColorType
         if (status === TreeStatus.New) {
           color = "processing"
         } else if (status === TreeStatus.ToApprove) {
           color = "error"
         } else if (status === TreeStatus.Approved) {
           color = "success"
+        } else if (status === TreeStatus.Deleted) {
+          color = "default"
+        } else {
+          color = "default"
         }
         return <Tag color={color}>{status}</Tag>
       }
@@ -47,11 +51,23 @@ const AllTreesPage: React.FC = () => {
             onClick: () => {
               api.tree.approveTree({treeId: record.id}).then(() => {
                 record.status = TreeStatus.Approved
-                updateRecord(record)
+                updateTableRecord(record)
               })
             }
           })
         }
+
+        items.push({
+          label: 'Delete',
+          key: "action-delete-tree",
+          onClick: () => {
+            api.tree.deleteTree({id: record.id}).then(() => {
+              record.status = TreeStatus.Deleted
+              deleteTableRecord(record)
+            })
+          }
+        })
+
         return <Dropdown trigger={['click']} disabled={items.length === 0} menu={{items}}>
           <BarsOutlined/>
         </Dropdown>
@@ -59,8 +75,12 @@ const AllTreesPage: React.FC = () => {
     },
   ]
 
-  const updateRecord = (record: CtTree) => {
-    const index = data.findIndex((value) => record.id === value.id)
+  const deleteTableRecord = (record: CtTree) => {
+    setData(data.filter(tree => record.id !== tree.id))
+  }
+
+  const updateTableRecord = (record: CtTree) => {
+    const index = data.findIndex((tree) => record.id === tree.id)
     if (index > -1) {
       const newData = [...data]
       const item = newData[index]

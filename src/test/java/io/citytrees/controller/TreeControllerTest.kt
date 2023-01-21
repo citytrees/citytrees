@@ -91,12 +91,4 @@ class TreeControllerTest : AbstractTest() {
             jsonPath("$[*]") { isNotEmpty() }
         }
     }
-
-    @Test
-    fun test1() {
-        val user = givenTestUser(email = "any@mail.io", password = "password")
-        repeat(50) {
-            givenTree(userId = user.id, latitude = 0.0, longitude = 0.0)
-        }
-    }
 }
