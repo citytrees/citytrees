@@ -4,7 +4,6 @@ import io.citytrees.model.Tree;
 import io.citytrees.repository.extension.TreeRepositoryExtension;
 import io.citytrees.v1.model.TreeStatus;
 import org.jetbrains.annotations.NotNull;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.jdbc.repository.query.Modifying;
 import org.springframework.data.jdbc.repository.query.Query;
 import org.springframework.data.repository.CrudRepository;
@@ -24,9 +23,9 @@ public interface TreeRepository extends CrudRepository<Tree, UUID>, TreeReposito
         """)
     List<Tree> findAllByRegion(Double x1, Double y1, Double x2, Double y2, Integer srid);
 
-    // todo #18
-    @Query("SELECT * FROM ct_tree")
-    List<Tree> findAll(Pageable pageable);
+    // todo #18 implement cursor based pagination, order by created_at
+    @Query("SELECT * FROM ct_tree ORDER BY id LIMIT :limit OFFSET :offset")
+    List<Tree> findAll(Integer limit, Integer offset);
 
     @Query("""
         INSERT INTO ct_tree(id, user_id, status, geo_point)

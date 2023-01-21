@@ -142,7 +142,7 @@ abstract class AbstractTest {
         .fileIds(emptySet())
         .build().also {
             treeService.create(it.id, it.userId, it.geoPoint)
-            CLEANUP_TASKS.addFirst { treeService.delete(it.id) }
+//            CLEANUP_TASKS.addFirst { treeService.delete(it.id) }
         }
 
     companion object {

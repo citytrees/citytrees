@@ -6,6 +6,7 @@ import io.citytrees.service.FileDownloadService;
 import io.citytrees.service.TreeService;
 import io.citytrees.v1.controller.TreeControllerApiDelegate;
 import io.citytrees.v1.model.FileUploadResponse;
+import io.citytrees.v1.model.TreeCountAllGetResponse;
 import io.citytrees.v1.model.TreeCreateRequest;
 import io.citytrees.v1.model.TreeCreateResponse;
 import io.citytrees.v1.model.TreeGetAttachedFileResponse;
@@ -105,12 +106,17 @@ public class TreeController implements TreeControllerApiDelegate {
 
     @Override
     @PreAuthorize("permitAll()")
-    public ResponseEntity<List<TreeGetResponse>> getAll(BigDecimal page, BigDecimal size) {
-        var response = treeService.listAll(page.intValue(), size.intValue()).stream()
+    public ResponseEntity<List<TreeGetResponse>> getAll(BigDecimal limit, BigDecimal offset) {
+        var response = treeService.listAll(limit.intValue(), offset.intValue()).stream()
             .map(TreeController::responseFromTree)
             .toList();
 
         return ResponseEntity.ok(response);
+    }
+
+    @Override
+    public ResponseEntity<TreeCountAllGetResponse> getAllTreesCount() {
+        return ResponseEntity.ok(new TreeCountAllGetResponse().count(treeService.countAll()));
     }
 
     private static TreeGetResponse responseFromTree(Tree tree) {

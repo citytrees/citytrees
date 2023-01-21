@@ -15,7 +15,6 @@ import io.citytrees.v1.model.TreeStatus;
 import io.citytrees.v1.model.TreeUpdateRequest;
 import lombok.RequiredArgsConstructor;
 import org.locationtech.jts.geom.Point;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -123,7 +122,11 @@ public class TreeService {
         treeRepository.updateStatus(id, status);
     }
 
-    public List<Tree> listAll(Integer page, Integer size) {
-        return treeRepository.findAll(PageRequest.of(page, size));
+    public List<Tree> listAll(Integer limit, Integer offset) {
+        return treeRepository.findAll(limit, offset);
+    }
+
+    public BigDecimal countAll() {
+        return BigDecimal.valueOf(treeRepository.count());
     }
 }

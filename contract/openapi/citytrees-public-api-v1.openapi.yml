@@ -605,24 +605,24 @@ paths:
           $ref: '#/components/responses/Forbidden'
         500:
           $ref: '#/components/responses/InternalServerError'
-  /tree/all/{page}/{size}:
+  /tree/all/{limit}/{offset}:
     get:
       tags:
         - tree-controller
       summary: Get all trees
       operationId: getAll
       parameters:
-        - name: page
+        - name: limit
           in: path
           required: true
           schema:
             type: number
-        - name: size
+            maximum: 50
+        - name: offset
           in: path
           required: true
           schema:
             type: number
-            maximum: 20
       responses:
         200:
           description: OK
@@ -640,6 +640,28 @@ paths:
           $ref: '#/components/responses/Forbidden'
         500:
           $ref: '#/components/responses/InternalServerError'
+  /tree/all/count:
+    get:
+      tags:
+        - tree-controller
+      summary: Count all trees
+      operationId: getAllTreesCount
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TreeCountAllGetResponse'
+        400:
+          $ref: "#/components/responses/BadRequest"
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/Forbidden'
+        500:
+          $ref: '#/components/responses/InternalServerError'
+
 
   /wood-type:
     post:
@@ -1107,6 +1129,14 @@ components:
           items:
             type: string
             format: uuid
+
+    TreeCountAllGetResponse:
+      type: object
+      required:
+        - count
+      properties:
+        count:
+          type: number
 
     TreesByRegionRequest:
       type: object

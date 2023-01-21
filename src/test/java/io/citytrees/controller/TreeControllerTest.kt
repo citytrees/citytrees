@@ -61,7 +61,7 @@ class TreeControllerTest : AbstractTest() {
         val user = givenTestUser(email = "any@mail.io", password = "password")
         repeat((0..25).count()) { givenTree(userId = user.id, latitude = 0.0, longitude = 0.0) }
 
-        mockMvc.get("/api/v1/tree/all/1/20") {
+        mockMvc.get("/api/v1/tree/all/20/3") {
             withAuthenticationAs(user)
         }.andExpect {
             status { isOk() }
@@ -87,6 +87,14 @@ class TreeControllerTest : AbstractTest() {
         }.andExpect {
             status { isOk() }
             jsonPath("$[*]") { isNotEmpty() }
+        }
+    }
+
+    @Test
+    fun test1() {
+        val user = givenTestUser(email = "any@mail.io", password = "password")
+        repeat(50) {
+            givenTree(userId = user.id, latitude = 0.0, longitude = 0.0)
         }
     }
 }
