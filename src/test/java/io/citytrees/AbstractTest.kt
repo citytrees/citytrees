@@ -6,6 +6,7 @@ import io.citytrees.constants.CookieNames
 import io.citytrees.model.CtFile
 import io.citytrees.model.Tree
 import io.citytrees.model.User
+import io.citytrees.repository.TreeRepository
 import io.citytrees.repository.UserRepository
 import io.citytrees.service.FileService
 import io.citytrees.service.TokenService
@@ -58,6 +59,9 @@ abstract class AbstractTest {
 
     @Autowired
     protected lateinit var tokenService: TokenService
+
+    @Autowired
+    protected lateinit var treeRepository: TreeRepository
 
     @Autowired
     protected lateinit var treeService: TreeService
@@ -137,10 +141,12 @@ abstract class AbstractTest {
         .userId(userId)
         .status(status)
         .geoPoint(GEOMETRY_FACTORY.createPoint(Coordinate(latitude, longitude)))
+        .barkCondition(emptySet())
+        .branchesCondition(emptySet())
         .fileIds(emptySet())
         .build().also {
             treeService.create(it.id, it.userId, it.geoPoint)
-            CLEANUP_TASKS.addFirst { treeService.delete(it.id) }
+            CLEANUP_TASKS.addFirst { treeRepository.deleteById(it.id) }
         }
 
     companion object {

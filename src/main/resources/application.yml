@@ -33,6 +33,11 @@ security:
   admin-email: ${ADMIN_EMAIL:admin@citytrees.io}
   admin-password: ${ADMIN_PASSWORD:admin@citytrees.io}
 
+caffeine:
+  caches:
+    - name: isUserExistsByIdCache
+      spec: maximumSize=10000,expireAfterWrite=30m,recordStats
+
 email:
   user: ${EMAIL_USER:citytrees}
   sender-email: ${EMAIL_SENDER:citytrees@example.io}

@@ -42,17 +42,17 @@
         "signIn": {
             "label": "Войти"
         },
-
         "submit": {
             "label": "Сбросить пароль"
         }
     },
     "appHeader": {
-        "menuItems":{
+        "menuItems": {
             "map": "Карта",
             "myTrees": "Мои деревья",
             "allTrees": "Все деревья",
-            "users": "Пользователи"
+            "users": "Пользователи",
+            "woodTypes": "Породы деревьев"
         },
         "buttons": {
             "signIn": "Войти",

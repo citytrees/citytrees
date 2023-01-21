@@ -33,7 +33,7 @@ public class AuthService {
         var email = loginAndPassword[0];
         var password = loginAndPassword[1];
 
-        userService.findByEmail(email)
+        userService.getByEmail(email)
             .filter(user -> user.getPassword().equals(hashUtil.md5WithSalt(password)))
             .ifPresentOrElse(
                 user -> setResponseCookies(tokenService.generateNewPair(user), httpServletResponse),
@@ -50,7 +50,7 @@ public class AuthService {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage(), e);
         }
 
-        userService.findByEmail(email)
+        userService.getByEmail(email)
             .ifPresentOrElse(
                 user -> setResponseCookies(tokenService.generateNewPair(user), httpServletResponse),
                 () -> {

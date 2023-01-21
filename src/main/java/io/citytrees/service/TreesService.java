@@ -17,13 +17,13 @@ public class TreesService {
     private final GeoProperties geoProperties;
     private final TreeRepository repository;
 
-    public List<Tree> loadByRegion(Double x1, Double y1, Double x2, Double y2) {
-        return repository.findByRegion(x1, y1, x2, y2, geoProperties.getSrid());
+    public List<Tree> listByRegion(Double x1, Double y1, Double x2, Double y2) {
+        return repository.findAllByRegion(x1, y1, x2, y2, geoProperties.getSrid());
     }
 
     @SneakyThrows
     @Deprecated
-    public List<TreesCluster> loadClustersByRegion(Double x1, Double y1, Double x2, Double y2) {
+    public List<TreesCluster> listClustersByRegion(Double x1, Double y1, Double x2, Double y2) {
         return repository.findClustersByRegion(x1, y1, x2, y2, geoProperties.getClusterDistance(), geoProperties.getSrid());
     }
 }

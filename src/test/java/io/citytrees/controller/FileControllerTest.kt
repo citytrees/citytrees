@@ -2,6 +2,7 @@ package io.citytrees.controller
 
 import io.citytrees.AbstractTest
 import io.citytrees.constants.TableNames
+import io.citytrees.v1.model.FileGetResponse
 import org.junit.jupiter.api.Test
 import org.springframework.http.MediaType
 import org.springframework.mock.web.MockMultipartFile
@@ -39,12 +40,12 @@ class FileControllerTest : AbstractTest() {
         mockMvc.get("/api/v1/file/${file.id}")
             .andExpect {
                 status { isOk() }
-                jsonPath("id") { value(file.id.toString()) }
-                jsonPath("name") { value(file.name) }
-                jsonPath("mimeType") { value(file.mimeType) }
-                jsonPath("size") { value(file.size) }
-                jsonPath("hash") { value(file.hash) }
-                jsonPath("userId") { value(file.userId.toString()) }
+                jsonPath(FileGetResponse::id.name) { value(file.id.toString()) }
+                jsonPath(FileGetResponse::name.name) { value(file.name) }
+                jsonPath(FileGetResponse::mimeType.name) { value(file.mimeType) }
+                jsonPath(FileGetResponse::size.name) { value(file.size) }
+                jsonPath(FileGetResponse::hash.name) { value(file.hash) }
+                jsonPath(FileGetResponse::userId.name) { value(file.userId.toString()) }
             }
     }
 

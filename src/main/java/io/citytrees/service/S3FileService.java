@@ -20,7 +20,9 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 @Service
@@ -46,6 +48,11 @@ public class S3FileService implements FileService {
     @Override
     public Optional<CtFile> getFile(UUID id) {
         return fileRepository.findById(id);
+    }
+
+    @Override
+    public List<CtFile> listAllByIds(Set<UUID> uuids) {
+        return fileRepository.findAllByIdIn(uuids);
     }
 
     @Override

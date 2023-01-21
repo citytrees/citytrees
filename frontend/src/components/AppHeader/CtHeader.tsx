@@ -31,13 +31,17 @@ const CtHeader: React.FC = () => {
     })
     if (user.roles.indexOf(UserRole.Admin) !== -1) {
       tabs.push({
-        label: t("appHeader.menuItems.allTrees"),
-        key: AppRoutes.ALL_TREES
-      },
-      {
-        label: t("appHeader.menuItems.users"),
-        key: AppRoutes.USERS
-      })
+            label: t("appHeader.menuItems.allTrees"),
+            key: AppRoutes.ALL_TREES
+          },
+          {
+            label: t("appHeader.menuItems.users"),
+            key: AppRoutes.USERS
+          },
+          {
+            label: t("appHeader.menuItems.woodTypes"),
+            key: AppRoutes.WOOD_TYPE
+          })
     }
   }
 

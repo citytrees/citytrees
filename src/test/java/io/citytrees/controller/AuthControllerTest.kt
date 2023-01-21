@@ -81,7 +81,7 @@ class AuthControllerTest : AbstractTest() {
         val password = "123"
         givenTestUser(email, password)
 
-        val tokenPair = tokenService.generateNewPair(userService.findByEmail(email).orElseThrow())
+        val tokenPair = tokenService.generateNewPair(userService.getByEmail(email).orElseThrow())
         mockMvc.post("/api/v1/auth/jwt/refresh") {
             withRefreshTokenCookie(tokenPair.refreshToken)
         }.andExpect {

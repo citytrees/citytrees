@@ -20,6 +20,7 @@ import UserPage from "./pages/User";
 import UsersPage from "./pages/Users";
 import AllTreesPage from "./pages/AllTrees";
 import MyTreesPage from "./pages/MyTrees";
+import WoodTypePage from "./pages/WoodType";
 
 export default function App() {
   const dispatch = useAppDispatch();
@@ -29,7 +30,7 @@ export default function App() {
     dispatch(setUser(jwt_decode<User>(ctAccessToken)))
   }
 
-  const { Content } = Layout;
+  const {Content} = Layout;
 
   return (
       <ConfigProvider theme={{
@@ -41,7 +42,7 @@ export default function App() {
       }}>
         <BrowserRouter>
           <Layout style={{height: "100vh"}}>
-            <AppHeader />
+            <AppHeader/>
             <Content>
               <Routes>
                 <Route path={AppRoutes.LOGIN} element={<OnlyNotAuthenticatedRoute element={<LoginPage/>}/>}/>
@@ -49,14 +50,15 @@ export default function App() {
                 <Route path={AppRoutes.PASSWORD_RESET} element={<OnlyNotAuthenticatedRoute element={<PasswordResetPage/>}/>}/>
                 <Route path={AppRoutes.MAIN} element={<MainPage/>}/>
                 <Route path={AppRoutes.USER_EMAIL_CONFIRMATION} element={<EmailConfirmationPage/>}/>
-                <Route path={AppRoutes.NOT_FOUND} element={<div>404 page</div>}/> { /* TODO */ }
+                <Route path={AppRoutes.NOT_FOUND} element={<div>404 page</div>}/> { /* TODO */}
                 <Route path={AppRoutes.MY_TREES} element={<OnlyAuthenticatedRoute element={<MyTreesPage/>}/>}/>
                 <Route path={AppRoutes.ALL_TREES} element={<AdminRoute element={<AllTreesPage/>}/>}/>
                 <Route path={AppRoutes.USERS} element={<AdminRoute element={<UsersPage/>}/>}/>
                 <Route path={AppRoutes.USER} element={<OnlyAuthenticatedRoute element={<UserPage/>}/>}/>
+                <Route path={AppRoutes.WOOD_TYPE} element={<AdminRoute element={<WoodTypePage/>}/>}/>
               </Routes>
             </Content>
-            <AppFooter />
+            <AppFooter/>
           </Layout>
         </BrowserRouter>
       </ConfigProvider>

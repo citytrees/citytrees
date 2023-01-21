@@ -1,6 +1,7 @@
 package io.citytrees.controller
 
 import io.citytrees.AbstractTest
+import io.citytrees.v1.model.TreesGetResponseTree
 import org.junit.jupiter.api.Test
 import org.springframework.test.web.servlet.get
 
@@ -19,7 +20,7 @@ class TreesControllerTest : AbstractTest() {
             param("y2", "2.0")
         }.andExpect {
             status { isOk() }
-            jsonPath("$[0].id") { value(tree.id.toString()) }
+            jsonPath("$[0].${TreesGetResponseTree::id.name}") { value(tree.id.toString()) }
         }
     }
 
