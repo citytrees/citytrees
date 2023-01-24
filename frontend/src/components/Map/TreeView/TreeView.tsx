@@ -43,12 +43,11 @@ const TreeView = ({...props}: ModalProps & TreeEditorProps) => {
       setFileList(initialValue.files.map(file => ({uid: file.id, name: file.name, status: 'done', url: file.url,})) ?? [])
       form.setFieldsValue(initialValue)
       form.setFieldValue("condition", initialValue.condition ? availableTreeConditionValues.indexOf(initialValue.condition) + 1 : null)
+      api.woodType.getAllWoodTypes()
+          .then((responce) => {
+            setWoodTypes(responce.map(type => ({id: type.id, name: type.name})))
+          })
     }
-
-    api.woodType.getAllWoodTypes()
-        .then((responce) => {
-          setWoodTypes(responce.map(type => ({id: type.id, name: type.name})))
-        })
   }, [form, props.initial])
 
   const getCtTree: () => CtTree = () => {
@@ -62,7 +61,6 @@ const TreeView = ({...props}: ModalProps & TreeEditorProps) => {
     if (conditionNumber) {
       condition = availableTreeConditionValues[conditionNumber - 1]
     }
-
     let value = props.initial;
     return {
       id: value.id,
@@ -77,7 +75,12 @@ const TreeView = ({...props}: ModalProps & TreeEditorProps) => {
       branchesCondition: form.getFieldValue("branchesCondition"),
       plantingType: form.getFieldValue("plantingType"),
       comment: comment,
-      files: fileList.map(file => ({id: file.uid, name: file.name, url: file.url}))
+      files: fileList.map(file => ({id: file.uid, name: file.name, url: file.url})),
+      diameterOfCrown: form.getFieldValue("diameterOfCrown"),
+      heightOfTheFirstBranch: form.getFieldValue("heightOfTheFirstBranch"),
+      numberOfTreeTrunks: form.getFieldValue("numberOfTreeTrunks"),
+      treeHeight: form.getFieldValue("treeHeight"),
+      trunkGirth: form.getFieldValue("trunkGirth"),
     }
   }
 
@@ -175,6 +178,26 @@ const TreeView = ({...props}: ModalProps & TreeEditorProps) => {
 
           <Form.Item name="comment" label="Comment">
             <TextArea rows={2} maxLength={150} showCount/>
+          </Form.Item>
+
+          <Form.Item name="diameterOfCrown" label="Diameter of crown">
+            <InputNumber step={0.01}/>
+          </Form.Item>
+
+          <Form.Item name="heightOfTheFirstBranch" label="Height of the first branch">
+            <InputNumber step={0.01}/>
+          </Form.Item>
+
+          <Form.Item name="numberOfTreeTrunks" label="Number of tree trunks">
+            <InputNumber/>
+          </Form.Item>
+
+          <Form.Item name="treeHeight" label="Tree height">
+            <InputNumber step={0.01}/>
+          </Form.Item>
+
+          <Form.Item name="trunkGirth" label="Trunk girth">
+            <InputNumber step={0.01}/>
           </Form.Item>
 
           <Form.Item label="Files">

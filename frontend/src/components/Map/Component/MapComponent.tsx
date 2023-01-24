@@ -137,7 +137,12 @@ const TreeMap = ({...props}: TreeMapProps & MapContainerProps) => {
             branchesCondition: tree.branchesCondition,
             plantingType: tree.plantingType,
             comment: tree.comment,
-            fileIds: tree.files.map(file => file.id)
+            fileIds: tree.files.map(file => file.id),
+            diameterOfCrown: tree.diameterOfCrown,
+            heightOfTheFirstBranch: tree.heightOfTheFirstBranch,
+            numberOfTreeTrunks: tree.numberOfTreeTrunks,
+            treeHeight: tree.treeHeight,
+            trunkGirth: tree.trunkGirth,
           }
         }
     ).then(() => onSuccess())

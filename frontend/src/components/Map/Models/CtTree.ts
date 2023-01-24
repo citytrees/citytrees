@@ -16,6 +16,11 @@ export interface CtTree {
     comment?: string
     userId?: string
     files: CtFile[]
+    diameterOfCrown?: number,
+    heightOfTheFirstBranch?: number,
+    numberOfTreeTrunks?: number,
+    treeHeight?: number,
+    trunkGirth?: number
 }
 
 export const ctTreeOf: (tree: TreeGetResponse, files: TreeGetAttachedFileResponse[]) => CtTree = (tree, files) => {
@@ -33,6 +38,11 @@ export const ctTreeOf: (tree: TreeGetResponse, files: TreeGetAttachedFileRespons
         plantingType: tree.plantingType,
         comment: tree.comment,
         userId: tree.userId,
-        files: files.map(file => ({id: file.id, name: file.name, url: file.url}))
+        files: files.map(file => ({id: file.id, name: file.name, url: file.url})),
+        diameterOfCrown: tree.diameterOfCrown,
+        heightOfTheFirstBranch: tree.heightOfTheFirstBranch,
+        numberOfTreeTrunks: tree.numberOfTreeTrunks,
+        treeHeight: tree.treeHeight,
+        trunkGirth: tree.trunkGirth,
     }
 }

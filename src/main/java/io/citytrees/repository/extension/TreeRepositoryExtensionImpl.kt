@@ -48,11 +48,11 @@ open class TreeRepositoryExtensionImpl(
         plantingType: TreePlantingType?,
         comment: String?,
         fileIds: List<UUID>,
-        diameterOfCrown: Double,
-        heightOfTheFirstBranch: Double,
-        numberOfTreeTrunks: Int,
-        treeHeight: Double,
-        trunkGirth: Double,
+        diameterOfCrown: Double?,
+        heightOfTheFirstBranch: Double?,
+        numberOfTreeTrunks: Int?,
+        treeHeight: Double?,
+        trunkGirth: Double?,
     ) {
         @Language("SQL")
         val sql = """

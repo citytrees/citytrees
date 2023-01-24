@@ -16,6 +16,7 @@ import org.postgresql.util.PGobject;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
 
+import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.util.Objects;
 import java.util.UUID;
@@ -37,6 +38,12 @@ public class TreeRowMapper implements RowMapper<Tree> {
         String condition = rs.getObject("condition", String.class);
         String plantingType = rs.getObject("planting_type", String.class);
 
+        BigDecimal diameterOfCrown = rs.getBigDecimal("diameter_of_crown");
+        BigDecimal heightOfTheFirstBranch = rs.getBigDecimal("height_of_the_first_branch");
+        BigDecimal numberOfTreeTrunks = rs.getBigDecimal("number_of_tree_trunks");
+        BigDecimal treeHeight = rs.getBigDecimal("tree_height");
+        BigDecimal trunkGirth = rs.getBigDecimal("trunk_girth");
+
         return builder
             .id(rs.getObject("id", UUID.class))
             .userId(rs.getObject("user_id", UUID.class))
@@ -51,6 +58,11 @@ public class TreeRowMapper implements RowMapper<Tree> {
             .branchesCondition(objectMapper.readValue(rs.getString("branches_condition"), new TypeReference<>() {}))
             .plantingType(plantingType != null ? TreePlantingType.valueOf(plantingType) : null)
             .comment(rs.getString("comment"))
+            .diameterOfCrown(diameterOfCrown != null ? diameterOfCrown.doubleValue() : null)
+            .heightOfTheFirstBranch(heightOfTheFirstBranch != null ? heightOfTheFirstBranch.doubleValue() : null)
+            .numberOfTreeTrunks(numberOfTreeTrunks != null ? numberOfTreeTrunks.intValue() : null)
+            .treeHeight(treeHeight != null ? treeHeight.doubleValue() : null)
+            .trunkGirth(trunkGirth != null ? trunkGirth.doubleValue() : null)
             .build();
     }
 }
