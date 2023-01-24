@@ -13,7 +13,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.DigestUtils;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -36,10 +38,11 @@ public class DbFileService implements FileService {
 
         fileRepository.save(
             uuid,
-            multipartFile.getOriginalFilename(),
-            multipartFile.getContentType(),
-            (long) content.length,
+            Objects.requireNonNull(multipartFile.getOriginalFilename()),
+            Objects.requireNonNull(multipartFile.getContentType()),
+            content.length,
             hash,
+            LocalDateTime.now(),
             securityService.getCurrentUserId());
 
         fileContentRepository.upsert(UUID.randomUUID(), content, hash);
@@ -72,7 +75,7 @@ public class DbFileService implements FileService {
         var ctFile = optionalFile.get();
 
         var hash = ctFile.getHash();
-        if (fileRepository.countByHash(hash) == 0) {
+        if (fileRepository.countByHash(hash) == 1) {
             deleteContent(hash);
         }
 

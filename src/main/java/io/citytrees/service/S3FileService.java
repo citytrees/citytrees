@@ -20,6 +20,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -41,6 +42,7 @@ public class S3FileService implements FileService {
             file.getMimeType(),
             file.getSize(),
             file.getHash(),
+            file.getCreationDateTime(),
             file.getUserId()
         );
     }
@@ -111,6 +113,7 @@ public class S3FileService implements FileService {
             fileBuilder.size(tempFile.length());
             fileBuilder.mimeType(file.getContentType());
             fileBuilder.hash(hash);
+            fileBuilder.creationDateTime(LocalDateTime.now());
             fileBuilder.userId(securityService.getCurrentUserId());
         } catch (IOException e) {
             throw new FileServiceException(e.getMessage(), e);

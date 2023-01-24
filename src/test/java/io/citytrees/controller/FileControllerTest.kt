@@ -1,12 +1,11 @@
 package io.citytrees.controller
 
 import io.citytrees.AbstractTest
-import io.citytrees.constants.TableNames
 import io.citytrees.v1.model.FileGetResponse
+import io.citytrees.v1.model.FileUploadResponse
 import org.junit.jupiter.api.Test
 import org.springframework.http.MediaType
 import org.springframework.mock.web.MockMultipartFile
-import org.springframework.test.context.jdbc.Sql
 import org.springframework.test.web.servlet.delete
 import org.springframework.test.web.servlet.get
 import org.springframework.test.web.servlet.multipart
@@ -14,7 +13,6 @@ import org.springframework.test.web.servlet.multipart
 class FileControllerTest : AbstractTest() {
 
     @Test
-    @Sql(statements = ["DELETE FROM ${TableNames.FILE_TABLE}"], executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     fun `file upload should return 200`() {
         val user = givenTestUser("mail@example.com", "password")
         val mockFile = MockMultipartFile(
@@ -23,13 +21,16 @@ class FileControllerTest : AbstractTest() {
             MediaType.TEXT_PLAIN_VALUE,
             "some content".toByteArray()
         )
-        mockMvc.multipart("/api/v1/file/upload") {
+        val content = mockMvc.multipart("/api/v1/file/upload") {
             withAuthenticationAs(user)
             contentType = MediaType.MULTIPART_FORM_DATA
             file(mockFile)
         }.andExpect {
             status { isOk() }
-        }
+        }.andReturn().response.contentAsString
+
+        val response = objectMapper.readValue(content, FileUploadResponse::class.java)
+        fileService.delete(response.fileId)
     }
 
     @Test

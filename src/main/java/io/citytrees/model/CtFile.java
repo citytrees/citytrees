@@ -7,6 +7,7 @@ import org.jetbrains.annotations.NotNull;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Table;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Value
@@ -29,6 +30,9 @@ public class CtFile {
 
     @NotNull
     String hash;
+
+    @NotNull
+    LocalDateTime creationDateTime;
 
     @NotNull
     UUID userId;
