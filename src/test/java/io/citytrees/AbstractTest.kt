@@ -33,6 +33,7 @@ import org.springframework.test.web.servlet.MockHttpServletRequestDsl
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.result.JsonPathResultMatchersDsl
 import org.springframework.util.Base64Utils
+import java.time.LocalDateTime
 import java.util.*
 import javax.servlet.http.Cookie
 import kotlin.collections.ArrayDeque
@@ -112,6 +113,7 @@ abstract class AbstractTest {
         .password(password)
         .status(UserStatus.APPROVED)
         .roles(roles)
+        .creationDateTime(LocalDateTime.now())
         .firstName(firstName)
         .lastName(lastName)
         .build().also {

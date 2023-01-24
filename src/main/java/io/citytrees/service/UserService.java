@@ -19,6 +19,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -104,6 +105,6 @@ public class UserService implements UserDetailsService {
     private UUID create(UUID id, String email, String pwd, UserStatus status, Set<UserRole> roles, String firstName, String lastName) {
         var rolesJson = objectMapper.writeValueAsString(roles);
         var hashedPassword = hashUtil.md5WithSalt(pwd);
-        return userRepository.create(id, email, hashedPassword, status, rolesJson, firstName, lastName);
+        return userRepository.create(id, email, hashedPassword, status, rolesJson, LocalDateTime.now(), firstName, lastName);
     }
 }

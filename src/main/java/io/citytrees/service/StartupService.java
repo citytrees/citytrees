@@ -9,6 +9,7 @@ import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
 import java.util.Set;
 import java.util.UUID;
 
@@ -31,6 +32,7 @@ public class StartupService {
                 .password(securityProperties.getAdminPassword())
                 .status(UserStatus.APPROVED)
                 .roles(Set.of(UserRole.ADMIN))
+                .creationDateTime(LocalDateTime.now())
                 .build()
         );
     }

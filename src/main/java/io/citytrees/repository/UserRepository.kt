@@ -7,6 +7,7 @@ import org.springframework.data.domain.Pageable
 import org.springframework.data.jdbc.repository.query.Modifying
 import org.springframework.data.jdbc.repository.query.Query
 import org.springframework.data.repository.CrudRepository
+import java.time.LocalDateTime
 import java.util.*
 
 interface UserRepository : CrudRepository<User, UUID> {
@@ -19,12 +20,21 @@ interface UserRepository : CrudRepository<User, UUID> {
 
     @Query(
         """
-        INSERT INTO $USER_TABLE(id, email, pwd, status, roles, first_name, last_name)
-        VALUES (:id, :email, :pwd, :status, :roles::jsonb, :firstName, :lastName)
+        INSERT INTO $USER_TABLE(id, email, pwd, status, roles, creation_date_time, first_name, last_name)
+        VALUES (:id, :email, :pwd, :status, :roles::jsonb, :creationDateTime, :firstName, :lastName)
         RETURNING id
         """
     )
-    fun create(id: UUID, email: String, pwd: String, status: UserStatus, roles: String, firstName: String?, lastName: String?): UUID
+    fun create(
+        id: UUID,
+        email: String,
+        pwd: String,
+        status: UserStatus,
+        roles: String,
+        creationDateTime: LocalDateTime,
+        firstName: String?,
+        lastName: String?
+    ): UUID
 
     @Modifying
     @Query(

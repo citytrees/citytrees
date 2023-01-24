@@ -833,6 +833,7 @@ components:
         - NEW
         - TO_BE_APPROVED
         - APPROVED
+        - BANNED
 
     UserPasswordResetStatus:
       type: string

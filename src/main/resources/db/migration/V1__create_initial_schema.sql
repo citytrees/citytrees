@@ -1,12 +1,13 @@
 create table ct_user
 (
-    id         uuid         not null primary key,
-    email      varchar(128) not null,
-    pwd        varchar(128) not null,
-    roles      jsonb        not null,
-    status     varchar(16)  not null,
-    first_name varchar(128),
-    last_name  varchar(128)
+    id                 uuid         not null primary key,
+    email              varchar(128) not null,
+    pwd                varchar(128) not null,
+    roles              jsonb        not null,
+    status             varchar(16)  not null,
+    creation_date_time timestamp    not null,
+    first_name         varchar(128),
+    last_name          varchar(128)
 );
 
 create unique index ct_user_email_uidx on ct_user (email);
