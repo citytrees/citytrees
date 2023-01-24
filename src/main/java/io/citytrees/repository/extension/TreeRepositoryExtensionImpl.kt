@@ -47,7 +47,12 @@ open class TreeRepositoryExtensionImpl(
         branchesCondition: Set<TreeBranchCondition>,
         plantingType: TreePlantingType?,
         comment: String?,
-        fileIds: List<UUID?>
+        fileIds: List<UUID>,
+        diameterOfCrown: Double,
+        heightOfTheFirstBranch: Double,
+        numberOfTreeTrunks: Int,
+        treeHeight: Double,
+        trunkGirth: Double,
     ) {
         @Language("SQL")
         val sql = """
@@ -61,7 +66,12 @@ open class TreeRepositoryExtensionImpl(
                 branches_condition = :branchesCondition::jsonb, 
                 planting_type = :plantingType, 
                 comment = :comment, 
-                file_ids = :fileIds::jsonb 
+                file_ids = :fileIds::jsonb,
+                diameter_of_crown = :diameterOfCrown,
+                height_of_the_first_branch = :heightOfTheFirstBranch,
+                number_of_tree_trunks = :numberOfTreeTrunks,
+                tree_height = :treeHeight,
+                trunk_girth = :trunkGirth
                 WHERE id = :id"""
 
         val params: Map<String, Any?> = mapOf(
@@ -76,6 +86,11 @@ open class TreeRepositoryExtensionImpl(
             "branchesCondition" to objectMapper.writeValueAsString(branchesCondition),
             "plantingType" to plantingType?.value,
             "comment" to comment,
+            "diameterOfCrown" to diameterOfCrown,
+            "heightOfTheFirstBranch" to heightOfTheFirstBranch,
+            "numberOfTreeTrunks" to numberOfTreeTrunks,
+            "treeHeight" to treeHeight,
+            "trunkGirth" to trunkGirth,
             "fileIds" to objectMapper.writeValueAsString(fileIds),
         )
 

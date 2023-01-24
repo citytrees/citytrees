@@ -9,6 +9,7 @@ import io.citytrees.v1.model.TreeBarkCondition;
 import io.citytrees.v1.model.TreeBranchCondition;
 import io.citytrees.v1.model.TreeCondition;
 import io.citytrees.v1.model.TreeCreateRequest;
+import io.citytrees.v1.model.TreeGetResponse;
 import io.citytrees.v1.model.TreePlantingType;
 import io.citytrees.v1.model.TreeState;
 import io.citytrees.v1.model.TreeStatus;
@@ -19,7 +20,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -59,20 +59,25 @@ public class TreeService {
         List<TreeBarkCondition> barkCondition = treeUpdateRequest.getBarkCondition();
         List<TreeBranchCondition> branchesCondition = treeUpdateRequest.getBranchesCondition();
         List<UUID> fileIds = treeUpdateRequest.getFileIds();
-        BigDecimal age = treeUpdateRequest.getAge();
 
         update(id,
             securityService.getCurrentUserId(),
             treeUpdateRequest.getWoodTypeId(),
             treeUpdateRequest.getStatus(),
             treeUpdateRequest.getState(),
-            age != null ? age.intValue() : null,
+            treeUpdateRequest.getAge(),
             treeUpdateRequest.getCondition(),
             barkCondition != null ? new HashSet<>(barkCondition) : Collections.emptySet(),
             branchesCondition != null ? new HashSet<>(branchesCondition) : Collections.emptySet(),
             treeUpdateRequest.getPlantingType(),
             treeUpdateRequest.getComment(),
-            fileIds != null ? fileIds : Collections.emptyList());
+            fileIds != null ? fileIds : Collections.emptyList(),
+            treeUpdateRequest.getDiameterOfCrown(),
+            treeUpdateRequest.getHeightOfTheFirstBranch(),
+            treeUpdateRequest.getNumberOfTreeTrunks(),
+            treeUpdateRequest.getTreeHeight(),
+            treeUpdateRequest.getTrunkGirth()
+        );
     }
 
     @SuppressWarnings("checkstyle:ParameterNumber")
@@ -87,7 +92,13 @@ public class TreeService {
                        Set<TreeBranchCondition> branchesCondition,
                        TreePlantingType plantingType,
                        String comment,
-                       List<UUID> fileIds) {
+                       List<UUID> fileIds,
+                       Double diameterOfCrown,
+                       Double heightOfTheFirstBranch,
+                       Integer numberOfTreeTrunks,
+                       Double treeHeight,
+                       Double trunkGirth
+    ) {
         treeRepository.update(id,
             userId,
             woodTypeId,
@@ -99,7 +110,12 @@ public class TreeService {
             branchesCondition,
             plantingType,
             comment,
-            fileIds);
+            fileIds,
+            diameterOfCrown,
+            heightOfTheFirstBranch,
+            numberOfTreeTrunks,
+            treeHeight,
+            trunkGirth);
     }
 
     @Transactional
@@ -126,7 +142,32 @@ public class TreeService {
         return treeRepository.findAll(limit, offset);
     }
 
-    public BigDecimal countAll() {
-        return BigDecimal.valueOf(treeRepository.count());
+    public Long countAll() {
+        return treeRepository.count();
+    }
+
+    // TODO #32 add mapper
+    public TreeGetResponse responseFromTree(Tree tree) {
+        Integer age = tree.getAge();
+        return new TreeGetResponse()
+            .id(tree.getId())
+            .userId(tree.getUserId())
+            .status(tree.getStatus())
+            .latitude(tree.getGeoPoint().getX())
+            .longitude(tree.getGeoPoint().getY())
+            .woodTypeId(tree.getWoodTypeId())
+            .fileIds(tree.getFileIds().stream().map(UUID::toString).toList())
+            .state(tree.getState())
+            .age(age)
+            .condition(tree.getCondition())
+            .barkCondition(tree.getBarkCondition().stream().toList())
+            .branchesCondition(tree.getBranchesCondition().stream().toList())
+            .plantingType(tree.getPlantingType())
+            .comment(tree.getComment())
+            .diameterOfCrown(tree.getDiameterOfCrown())
+            .heightOfTheFirstBranch(tree.getHeightOfTheFirstBranch())
+            .numberOfTreeTrunks(tree.getNumberOfTreeTrunks())
+            .treeHeight(tree.getTreeHeight())
+            .trunkGirth(tree.getTrunkGirth());
     }
 }

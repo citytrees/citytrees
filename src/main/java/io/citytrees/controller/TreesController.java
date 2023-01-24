@@ -8,7 +8,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -18,8 +17,8 @@ public class TreesController implements TreesControllerApiDelegate {
     private final TreesService treesService;
 
     @Override
-    public ResponseEntity<List<TreesGetResponseTree>> loadTreesByRegion(BigDecimal x1, BigDecimal y1, BigDecimal x2, BigDecimal y2) {
-        List<TreesGetResponseTree> responseTreeList = treesService.listByRegion(x1.doubleValue(), y1.doubleValue(), x2.doubleValue(), y2.doubleValue())
+    public ResponseEntity<List<TreesGetResponseTree>> loadTreesByRegion(Double x1, Double y1, Double x2, Double y2) {
+        List<TreesGetResponseTree> responseTreeList = treesService.listByRegion(x1, y1, x2, y2)
             .stream()
             .map(tree -> new TreesGetResponseTree()
                 .id(tree.getId())
@@ -34,13 +33,13 @@ public class TreesController implements TreesControllerApiDelegate {
 
     @Override
     @Deprecated
-    public ResponseEntity<List<TreesClusterGetResponse>> loadTreesClustersByRegion(BigDecimal x1, BigDecimal y1, BigDecimal x2, BigDecimal y2) {
-        List<TreesClusterGetResponse> response = treesService.listClustersByRegion(x1.doubleValue(), y1.doubleValue(), x2.doubleValue(), y2.doubleValue())
+    public ResponseEntity<List<TreesClusterGetResponse>> loadTreesClustersByRegion(Double x1, Double y1, Double x2, Double y2) {
+        List<TreesClusterGetResponse> response = treesService.listClustersByRegion(x1, y1, x2, y2)
             .stream()
             .map(cluster -> new TreesClusterGetResponse()
                 .latitude(cluster.getGeoPoint().getX())
                 .longitude(cluster.getGeoPoint().getY())
-                .count(BigDecimal.valueOf(cluster.getCount())))
+                .count(cluster.getCount()))
             .toList();
 
         return ResponseEntity.ok(response);

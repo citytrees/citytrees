@@ -2,7 +2,6 @@ package io.citytrees.controller;
 
 import io.citytrees.service.FileDownloadService;
 import io.citytrees.service.FileService;
-import io.citytrees.service.SecurityService;
 import io.citytrees.v1.controller.FileControllerApiDelegate;
 import io.citytrees.v1.model.FileGetResponse;
 import io.citytrees.v1.model.FileUploadResponse;
@@ -26,7 +25,6 @@ public class FileController extends BaseController implements FileControllerApiD
 
     private final FileService fileService;
     private final FileDownloadService fileDownloadService;
-    private final SecurityService securityService;
 
     @Override
     @PreAuthorize("permitAll()")

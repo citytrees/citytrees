@@ -10,6 +10,7 @@ import io.citytrees.v1.model.TreeStatus;
 import lombok.Builder;
 import lombok.Value;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.locationtech.jts.geom.Point;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Column;
@@ -37,16 +38,8 @@ public class Tree {
     @Column("geo_point")
     Point geoPoint;
 
-    UUID woodTypeId;
-
     @NotNull
     Set<UUID> fileIds;
-
-    TreeState state;
-
-    Integer age;
-
-    TreeCondition condition;
 
     @NotNull
     Set<TreeBarkCondition> barkCondition;
@@ -54,7 +47,36 @@ public class Tree {
     @NotNull
     Set<TreeBranchCondition> branchesCondition;
 
+    @Nullable
+    UUID woodTypeId;
+
+    @Nullable
+    TreeState state;
+
+    @Nullable
+    Integer age;
+
+    @Nullable
+    TreeCondition condition;
+
+    @Nullable
     TreePlantingType plantingType;
 
+    @Nullable
     String comment;
+
+    @Nullable
+    Double diameterOfCrown;
+
+    @Nullable
+    Double heightOfTheFirstBranch;
+
+    @Nullable
+    Integer numberOfTreeTrunks;
+
+    @Nullable
+    Double treeHeight;
+
+    @Nullable
+    Double trunkGirth;
 }

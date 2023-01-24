@@ -1,7 +1,6 @@
 package io.citytrees.controller;
 
 import io.citytrees.model.CtFile;
-import io.citytrees.model.Tree;
 import io.citytrees.service.FileDownloadService;
 import io.citytrees.service.TreeService;
 import io.citytrees.v1.controller.TreeControllerApiDelegate;
@@ -21,7 +20,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
 
@@ -49,10 +47,7 @@ public class TreeController implements TreeControllerApiDelegate {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
 
-        var tree = optionalTree.get();
-
-        var response = responseFromTree(tree);
-
+        var response = treeService.responseFromTree(optionalTree.get());
         return ResponseEntity.ok(response);
     }
 
@@ -97,7 +92,7 @@ public class TreeController implements TreeControllerApiDelegate {
             .map(file -> new TreeGetAttachedFileResponse()
                 .id(file.getId())
                 .name(file.getName())
-                .size(BigDecimal.valueOf(file.getSize()))
+                .size(file.getSize())
                 .url(fileDownloadService.generateDownloadUrl(file.getId())))
             .toList();
 
@@ -106,9 +101,9 @@ public class TreeController implements TreeControllerApiDelegate {
 
     @Override
     @PreAuthorize("permitAll()")
-    public ResponseEntity<List<TreeGetResponse>> getAll(BigDecimal limit, BigDecimal offset) {
-        var response = treeService.listAll(limit.intValue(), offset.intValue()).stream()
-            .map(TreeController::responseFromTree)
+    public ResponseEntity<List<TreeGetResponse>> getAll(Integer limit, Integer offset) {
+        var response = treeService.listAll(limit, offset).stream()
+            .map(treeService::responseFromTree)
             .toList();
 
         return ResponseEntity.ok(response);
@@ -117,24 +112,5 @@ public class TreeController implements TreeControllerApiDelegate {
     @Override
     public ResponseEntity<TreeCountAllGetResponse> getAllTreesCount() {
         return ResponseEntity.ok(new TreeCountAllGetResponse().count(treeService.countAll()));
-    }
-
-    private static TreeGetResponse responseFromTree(Tree tree) {
-        Integer age = tree.getAge();
-        return new TreeGetResponse()
-            .id(tree.getId())
-            .userId(tree.getUserId())
-            .status(tree.getStatus())
-            .latitude(tree.getGeoPoint().getX())
-            .longitude(tree.getGeoPoint().getY())
-            .woodTypeId(tree.getWoodTypeId())
-            .fileIds(tree.getFileIds().stream().map(UUID::toString).toList())
-            .state(tree.getState())
-            .age(age != null ? BigDecimal.valueOf(age) : null)
-            .condition(tree.getCondition())
-            .barkCondition(tree.getBarkCondition().stream().toList())
-            .branchesCondition(tree.getBranchesCondition().stream().toList())
-            .plantingType(tree.getPlantingType())
-            .comment(tree.getComment());
     }
 }
