@@ -415,10 +415,37 @@ paths:
         500:
           $ref: '#/components/responses/InternalServerError'
 
+  /tree/{treeId}/approve:
+    post:
+      tags:
+        - tree-controller
+      summary: Approve tree
+      operationId: approveTree
+      security:
+        - BearerAuth: [ ]
+      parameters:
+        - name: treeId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        200:
+          description: OK
+        400:
+          $ref: "#/components/responses/BadRequest"
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/Forbidden'
+        500:
+          $ref: '#/components/responses/InternalServerError'
+
   /tree/{treeId}/file:
     post:
       tags:
-        - tree-files-controller
+        - tree-controller
       summary: Attach file to tree
       operationId: attachFile
       security:
@@ -455,7 +482,7 @@ paths:
   /tree/{treeId}/file/all:
     get:
       tags:
-        - tree-files-controller
+        - tree-controller
       summary: Load all attached files
       operationId: getAllAttachedFiles
       parameters:
@@ -578,7 +605,112 @@ paths:
           $ref: '#/components/responses/Forbidden'
         500:
           $ref: '#/components/responses/InternalServerError'
+  /tree/all/{limit}/{offset}:
+    get:
+      tags:
+        - tree-controller
+      summary: Get all trees
+      operationId: getAll
+      parameters:
+        - name: limit
+          in: path
+          required: true
+          schema:
+            type: number
+            maximum: 50
+        - name: offset
+          in: path
+          required: true
+          schema:
+            type: number
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TreeGetResponse'
+        400:
+          $ref: "#/components/responses/BadRequest"
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/Forbidden'
+        500:
+          $ref: '#/components/responses/InternalServerError'
+  /tree/all/count:
+    get:
+      tags:
+        - tree-controller
+      summary: Count all trees
+      operationId: getAllTreesCount
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TreeCountAllGetResponse'
+        400:
+          $ref: "#/components/responses/BadRequest"
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/Forbidden'
+        500:
+          $ref: '#/components/responses/InternalServerError'
 
+
+  /wood-type:
+    post:
+      tags:
+        - wood-type-controller
+      summary: Add new type of wood
+      operationId: createWoodType
+      security:
+        - BearerAuth: [ ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WoodTypeCreateRequest'
+      responses:
+        200:
+          description: OK
+        400:
+          $ref: "#/components/responses/BadRequest"
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/Forbidden'
+        500:
+          $ref: '#/components/responses/InternalServerError'
+  /wood-type/all:
+    get:
+      tags:
+        - wood-type-controller
+      summary: Get all types of wood
+      operationId: getAllWoodTypes
+      responses:
+        200:
+          description: Returns file's data
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/WoodTypeResponse'
+        400:
+          $ref: "#/components/responses/BadRequest"
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/Forbidden'
+        500:
+          $ref: '#/components/responses/InternalServerError'
   /file/upload:
     post:
       tags:
@@ -692,6 +824,7 @@ components:
       type: string
       enum:
         - ADMIN
+        - MODERATOR
         - BASIC
 
     UserStatus:
@@ -713,12 +846,14 @@ components:
         - NEW
         - TO_APPROVE
         - APPROVED
+        - DELETED
 
     TreeState:
       type: string
       enum:
         - ALIVE
         - DEAD
+        - STUMP
 
     TreeCondition:
       type: string
@@ -728,6 +863,28 @@ components:
         - NORMAL
         - GREAT
         - AWESOME
+
+    TreeBarkCondition:
+      type: string
+      enum:
+        - HOLLOW
+        - GROWTH
+        - CRACK
+        - MECHANICAL_DAMAGE
+
+    TreeBranchCondition:
+      type: string
+      enum:
+        - DEAD
+        - BROKEN
+        - CUT
+        - DANGEROUSLY_OVERHANGING
+
+    TreePlantingType:
+      type: string
+      enum:
+        - SELF_SEEDING
+        - CULTURAL_SEEDING
 
     UserRegisterResponse:
       type: object
@@ -857,7 +1014,6 @@ components:
       type: object
       required:
         - treeId
-        - status
       properties:
         treeId:
           type: string
@@ -872,9 +1028,6 @@ components:
         - status
         - latitude
         - longitude
-        - state
-        - condition
-        - comment
         - fileIds
       properties:
         id:
@@ -895,10 +1048,26 @@ components:
           type: number
           format: double
           example: 0.0
+        woodTypeId:
+          type: string
+          format: uuid
         state:
           $ref: '#/components/schemas/TreeState'
+        age:
+          type: number
+          format: integer
         condition:
           $ref: '#/components/schemas/TreeCondition'
+        barkCondition:
+          type: array
+          items:
+            $ref: '#/components/schemas/TreeBarkCondition'
+        branchesCondition:
+          type: array
+          items:
+            $ref: '#/components/schemas/TreeBranchCondition'
+        plantingType:
+          $ref: '#/components/schemas/TreePlantingType'
         comment:
           type: string
         fileIds:
@@ -932,12 +1101,28 @@ components:
       required:
         - status
       properties:
+        woodTypeId:
+          type: string
+          format: uuid
         status:
           $ref: '#/components/schemas/TreeStatus'
         state:
           $ref: '#/components/schemas/TreeState'
+        age:
+          type: number
+          format: integer
         condition:
           $ref: '#/components/schemas/TreeCondition'
+        barkCondition:
+          type: array
+          items:
+            $ref: '#/components/schemas/TreeBarkCondition'
+        branchesCondition:
+          type: array
+          items:
+            $ref: '#/components/schemas/TreeBranchCondition'
+        plantingType:
+          $ref: '#/components/schemas/TreePlantingType'
         comment:
           type: string
         fileIds:
@@ -945,6 +1130,14 @@ components:
           items:
             type: string
             format: uuid
+
+    TreeCountAllGetResponse:
+      type: object
+      required:
+        - count
+      properties:
+        count:
+          type: number
 
     TreesByRegionRequest:
       type: object
@@ -1018,6 +1211,32 @@ components:
           type: number
           format: integer
 
+    WoodTypeCreateRequest:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+          minLength: 2
+          maxLength: 30
+
+    WoodTypeResponse:
+      type: object
+      required:
+        - id
+        - name
+        - userId
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        userId:
+          type: string
+          format: uuid
+
     FileUploadRequest:
       type: object
       required:
@@ -1026,6 +1245,7 @@ components:
         file:
           type: string
           format: binary
+
     FileUploadResponse:
       type: object
       required:

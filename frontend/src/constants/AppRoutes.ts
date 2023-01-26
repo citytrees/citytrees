@@ -8,7 +8,8 @@ const AppRoutes = {
     ALL_TREES: '/all-trees',
     USERS: '/users',
     NOT_FOUND: '/404',
-    USER: '/user'
+    USER: '/user',
+    WOOD_TYPE: '/wood-type',
 } as const
 
 export default AppRoutes;

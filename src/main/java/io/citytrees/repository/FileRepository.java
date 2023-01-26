@@ -4,7 +4,9 @@ import io.citytrees.model.CtFile;
 import org.springframework.data.jdbc.repository.query.Query;
 import org.springframework.data.repository.CrudRepository;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 public interface FileRepository extends CrudRepository<CtFile, UUID> {
@@ -18,4 +20,6 @@ public interface FileRepository extends CrudRepository<CtFile, UUID> {
     Optional<CtFile> findFirstByHash(String hash);
 
     long countByHash(String hash);
+
+    List<CtFile> findAllByIdIn(Set<UUID> uuids);
 }

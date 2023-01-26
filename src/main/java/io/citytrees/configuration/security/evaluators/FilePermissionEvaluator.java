@@ -22,7 +22,7 @@ public class FilePermissionEvaluator implements DomainPermissionEvaluator {
         return switch (permission) {
             case Permissions.DELETE -> {
                 UUID userId = securityService.getCurrentUserId();
-                yield fileService.getById(targetId).orElseThrow().getUserId().equals(userId);
+                yield fileService.getFile(targetId).orElseThrow().getUserId().equals(userId);
             }
             default -> throw new NotImplementedError("Permission check is not yet implemented for that permission: " + permission);
         };

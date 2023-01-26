@@ -2,12 +2,11 @@ package io.citytrees.controller
 
 import io.citytrees.AbstractTest
 import io.citytrees.constants.CookieNames
-import io.citytrees.constants.TableNames
+import io.citytrees.v1.model.UserGetResponse
+import io.citytrees.v1.model.UserRegisterResponse
 import io.citytrees.v1.model.UserRole
 import org.junit.jupiter.api.Test
 import org.springframework.http.MediaType
-import org.springframework.test.context.jdbc.Sql
-import org.springframework.test.context.jdbc.Sql.ExecutionPhase.AFTER_TEST_METHOD
 import org.springframework.test.web.servlet.get
 import org.springframework.test.web.servlet.post
 import org.springframework.test.web.servlet.put
@@ -17,12 +16,11 @@ import kotlin.test.assertEquals
 class UserControllerTest : AbstractTest() {
 
     @Test
-    @Sql(statements = ["DELETE FROM ${TableNames.USER_TABLE}"], executionPhase = AFTER_TEST_METHOD)
     fun `user register should return 200`() {
         val email = "test@example.com"
         val password = "pass"
 
-        mockMvc.post("/api/v1/user/register") {
+        val content = mockMvc.post("/api/v1/user/register") {
             contentType = MediaType.APPLICATION_JSON
             content = objectMapper.createObjectNode().apply {
                 put("email", email)
@@ -30,8 +28,11 @@ class UserControllerTest : AbstractTest() {
             }
         }.andExpect {
             status { isOk() }
-            jsonPath("userId") { isNotEmpty() }
-        }
+            jsonPath(UserRegisterResponse::userId.name) { isNotEmpty() }
+        }.andReturn().response.contentAsString
+
+        val response = objectMapper.readValue(content, UserRegisterResponse::class.java)
+        userRepository.deleteById(response.userId)
     }
 
     @Test
@@ -47,13 +48,13 @@ class UserControllerTest : AbstractTest() {
         mockMvc.get("/api/v1/user/${user.id}")
             .andExpect {
                 status { isOk() }
-                jsonPath("id") { value(user.id.toString()) }
-                jsonPath("email") { value(user.email) }
-                jsonPath("roles") { isArray() }
-                jsonPath("roles") { hasSize(1) }
-                jsonPath("roles[0]") { value(UserRole.BASIC.name) }
-                jsonPath("firstName") { value(user.firstName) }
-                jsonPath("lastName") { value(user.lastName) }
+                jsonPath(UserGetResponse::id.name) { value(user.id.toString()) }
+                jsonPath(UserGetResponse::email.name) { value(user.email) }
+                jsonPath(UserGetResponse::roles.name) { isArray() }
+                jsonPath(UserGetResponse::roles.name) { hasSize(1) }
+                jsonPath(UserGetResponse::roles.name + "[0]") { value(UserRole.BASIC.name) }
+                jsonPath(UserGetResponse::firstName.name) { value(user.firstName) }
+                jsonPath(UserGetResponse::lastName.name) { value(user.lastName) }
             }
     }
 

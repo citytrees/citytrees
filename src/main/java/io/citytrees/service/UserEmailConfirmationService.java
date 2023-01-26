@@ -43,7 +43,7 @@ public class UserEmailConfirmationService {
     }
 
     public void confirmEmail(UUID userId, String confirmationId) {
-        var optionalUser = userRepository.findByUserId(userId);
+        var optionalUser = userRepository.findFirstById(userId);
         if (optionalUser.isEmpty()) {
             throw new UserEmailConfirmationException("Invalid parameters");
         }

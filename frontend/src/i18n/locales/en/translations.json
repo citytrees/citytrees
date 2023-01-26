@@ -47,11 +47,12 @@
         }
     },
     "appHeader": {
-        "menuItems":{
+        "menuItems": {
             "map": "Map",
             "myTrees": "My trees",
             "allTrees": "All trees",
-            "users": "Users"
+            "users": "Users",
+            "woodTypes": "Types of wood"
         },
         "buttons": {
             "signIn": "Sign in",

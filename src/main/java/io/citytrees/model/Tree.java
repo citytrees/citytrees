@@ -1,7 +1,10 @@
 package io.citytrees.model;
 
 import io.citytrees.constants.TableNames;
+import io.citytrees.v1.model.TreeBarkCondition;
+import io.citytrees.v1.model.TreeBranchCondition;
 import io.citytrees.v1.model.TreeCondition;
+import io.citytrees.v1.model.TreePlantingType;
 import io.citytrees.v1.model.TreeState;
 import io.citytrees.v1.model.TreeStatus;
 import lombok.Builder;
@@ -34,12 +37,24 @@ public class Tree {
     @Column("geo_point")
     Point geoPoint;
 
+    UUID woodTypeId;
+
     @NotNull
     Set<UUID> fileIds;
 
     TreeState state;
 
+    Integer age;
+
     TreeCondition condition;
+
+    @NotNull
+    Set<TreeBarkCondition> barkCondition;
+
+    @NotNull
+    Set<TreeBranchCondition> branchesCondition;
+
+    TreePlantingType plantingType;
 
     String comment;
 }

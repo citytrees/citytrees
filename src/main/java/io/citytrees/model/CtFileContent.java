@@ -1,7 +1,6 @@
 package io.citytrees.model;
 
 import io.citytrees.constants.TableNames;
-import io.citytrees.v1.model.UserPasswordResetStatus;
 import lombok.Builder;
 import lombok.Value;
 import org.jetbrains.annotations.NotNull;
@@ -12,19 +11,16 @@ import java.util.UUID;
 
 @Value
 @Builder
-@Table(TableNames.USER_PASSWORD_RESET_TABLE)
-public class UserPasswordResetToken {
+@Table(TableNames.FILE_CONTENT_TABLE)
+public class CtFileContent {
 
     @Id
     @NotNull
-    UUID userId;
+    UUID id;
 
     @NotNull
-    String email;
+    byte[] content;
 
     @NotNull
-    String token;
-
-    @NotNull
-    UserPasswordResetStatus status;
+    String hash;
 }
