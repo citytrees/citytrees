@@ -7,7 +7,7 @@ import {TileLayerProps} from "react-leaflet/lib/TileLayer";
 import {useUser} from "../../../app/hooks";
 import {TreesGetResponseTree, TreeStatus} from "../../../generated/openapi";
 import MarkerClusterGroup from "react-leaflet-cluster";
-import {Button, notification} from "antd";
+import {Button, Card, notification, Skeleton} from "antd";
 import api from "../../../api";
 import {mapBoundsOf} from "../Bounds/MapBounds";
 import uuid from "react-uuid";
@@ -15,6 +15,8 @@ import {clusterIcon, newTreeIcon, treeIcon} from "../Icon/MapIcons";
 import {CtTree, ctTreeOf} from "../Models/CtTree";
 import TreeView from "../TreeView";
 import {DragEndEvent, LatLng} from "leaflet";
+import Meta from "antd/es/card/Meta";
+import {EllipsisOutlined} from "@ant-design/icons";
 
 interface DraftCtTree {
   latitude: number
@@ -65,7 +67,6 @@ const TreeMap = ({...props}: TreeMapProps & MapContainerProps) => {
     setTreeViewValue(value)
     setTreeViewOpen(isOpen)
   }
-
   const createTreeMarker = (tree: TreesGetResponseTree) =>
       <Marker
           key={uuid()}
@@ -73,22 +74,49 @@ const TreeMap = ({...props}: TreeMapProps & MapContainerProps) => {
           icon={treeIcon()}
       >
         <Popup>
-          <Button
-              type="primary"
-              onClick={() => {
-                // todo #18 implement catch()
-                api.tree.getTreeById({id: tree.id})
-                    .then(treeResponse => {
-                      api.tree.getAllAttachedFiles({treeId: tree.id})
-                          .then((filesResponse) => {
-                            setTreeViewState(true, ctTreeOf(treeResponse, filesResponse));
-                          })
-                    })
-                    .catch()
-              }}
+          <Card
+              style={{width: 300}}
+              cover={
+                <div style={{display: "flex", width: "100%"}}>
+                  {
+                    tree.fileUrl
+                        ? <img style={{
+                          height: 300,
+                          margin: "auto",
+                          objectFit: "cover",
+                          objectPosition: "100% 0"
+                        }}
+                               alt={tree.id}
+                               src={tree.fileUrl}
+                        />
+                        : <Skeleton.Image style={{height: 250, width: 300}} active={true}/>
+                  }
+                </div>
+              }
+              actions={[
+                <EllipsisOutlined key="tree-details" onClick={() => {
+                  api.tree.getTreeById({id: tree.id})
+                      .then(treeResponse => {
+                        api.tree.getAllAttachedFiles({treeId: tree.id})
+                            .then((filesResponse) => {
+                              setTreeViewState(true, ctTreeOf(treeResponse, filesResponse));
+                            })
+                      })
+                      .catch()
+                }}/>,
+              ]}
           >
-            Details
-          </Button>
+            <Meta
+                title={tree.id}
+                description={
+                  <div>
+                    <p>Tree height: {tree.treeHeight}</p>
+                    <p>Trunk girth: {tree.trunkGirth}</p>
+                    <p>Wood type: {tree.woodTypeName}</p>
+                  </div>
+                }
+            />
+          </Card>
         </Popup>
       </Marker>
 

@@ -1226,6 +1226,19 @@ components:
           example: 0.0
         status:
           $ref: '#/components/schemas/TreeStatus'
+        woodTypeId:
+          type: string
+          format: uuid
+        woodTypeName:
+          type: string
+        treeHeight:
+          type: number
+          format: double
+        trunkGirth:
+          type: number
+          format: double
+        fileUrl:
+          type: string
 
     TreesClusterGetResponse:
       type: object
