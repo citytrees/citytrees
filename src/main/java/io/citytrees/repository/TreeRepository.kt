@@ -9,10 +9,10 @@ import org.springframework.data.jdbc.repository.query.Query
 import org.springframework.data.repository.CrudRepository
 import java.util.*
 
-interface TreeRepository : CrudRepository<Tree?, UUID>, TreeRepositoryExtension {
+interface TreeRepository : CrudRepository<Tree?, Long>, TreeRepositoryExtension {
 
     @Query("SELECT * FROM $TREE_TABLE WHERE id = :id")
-    fun findFirstById(id: UUID): Optional<Tree>
+    fun findFirstById(id: Long): Optional<Tree>
 
     @Query(
         """
@@ -28,18 +28,18 @@ interface TreeRepository : CrudRepository<Tree?, UUID>, TreeRepositoryExtension 
 
     @Query(
         """
-        INSERT INTO $TREE_TABLE(id, user_id, status, geo_point)
-        VALUES (:id, :userId, :status, ST_SetSRID(ST_MakePoint(:x, :y), :srid))
+        INSERT INTO $TREE_TABLE(user_id, status, geo_point)
+        VALUES (:userId, :status, ST_SetSRID(ST_MakePoint(:x, :y), :srid))
         RETURNING id
         """
     )
-    fun create(id: UUID, userId: UUID, status: TreeStatus, x: Double, y: Double, srid: Int): UUID
+    fun create(userId: UUID, status: TreeStatus, x: Double, y: Double, srid: Int): Long
 
     @Modifying
     @Query("UPDATE $TREE_TABLE SET status = :status WHERE id = :id")
-    fun updateStatus(id: UUID, status: TreeStatus): Int
+    fun updateStatus(id: Long, status: TreeStatus): Int
 
     @Modifying
     @Query("DELETE FROM $TREE_TABLE where id = :id")
-    override fun deleteById(id: UUID)
+    override fun deleteById(id: Long)
 }

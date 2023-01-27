@@ -5,10 +5,10 @@ import io.citytrees.v1.model.*
 import java.util.*
 
 interface TreeRepositoryExtension {
-    fun attachFile(treeId: UUID, fileId: UUID)
+    fun attachFile(treeId: Long, fileId: UUID)
 
     fun update(
-        id: UUID,
+        id: Long,
         userId: UUID,
         woodTypeId: UUID?,
         status: TreeStatus?,

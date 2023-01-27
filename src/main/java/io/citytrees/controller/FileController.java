@@ -1,6 +1,6 @@
 package io.citytrees.controller;
 
-import io.citytrees.service.FileDownloadService;
+import io.citytrees.util.FileDownloadUtil;
 import io.citytrees.service.FileService;
 import io.citytrees.v1.controller.FileControllerApiDelegate;
 import io.citytrees.v1.model.FileGetResponse;
@@ -24,7 +24,7 @@ import java.util.UUID;
 public class FileController extends BaseController implements FileControllerApiDelegate {
 
     private final FileService fileService;
-    private final FileDownloadService fileDownloadService;
+    private final FileDownloadUtil fileDownloadUtil;
 
     @Override
     @PreAuthorize("permitAll()")
@@ -52,7 +52,7 @@ public class FileController extends BaseController implements FileControllerApiD
         var fileId = fileService.upload(file);
         var response = new FileUploadResponse()
             .fileId(fileId)
-            .url(fileDownloadService.generateDownloadUrl(fileId));
+            .url(fileDownloadUtil.generateDownloadUrl(fileId));
 
         return ResponseEntity.ok(response);
     }

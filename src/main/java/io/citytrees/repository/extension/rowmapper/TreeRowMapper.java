@@ -3,7 +3,7 @@ package io.citytrees.repository.extension.rowmapper;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.citytrees.model.Tree;
-import io.citytrees.service.GeometryService;
+import io.citytrees.util.GeometryUtil;
 import io.citytrees.v1.model.TreeCondition;
 import io.citytrees.v1.model.TreePlantingType;
 import io.citytrees.v1.model.TreeState;
@@ -25,7 +25,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class TreeRowMapper implements RowMapper<Tree> {
 
-    private final GeometryService geometryService;
+    private final GeometryUtil geometryUtil;
     private final ObjectMapper objectMapper;
 
     @Override
@@ -45,10 +45,10 @@ public class TreeRowMapper implements RowMapper<Tree> {
         BigDecimal trunkGirth = rs.getBigDecimal("trunk_girth");
 
         return builder
-            .id(rs.getObject("id", UUID.class))
+            .id(rs.getLong("id"))
             .userId(rs.getObject("user_id", UUID.class))
             .status(TreeStatus.valueOf(rs.getObject("status", String.class)))
-            .geoPoint(geometryService.createPoint(point.getX(), point.getY()))
+            .geoPoint(geometryUtil.createPoint(point.getX(), point.getY()))
             .woodTypeId(rs.getObject("wood_type_id", UUID.class))
             .fileIds(objectMapper.readValue(rs.getString("file_ids"), new TypeReference<>() {}))
             .state(state != null ? TreeState.valueOf(state) : null)

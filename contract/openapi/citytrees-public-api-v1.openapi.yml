@@ -341,8 +341,8 @@ paths:
           in: path
           required: true
           schema:
-            type: string
-            format: uuid
+            type: integer
+            format: int64
       responses:
         200:
           description: Tree information
@@ -370,8 +370,8 @@ paths:
           in: path
           required: true
           schema:
-            type: string
-            format: uuid
+            type: integer
+            format: int64
       requestBody:
         required: true
         content:
@@ -401,8 +401,8 @@ paths:
           in: path
           required: true
           schema:
-            type: string
-            format: uuid
+            type: integer
+            format: int64
       responses:
         200:
           description: OK
@@ -416,7 +416,7 @@ paths:
           $ref: '#/components/responses/InternalServerError'
 
   /tree/{treeId}/approve:
-    post:
+    put:
       tags:
         - tree-controller
       summary: Approve tree
@@ -428,8 +428,8 @@ paths:
           in: path
           required: true
           schema:
-            type: string
-            format: uuid
+            type: integer
+            format: int64
       responses:
         200:
           description: OK
@@ -455,8 +455,8 @@ paths:
           in: path
           required: true
           schema:
-            type: string
-            format: uuid
+            type: integer
+            format: int64
       requestBody:
         required: true
         content:
@@ -490,8 +490,8 @@ paths:
           in: path
           required: true
           schema:
-            type: string
-            format: uuid
+            type: integer
+            format: int64
       responses:
         200:
           description: Return tree files
@@ -1025,8 +1025,8 @@ components:
         - treeId
       properties:
         treeId:
-          type: string
-          format: uuid
+          type: integer
+          format: int64
           example: ed156378-204b-473c-9d2a-886941a819ff
 
     TreeGetResponse:
@@ -1039,9 +1039,8 @@ components:
         - longitude
       properties:
         id:
-          type: string
-          format: uuid
-          example: ed156378-204b-473c-9d2a-886941a819ff
+          type: integer
+          format: int64
         userId:
           type: string
           format: uuid
@@ -1213,9 +1212,8 @@ components:
         - status
       properties:
         id:
-          type: string
-          format: uuid
-          example: ed156378-204b-473c-9d2a-886941a819ff
+          type: integer
+          format: int64
         latitude:
           type: number
           format: double

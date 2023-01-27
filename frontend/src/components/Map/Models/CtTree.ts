@@ -2,7 +2,7 @@ import {TreeBarkCondition, TreeBranchCondition, TreeCondition, TreeGetAttachedFi
 import {CtFile} from "./CtFile";
 
 export interface CtTree {
-    id: string,
+    id: number,
     latitude: number
     longitude: number
     woodTypeId?: string

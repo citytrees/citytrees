@@ -32,11 +32,13 @@ interface TreeMapProps {
   maxZoom: number
 }
 
+// todo #32 refactor TreeMap
 const TreeMap = ({...props}: TreeMapProps & MapContainerProps) => {
   const user = useUser()
 
   const [trees, setTrees] = useState<TreesGetResponseTree[]>([])
   const [newTree, setNewTree] = useState<DraftCtTree | null>(null)
+  const [trigger, setTrigger] = useState(false) // todo #32 refactor TreeMap
 
   const map = useMapEvents({
     click: (event) => {
@@ -55,7 +57,7 @@ const TreeMap = ({...props}: TreeMapProps & MapContainerProps) => {
   useEffect(() => {
     api.trees.loadTreesByRegion(mapBoundsOf(map.getBounds()))
         .then((responseTrees) => setTrees(responseTrees))
-  }, [map, zoom, bounds, newTree])
+  }, [map, zoom, bounds, newTree, trigger])
 
   const [treeViewOpen, setTreeViewOpen] = useState(false)
   const [treeViewValue, setTreeViewValue] = useState<CtTree | undefined>()
@@ -86,15 +88,15 @@ const TreeMap = ({...props}: TreeMapProps & MapContainerProps) => {
                           objectFit: "cover",
                           objectPosition: "100% 0"
                         }}
-                               alt={tree.id}
+                               alt={tree.id.toString()}
                                src={tree.fileUrl}
                         />
-                        : <Skeleton.Image style={{height: 250, width: 300}} active={true}/>
+                        : <Skeleton.Image style={{height: 250, width: 300}}/>
                   }
                 </div>
               }
               actions={[
-                <EllipsisOutlined key="tree-details" onClick={() => {
+                <Button key="tree-details" type="text" onClick={() => {
                   api.tree.getTreeById({id: tree.id})
                       .then(treeResponse => {
                         api.tree.getAllAttachedFiles({treeId: tree.id})
@@ -103,7 +105,7 @@ const TreeMap = ({...props}: TreeMapProps & MapContainerProps) => {
                             })
                       })
                       .catch()
-                }}/>,
+                }}>Details</Button>,
               ]}
           >
             <Meta
@@ -178,7 +180,10 @@ const TreeMap = ({...props}: TreeMapProps & MapContainerProps) => {
 
   const onSave = (tree: CtTree) => {
     updateTree(tree, tree.status,
-        () => notification.open({message: "Tree was saved", type: "info", placement: "topRight"}))
+        () => {
+          notification.open({message: "Tree was saved", type: "info", placement: "topRight"})
+          setTrigger(!trigger)
+        })
   }
 
   const onPublish = (tree: CtTree) => {
@@ -186,6 +191,7 @@ const TreeMap = ({...props}: TreeMapProps & MapContainerProps) => {
       notification.open({message: "Tree was published!", type: "info", placement: "topRight"});
       setTreeViewOpen(false)
       map.closePopup()
+      setTrigger(!trigger)
     })
   }
 

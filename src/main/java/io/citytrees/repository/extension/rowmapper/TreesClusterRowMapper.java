@@ -1,7 +1,7 @@
 package io.citytrees.repository.extension.rowmapper;
 
 import io.citytrees.model.TreesCluster;
-import io.citytrees.service.GeometryService;
+import io.citytrees.util.GeometryUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.jdbc.core.RowMapper;
@@ -16,7 +16,7 @@ import static com.amazonaws.util.json.Jackson.fromJsonString;
 @Component
 @RequiredArgsConstructor
 public class TreesClusterRowMapper implements RowMapper<TreesCluster> {
-    private final GeometryService geometryService;
+    private final GeometryUtil geometryUtil;
 
     @SuppressWarnings("unchecked")
     @Override
@@ -27,7 +27,7 @@ public class TreesClusterRowMapper implements RowMapper<TreesCluster> {
             .stream().map(number -> Double.parseDouble(number.toString())).toList();
 
         return TreesCluster.builder()
-            .geoPoint(geometryService.createPoint(Double.valueOf(coordinatesInfo.get(0)), Double.valueOf(coordinatesInfo.get(1))))
+            .geoPoint(geometryUtil.createPoint(coordinatesInfo.get(0), coordinatesInfo.get(1)))
             .count((long) rs.getInt(2))
             .build();
     }

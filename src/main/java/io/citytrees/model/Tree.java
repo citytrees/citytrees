@@ -26,7 +26,7 @@ public class Tree {
 
     @Id
     @NotNull
-    UUID id;
+    Long id;
 
     @NotNull
     UUID userId;

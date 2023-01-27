@@ -1,4 +1,4 @@
-package io.citytrees.service;
+package io.citytrees.util;
 
 import io.citytrees.configuration.properties.ApplicationProperties;
 import lombok.RequiredArgsConstructor;
@@ -9,7 +9,7 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-public class FileDownloadService {
+public class FileDownloadUtil {
 
     private final ApplicationProperties applicationProperties;
 

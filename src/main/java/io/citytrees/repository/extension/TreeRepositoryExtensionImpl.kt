@@ -16,7 +16,7 @@ open class TreeRepositoryExtensionImpl(
     val treesClusterRowMapper: TreesClusterRowMapper,
     val objectMapper: ObjectMapper,
 ) : TreeRepositoryExtension {
-    override fun attachFile(treeId: UUID, fileId: UUID) {
+    override fun attachFile(treeId: Long, fileId: UUID) {
         val fileIdElement = objectMapper.writeValueAsString(listOf(fileId))
 
         @Language("SQL")
@@ -36,7 +36,7 @@ open class TreeRepositoryExtensionImpl(
     }
 
     override fun update(
-        id: UUID,
+        id: Long,
         userId: UUID,
         woodTypeId: UUID?,
         status: TreeStatus?,

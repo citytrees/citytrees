@@ -3,6 +3,7 @@ package io.citytrees.service;
 import io.citytrees.model.WoodType;
 import io.citytrees.repository.WoodTypeRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -21,5 +22,10 @@ public class WoodTypeService {
 
     public List<WoodType> getAllWoodTypes() {
         return repository.findAll();
+    }
+
+    @Cacheable("woodTypeByIdCache")
+    public WoodType getById(UUID woodTypeId) {
+        return repository.findById(woodTypeId).orElseThrow();
     }
 }

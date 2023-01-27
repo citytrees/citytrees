@@ -37,6 +37,8 @@ caffeine:
   caches:
     - name: isUserExistsByIdCache
       spec: maximumSize=10000,expireAfterWrite=30m,recordStats
+    - name: woodTypeByIdCache
+      spec: maximumSize=100,recordStats
 
 email:
   user: ${EMAIL_USER:citytrees}

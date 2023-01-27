@@ -18,7 +18,7 @@ public class TreePermissionEvaluator implements DomainPermissionEvaluator {
     private final TreeService treeService;
 
     @Override
-    public boolean hasPermission(Authentication authentication, UUID targetId, String permission) {
+    public boolean hasPermission(Authentication authentication, Long targetId, String permission) {
         return switch (permission) {
             case Permissions.DELETE, Permissions.EDIT -> {
                 UUID userId = securityService.getCurrentUserId();

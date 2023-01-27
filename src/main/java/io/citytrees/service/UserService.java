@@ -70,6 +70,7 @@ public class UserService implements UserDetailsService {
         return create(registerUserRequest);
     }
 
+    // todo #32 make @Cacheable
     public Optional<User> getByEmail(String email) {
         return userRepository.findFirstByEmail(email);
     }

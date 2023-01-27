@@ -1,4 +1,4 @@
-package io.citytrees.service;
+package io.citytrees.util;
 
 import lombok.RequiredArgsConstructor;
 import org.locationtech.jts.geom.Coordinate;
@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class GeometryService {
+public class GeometryUtil {
     private static final GeometryFactory GEOMETRY_FACTORY = new GeometryFactory();
 
     public Point createPoint(Double x, Double y) {

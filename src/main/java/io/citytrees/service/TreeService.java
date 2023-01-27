@@ -5,6 +5,7 @@ import io.citytrees.model.CtFile;
 import io.citytrees.model.Tree;
 import io.citytrees.repository.TreeRepository;
 import io.citytrees.service.exception.UserInputError;
+import io.citytrees.util.GeometryUtil;
 import io.citytrees.v1.model.TreeBarkCondition;
 import io.citytrees.v1.model.TreeBranchCondition;
 import io.citytrees.v1.model.TreeCondition;
@@ -32,30 +33,30 @@ import java.util.UUID;
 public class TreeService {
 
     private final GeoProperties geoProperties;
-    private final GeometryService geometryService;
+    private final GeometryUtil geometryUtil;
     private final SecurityService securityService;
     private final TreeRepository treeRepository;
     private final FileService fileService;
 
-    public UUID create(TreeCreateRequest request) {
-        Point point = geometryService.createPoint(request.getLatitude(), request.getLongitude());
+    public Long create(TreeCreateRequest request) {
+        Point point = geometryUtil.createPoint(request.getLatitude(), request.getLongitude());
         point.setSRID(geoProperties.getSrid());
-        return create(UUID.randomUUID(), securityService.getCurrentUserId(), point);
+        return create(securityService.getCurrentUserId(), point);
     }
 
-    public UUID create(UUID id, UUID userId, Point point) {
-        return treeRepository.create(id, userId, TreeStatus.NEW, point.getX(), point.getY(), geoProperties.getSrid());
+    public Long create(UUID userId, Point point) {
+        return treeRepository.create(userId, TreeStatus.NEW, point.getX(), point.getY(), geoProperties.getSrid());
     }
 
-    public void delete(UUID id) {
+    public void delete(Long id) {
         treeRepository.updateStatus(id, TreeStatus.DELETED);
     }
 
-    public Optional<Tree> getById(UUID treeId) {
+    public Optional<Tree> getById(Long treeId) {
         return treeRepository.findFirstById(treeId);
     }
 
-    public void update(UUID id, TreeUpdateRequest treeUpdateRequest) {
+    public void update(Long id, TreeUpdateRequest treeUpdateRequest) {
         List<TreeBarkCondition> barkCondition = treeUpdateRequest.getBarkCondition();
         List<TreeBranchCondition> branchesCondition = treeUpdateRequest.getBranchesCondition();
         List<UUID> fileIds = treeUpdateRequest.getFileIds();
@@ -81,7 +82,7 @@ public class TreeService {
     }
 
     @SuppressWarnings("checkstyle:ParameterNumber")
-    public void update(UUID id,
+    public void update(Long id,
                        UUID userId,
                        UUID woodTypeId,
                        TreeStatus status,
@@ -119,13 +120,13 @@ public class TreeService {
     }
 
     @Transactional
-    public UUID attachFile(UUID treeId, MultipartFile file) {
+    public UUID attachFile(Long treeId, MultipartFile file) {
         UUID fileId = fileService.upload(file);
         treeRepository.attachFile(treeId, fileId);
         return fileId;
     }
 
-    public List<CtFile> listAttachedFiles(UUID treeId) {
+    public List<CtFile> listAttachedFiles(Long treeId) {
         var optionalTree = treeRepository.findFirstById(treeId);
         if (optionalTree.isEmpty()) {
             throw new UserInputError("Tree with id '" + treeId + "' not found");
@@ -134,7 +135,7 @@ public class TreeService {
         return fileService.listAllByIds(tree.getFileIds());
     }
 
-    public void updateStatus(UUID id, TreeStatus status) {
+    public void updateStatus(Long id, TreeStatus status) {
         treeRepository.updateStatus(id, status);
     }
 

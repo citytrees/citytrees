@@ -137,9 +137,7 @@ abstract class AbstractTest {
         latitude: Double,
         longitude: Double,
         status: TreeStatus = TreeStatus.NEW,
-        id: UUID = UUID.randomUUID(),
     ): Tree = Tree.builder()
-        .id(id)
         .userId(userId)
         .status(status)
         .geoPoint(GEOMETRY_FACTORY.createPoint(Coordinate(latitude, longitude)))
@@ -147,8 +145,8 @@ abstract class AbstractTest {
         .branchesCondition(emptySet())
         .fileIds(emptySet())
         .build().also {
-            treeService.create(it.id, it.userId, it.geoPoint)
-            CLEANUP_TASKS.addFirst { treeRepository.deleteById(it.id) }
+            val id = treeService.create(it.userId, it.geoPoint)
+            CLEANUP_TASKS.addFirst { treeRepository.deleteById(id) }
         }
 
     companion object {

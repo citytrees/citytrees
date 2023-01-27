@@ -44,7 +44,9 @@ const AllTreesPage: React.FC = () => {
       render: (_, record: CtTree) => {
         const items: MenuProps["items"] = []
 
-        if (record.status === TreeStatus.ToApprove) {
+        const status = record.status;
+
+        if (status === TreeStatus.ToApprove) {
           items.push({
             label: 'Approve tree',
             key: "action-approve-tree",
@@ -57,16 +59,27 @@ const AllTreesPage: React.FC = () => {
           })
         }
 
-        items.push({
-          label: 'Delete',
-          key: "action-delete-tree",
-          onClick: () => {
-            api.tree.deleteTree({id: record.id}).then(() => {
-              record.status = TreeStatus.Deleted
-              deleteTableRecord(record)
-            })
-          }
-        })
+        if (status !== TreeStatus.Deleted) {
+          items.push({
+            label: 'Delete',
+            key: "action-delete-tree",
+            onClick: () => {
+              api.tree.deleteTree({id: record.id}).then(() => {
+                record.status = TreeStatus.Deleted
+                updateTableRecord(record)
+              })
+            }
+          })
+        } else if (status === TreeStatus.Deleted) {
+          // TODO #32 restore
+          items.push({
+            label: 'Restore',
+            key: "action-restore-tree",
+            disabled: true,
+            onClick: () => {
+            }
+          })
+        }
 
         return <Dropdown trigger={['click']} disabled={items.length === 0} menu={{items}}>
           <BarsOutlined/>
@@ -74,10 +87,6 @@ const AllTreesPage: React.FC = () => {
       }
     },
   ]
-
-  const deleteTableRecord = (record: CtTree) => {
-    setData(data.filter(tree => record.id !== tree.id))
-  }
 
   const updateTableRecord = (record: CtTree) => {
     const index = data.findIndex((tree) => record.id === tree.id)
