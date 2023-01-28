@@ -12,6 +12,7 @@ import org.springframework.web.server.ResponseStatusException;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 import java.time.Duration;
+import java.util.UUID;
 
 import static io.citytrees.constants.CookieNames.ACCESS_TOKEN;
 import static io.citytrees.constants.CookieNames.REFRESH_TOKEN;
@@ -34,7 +35,7 @@ public class AuthService {
         var password = loginAndPassword[1];
 
         userService.getByEmail(email)
-            .filter(user -> user.getPassword().equals(hashUtil.md5WithSalt(password)))
+            .filter(user -> user.getPassword() != null && user.getPassword().equals(hashUtil.md5WithSalt(password)))
             .ifPresentOrElse(
                 user -> setResponseCookies(tokenService.generateNewPair(user), httpServletResponse),
                 () -> {
@@ -43,14 +44,14 @@ public class AuthService {
     }
 
     public void refreshTokenPair(String refreshToken, HttpServletResponse httpServletResponse) {
-        String email;
+        UUID id;
         try {
-            email = tokenService.validateTokenAndExtractEmail(refreshToken);
+            id = tokenService.validateTokenAndExtractId(refreshToken);
         } catch (JWTVerificationException e) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage(), e);
         }
 
-        userService.getByEmail(email)
+        userService.getById(id)
             .ifPresentOrElse(
                 user -> setResponseCookies(tokenService.generateNewPair(user), httpServletResponse),
                 () -> {

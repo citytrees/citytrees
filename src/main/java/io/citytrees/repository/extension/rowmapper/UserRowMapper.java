@@ -31,6 +31,7 @@ public class UserRowMapper implements RowMapper<User> {
             .creationDateTime(rs.getObject("creation_date_time", LocalDateTime.class))
             .firstName(rs.getString("first_name"))
             .lastName(rs.getString("last_name"))
+            .authProviderMeta(objectMapper.readValue(rs.getString("auth_provider_meta"), new TypeReference<>() {}))
             .build();
     }
 }

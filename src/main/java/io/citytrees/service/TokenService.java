@@ -43,7 +43,7 @@ public class TokenService {
     }
 
     @NotNull
-    public String validateTokenAndExtractEmail(String refreshToken) {
+    public UUID validateTokenAndExtractId(String refreshToken) {
         if (refreshToken == null) {
             throw new JWTVerificationException("Refresh token not present");
         }
@@ -55,7 +55,7 @@ public class TokenService {
 
         var decodedJWT = verifier.verify(refreshToken);
 
-        return decodedJWT.getClaim(EMAIL_CLAIM).asString();
+        return UUID.fromString(decodedJWT.getSubject());
     }
 
     @NotNull

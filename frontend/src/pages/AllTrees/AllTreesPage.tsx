@@ -19,6 +19,14 @@ const AllTreesPage: React.FC = () => {
       dataIndex: 'id',
     },
     {
+      title: 'Lat',
+      dataIndex: 'latitude',
+    },
+    {
+      title: 'Long',
+      dataIndex: 'longitude',
+    },
+    {
       title: 'Status',
       dataIndex: 'status',
       render: (_, record: CtTree) => {

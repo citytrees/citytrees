@@ -16,6 +16,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
+import java.time.LocalDateTime;
 import java.util.Set;
 import java.util.UUID;
 
@@ -46,6 +47,9 @@ public class Tree {
 
     @NotNull
     Set<TreeBranchCondition> branchesCondition;
+
+    @NotNull
+    LocalDateTime creationDateTime;
 
     @Nullable
     UUID woodTypeId;

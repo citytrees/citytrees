@@ -7,6 +7,7 @@ import io.citytrees.v1.model.TreeStatus
 import org.springframework.data.jdbc.repository.query.Modifying
 import org.springframework.data.jdbc.repository.query.Query
 import org.springframework.data.repository.CrudRepository
+import java.time.LocalDateTime
 import java.util.*
 
 interface TreeRepository : CrudRepository<Tree?, Long>, TreeRepositoryExtension {
@@ -28,12 +29,12 @@ interface TreeRepository : CrudRepository<Tree?, Long>, TreeRepositoryExtension 
 
     @Query(
         """
-        INSERT INTO $TREE_TABLE(user_id, status, geo_point)
-        VALUES (:userId, :status, ST_SetSRID(ST_MakePoint(:x, :y), :srid))
+        INSERT INTO $TREE_TABLE(user_id, status, geo_point, creation_date_time)
+        VALUES (:userId, :status, ST_SetSRID(ST_MakePoint(:x, :y), :srid, :creationDateTime))
         RETURNING id
         """
     )
-    fun create(userId: UUID, status: TreeStatus, x: Double, y: Double, srid: Int): Long
+    fun create(userId: UUID, status: TreeStatus, x: Double, y: Double, srid: Int, creationDateTime: LocalDateTime): Long
 
     @Modifying
     @Query("UPDATE $TREE_TABLE SET status = :status WHERE id = :id")

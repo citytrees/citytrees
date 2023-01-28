@@ -3,6 +3,7 @@ package io.citytrees.model;
 import io.citytrees.constants.TableNames;
 import lombok.Builder;
 import lombok.Value;
+import org.jetbrains.annotations.Nullable;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Table;
 
@@ -21,6 +22,6 @@ public class WoodType {
     @NotNull
     String name;
 
-    @NotNull
+    @Nullable
     UUID userId;
 }

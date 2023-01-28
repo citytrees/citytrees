@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -45,7 +46,7 @@ public class TreeService {
     }
 
     public Long create(UUID userId, Point point) {
-        return treeRepository.create(userId, TreeStatus.NEW, point.getX(), point.getY(), geoProperties.getSrid());
+        return treeRepository.create(userId, TreeStatus.NEW, point.getX(), point.getY(), geoProperties.getSrid(), LocalDateTime.now());
     }
 
     public void delete(Long id) {

@@ -10,6 +10,7 @@ import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
@@ -33,6 +34,7 @@ public class StartupService {
                 .status(UserStatus.APPROVED)
                 .roles(Set.of(UserRole.ADMIN))
                 .creationDateTime(LocalDateTime.now())
+                .authProviderMeta(List.of())
                 .build()
         );
     }

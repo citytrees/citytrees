@@ -12,6 +12,8 @@ import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
@@ -25,13 +27,6 @@ public class User {
     UUID id;
 
     @NotNull
-    String email;
-
-    @NotNull
-    @Column("pwd")
-    String password;
-
-    @NotNull
     Set<UserRole> roles;
 
     @NotNull
@@ -40,9 +35,26 @@ public class User {
     @NotNull
     LocalDateTime creationDateTime;
 
+    @NotNull
+    List<AuthProviderMeta> authProviderMeta;
+
+    @Nullable
+    @Column("pwd")
+    String password;
+
+    @Nullable
+    String email;
+
     @Nullable
     String firstName;
 
     @Nullable
     String lastName;
+
+    @Value
+    @Builder
+    public static class AuthProviderMeta {
+        String id;
+        Map<String, Object> params;
+    }
 }

@@ -3,7 +3,6 @@ package io.citytrees.repository
 import io.citytrees.constants.TableNames.USER_TABLE
 import io.citytrees.model.User
 import io.citytrees.v1.model.UserStatus
-import org.springframework.data.domain.Pageable
 import org.springframework.data.jdbc.repository.query.Modifying
 import org.springframework.data.jdbc.repository.query.Query
 import org.springframework.data.repository.CrudRepository
@@ -12,11 +11,28 @@ import java.util.*
 
 interface UserRepository : CrudRepository<User, UUID> {
 
+    @Query("""
+        SELECT *
+        FROM ct_user
+        WHERE id = :id
+    """)
     fun findFirstById(id: UUID): Optional<User>
 
+    @Query("""
+        SELECT *
+        FROM ct_user
+        WHERE email = :email
+        LIMIT 1
+    """)
     fun findFirstByEmail(email: String): Optional<User>
 
-    fun findByStatus(status: UserStatus, pageable: Pageable): List<User>
+    @Query("""
+        SELECT *
+        FROM ct_user
+        WHERE status = :status
+        LIMIT 100
+    """)
+    fun findByStatus(status: UserStatus, limit: Int): List<User>
 
     @Query(
         """

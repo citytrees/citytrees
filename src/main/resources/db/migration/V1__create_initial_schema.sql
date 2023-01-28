@@ -1,22 +1,23 @@
+create extension if not exists postgis;
+
 create table ct_user
 (
     id                 uuid         not null primary key,
-    email              varchar(128) not null,
-    pwd                varchar(128) not null,
     roles              jsonb        not null,
     status             varchar(16)  not null,
     creation_date_time timestamp    not null,
+    auth_provider_meta jsonb        not null default '[]',
+    email              varchar(128),
+    pwd                varchar(128),
     first_name         varchar(128),
     last_name          varchar(128)
 );
-
-create unique index ct_user_email_uidx on ct_user (email);
 
 create table ct_file
 (
     id                 uuid         not null primary key,
     name               varchar(255) not null,
-    mime_type          varchar(64)  not null,
+    mime_type          varchar(128) not null,
     size               bigint       not null,
     hash               varchar(255) not null,
     creation_date_time timestamp    not null,
@@ -43,6 +44,7 @@ create table ct_tree
     file_ids                   jsonb       not null default '[]'::jsonb,
     bark_condition             jsonb       not null default '[]'::jsonb,
     branches_condition         jsonb       not null default '[]'::jsonb,
+    creation_date_time         timestamp   not null,
     wood_type_id               uuid,
     state                      varchar(16),
     age                        integer,
@@ -72,7 +74,7 @@ create table ct_wood_type
 (
     id      uuid               not null primary key,
     name    varchar(32) unique not null,
-    user_id uuid               not null
+    user_id uuid
 )
 
 -- todo #18 add enums, indexes

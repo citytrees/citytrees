@@ -63,6 +63,7 @@ public class TreeRowMapper implements RowMapper<Tree> {
             .numberOfTreeTrunks(numberOfTreeTrunks != null ? numberOfTreeTrunks.intValue() : null)
             .treeHeight(treeHeight != null ? treeHeight.doubleValue() : null)
             .trunkGirth(trunkGirth != null ? trunkGirth.doubleValue() : null)
+            .creationDateTime(rs.getTimestamp("creation_date_time").toLocalDateTime())
             .build();
     }
 }

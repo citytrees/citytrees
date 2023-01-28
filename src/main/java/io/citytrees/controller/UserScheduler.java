@@ -23,7 +23,7 @@ public class UserScheduler {
     @Scheduled(fixedDelayString = "${scheduling.user.confirmation-email-delay}")
     public void sendConfirmationEmail() {
         userRepository
-            .findByStatus(UserStatus.NEW, Pageable.ofSize(100))
+            .findByStatus(UserStatus.NEW, 100)
             .forEach(userEmailConfirmationService::sendConfirmationEmail);
     }
 
