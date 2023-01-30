@@ -2,6 +2,7 @@ package io.citytrees.service;
 
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import io.citytrees.model.TokenPair;
+import io.citytrees.model.User;
 import io.citytrees.util.HashUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -58,6 +59,10 @@ public class AuthService {
                     throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
                 }
             );
+    }
+
+    public void generateAndSetAuthCookies(User user, HttpServletResponse httpServletResponse) {
+        setResponseCookies(tokenService.generateNewPair(user), httpServletResponse);
     }
 
     private void setResponseCookies(TokenPair tokenPair, HttpServletResponse httpServletResponse) {

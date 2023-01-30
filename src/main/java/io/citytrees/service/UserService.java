@@ -108,4 +108,8 @@ public class UserService implements UserDetailsService {
         var hashedPassword = hashUtil.md5WithSalt(pwd);
         return userRepository.create(id, email, hashedPassword, status, rolesJson, LocalDateTime.now(), firstName, lastName);
     }
+
+    public User findByAuthProviderIdAndExternalUserId(String providerId, Long externalUserId) {
+        return userRepository.findByAuthProviderIdAndExternalUserId(providerId, externalUserId);
+    }
 }
