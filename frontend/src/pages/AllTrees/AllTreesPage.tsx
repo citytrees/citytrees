@@ -6,12 +6,16 @@ import {ColumnType} from "antd/es/table/interface";
 import {PresetStatusColorType} from "antd/es/_util/colors";
 import {TreeStatus} from "../../generated/openapi";
 import {BarsOutlined} from "@ant-design/icons";
+import TreeView from "../../components/Map/TreeView";
+import AppRoutes from "../../constants/AppRoutes";
 
 const AllTreesPage: React.FC = () => {
   const [pagination, setPagination] = useState({limit: 0, offset: 0})
   const [total, setTotal] = useState(1)
 
   const [data, setData] = useState<CtTree[]>([])
+  const [treeViewOpen, setTreeViewOpen] = useState(false)
+  const [selectedTree, setSelectedTree] = useState<CtTree>()
 
   const columns: ColumnType<CtTree>[] = [
     {
@@ -35,7 +39,7 @@ const AllTreesPage: React.FC = () => {
         if (status === TreeStatus.New) {
           color = "processing"
         } else if (status === TreeStatus.ToApprove) {
-          color = "error"
+          color = "warning"
         } else if (status === TreeStatus.Approved) {
           color = "success"
         } else if (status === TreeStatus.Deleted) {
@@ -54,20 +58,30 @@ const AllTreesPage: React.FC = () => {
 
         const status = record.status;
 
-        if (status === TreeStatus.ToApprove) {
-          items.push({
-            label: 'Approve tree',
-            key: "action-approve-tree",
-            onClick: () => {
-              api.tree.approveTree({treeId: record.id}).then(() => {
-                record.status = TreeStatus.Approved
-                updateTableRecord(record)
-              })
-            }
-          })
-        }
+        items.push({
+          label: 'Details',
+          key: "action-details-tree",
+          onClick: () => {
+            api.tree.getTreeById({id: record.id})
+                .then(treeResponse => {
+                  api.tree.getAllAttachedFiles({treeId: record.id})
+                      .then((filesResponse) => {
+                        setSelectedTree(ctTreeOf(treeResponse, filesResponse))
+                        setTreeViewOpen(true)
+                      })
+                })
+                .catch()
+          }
+        })
 
         if (status !== TreeStatus.Deleted) {
+          items.push({
+            label: 'Open on map',
+            key: 'action-open-on-map',
+            onClick: () => {
+              window.open(`${AppRoutes.MAIN}?lat=${record.latitude}&lng=${record.longitude}`, '_blank')
+            }
+          })
           items.push({
             label: 'Delete',
             key: "action-delete-tree",
@@ -85,6 +99,19 @@ const AllTreesPage: React.FC = () => {
             key: "action-restore-tree",
             disabled: true,
             onClick: () => {
+            }
+          })
+        }
+
+        if (status === TreeStatus.ToApprove) {
+          items.push({
+            label: 'Approve tree',
+            key: "action-approve-tree",
+            onClick: () => {
+              api.tree.approveTree({treeId: record.id}).then(() => {
+                record.status = TreeStatus.Approved
+                updateTableRecord(record)
+              })
             }
           })
         }
@@ -122,18 +149,29 @@ const AllTreesPage: React.FC = () => {
   }, [pagination])
 
   return (
-      <Table
-          dataSource={data}
-          columns={columns}
-          pagination={{
-            position: ['bottomCenter'],
-            showSizeChanger: false,
-            total: total,
-            onChange: (page, pageSize) => {
-              setPagination({limit: pageSize, offset: (page - 1) * pageSize})
-            },
-          }}
-      />
+      <div>
+        <TreeView
+            open={treeViewOpen}
+            centered={true}
+            initial={selectedTree!!}
+            editable={false}
+            onCancel={() => setTreeViewOpen(false)}
+            bodyStyle={{overflowY: 'auto', maxHeight: 'calc(100vh - 100px)'}}
+            width={600}
+        />
+        <Table
+            dataSource={data}
+            columns={columns}
+            pagination={{
+              position: ['bottomCenter'],
+              showSizeChanger: false,
+              total: total,
+              onChange: (page, pageSize) => {
+                setPagination({limit: pageSize, offset: (page - 1) * pageSize})
+              },
+            }}
+        />
+      </div>
   )
 };
 

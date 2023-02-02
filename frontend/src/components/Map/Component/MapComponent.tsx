@@ -16,7 +16,7 @@ import {CtTree, ctTreeOf} from "../Models/CtTree";
 import TreeView from "../TreeView";
 import {DragEndEvent, LatLng} from "leaflet";
 import Meta from "antd/es/card/Meta";
-import {EllipsisOutlined} from "@ant-design/icons";
+import {useSearchParams} from "react-router-dom";
 
 interface DraftCtTree {
   latitude: number
@@ -34,6 +34,7 @@ interface TreeMapProps {
 
 // todo #32 refactor TreeMap
 const TreeMap = ({...props}: TreeMapProps & MapContainerProps) => {
+  const [searchParams] = useSearchParams();
   const user = useUser()
 
   const [trees, setTrees] = useState<TreesGetResponseTree[]>([])
@@ -55,6 +56,19 @@ const TreeMap = ({...props}: TreeMapProps & MapContainerProps) => {
   const [zoom, setZoom] = useState(props.zoom)
 
   useEffect(() => {
+    let latStr = searchParams.get("lat");
+    let lngStr = searchParams.get("lng");
+
+    if (latStr !== null && lngStr !== null) {
+      try {
+        map.flyTo(new LatLng(parseFloat(latStr!!), parseFloat(lngStr!!)), props.maxZoom, {duration: 1})
+      } catch (e) {
+        console.warn("Incorrect coordinates")
+      }
+    }
+  }, [searchParams, map, props.maxZoom])
+
+  useEffect(() => {
     api.trees.loadTreesByRegion(mapBoundsOf(map.getBounds()))
         .then((responseTrees) => setTrees(responseTrees))
   }, [map, zoom, bounds, newTree, trigger])
@@ -73,7 +87,7 @@ const TreeMap = ({...props}: TreeMapProps & MapContainerProps) => {
       <Marker
           key={uuid()}
           position={[tree.latitude, tree.longitude]}
-          icon={treeIcon()}
+          icon={treeIcon(tree.status)}
       >
         <Popup>
           <Card
@@ -207,6 +221,8 @@ const TreeMap = ({...props}: TreeMapProps & MapContainerProps) => {
         </MarkerClusterGroup>
         {newTree && user && createDraftTreeMarker(newTree)}
         {treeViewValue && <TreeView
+            bodyStyle={{overflowY: 'auto', maxHeight: 'calc(100vh - 100px)'}}
+            width={600}
             centered={true}
             editable={treeViesEditable}
             open={treeViewOpen}

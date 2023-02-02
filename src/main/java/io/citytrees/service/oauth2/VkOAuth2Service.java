@@ -15,7 +15,6 @@ import io.citytrees.v1.model.UserRole;
 import lombok.RequiredArgsConstructor;
 import org.apache.http.client.utils.URIBuilder;
 import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import javax.servlet.http.HttpServletResponse;
@@ -23,7 +22,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-@Service
+//@Service TODO #32
 @RequiredArgsConstructor
 public class VkOAuth2Service implements OAuth2Service {
 
@@ -38,14 +37,14 @@ public class VkOAuth2Service implements OAuth2Service {
     @Override
     public String getOAuthUri() {
         return new URIBuilder()
-                .setHost("https://oauth.vk.com")
-                .setPath("authorize")
-                .setParameter("client_id", oAuth2Config.getClientId(PROVIDER_ID))
-                .setParameter("display", "page")
-                .setParameter("redirect_uri", applicationProperties.getBaseUrl() + "/auth/oauth2/vk/callback")
-                .setParameter("scope", "groups")
-                .setParameter("response_type", "code")
-                .toString();
+            .setHost("https://oauth.vk.com")
+            .setPath("authorize")
+            .setParameter("client_id", oAuth2Config.getClientId(PROVIDER_ID))
+            .setParameter("display", "page")
+            .setParameter("redirect_uri", applicationProperties.getBaseUrl() + "/auth/oauth2/vk/callback")
+            .setParameter("scope", "groups")
+            .setParameter("response_type", "code")
+            .toString();
     }
 
     @Override
@@ -54,10 +53,10 @@ public class VkOAuth2Service implements OAuth2Service {
         UserAuthResponse authResponse;
         try {
             authResponse = vk.oAuth().userAuthorizationCodeFlow(
-                    Integer.parseInt(oAuth2Config.getClientId(PROVIDER_ID)),
-                    oAuth2Config.getClientSecret(PROVIDER_ID),
-                    getRedirectUri(),
-                    authorizationCode
+                Integer.parseInt(oAuth2Config.getClientId(PROVIDER_ID)),
+                oAuth2Config.getClientSecret(PROVIDER_ID),
+                getRedirectUri(),
+                authorizationCode
             ).execute();
         } catch (ApiException | ClientException e) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage(), e);
@@ -73,9 +72,9 @@ public class VkOAuth2Service implements OAuth2Service {
 
     private String getRedirectUri() {
         return new URIBuilder()
-                .setHost(applicationProperties.getBaseUrl())
-                .setPath("/auth/oauth2/vk/callback")
-                .toString();
+            .setHost(applicationProperties.getBaseUrl())
+            .setPath("/auth/oauth2/vk/callback")
+            .toString();
     }
 
     private User createNewUser(Integer userVkId, String token) {
@@ -85,19 +84,19 @@ public class VkOAuth2Service implements OAuth2Service {
             GetResponse userR = getUsersResponse.get(0);
 
             User user = User.builder()
-                    .firstName(userR.getFirstName())
-                    .lastName(userR.getLastName())
-                    .roles(Set.of(UserRole.BASIC))
-                    .email(userR.getEmail())
-                    .authProviderMeta(List.of(
-                        User.AuthProviderMeta.builder()
-                                .id(PROVIDER_ID)
-                                .params(Map.of(
-                                    "id", userR.getId()
-                                ))
-                                .build()
-                    ))
-                    .build();
+                .firstName(userR.getFirstName())
+                .lastName(userR.getLastName())
+                .roles(Set.of(UserRole.BASIC))
+                .email(userR.getEmail())
+                .authProviderMeta(List.of(
+                    User.AuthProviderMeta.builder()
+                        .id(PROVIDER_ID)
+                        .params(Map.of(
+                            "id", userR.getId()
+                        ))
+                        .build()
+                ))
+                .build();
 
             userService.create(user);
 

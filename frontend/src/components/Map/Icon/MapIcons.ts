@@ -1,4 +1,5 @@
 import {divIcon, Icon} from "leaflet";
+import {TreeStatus} from "../../../generated/openapi";
 
 export const clusterIcon = (count: number) => divIcon({
     html: `<div style="
@@ -13,7 +14,16 @@ export const clusterIcon = (count: number) => divIcon({
     iconSize: [30, 30]
 })
 
-export const treeIcon = () => divIcon({
+const treeIconColor = (status: TreeStatus) => {
+    if (status === TreeStatus.New) {
+        return 'rgba(134,198,255,0.6)'
+    } else if (status === TreeStatus.ToApprove) {
+        return 'rgba(255,240,150,0.6)'
+    } else if (status === TreeStatus.Approved) {
+        return 'rgba(110,204,57,0.6)'
+    }
+}
+export const treeIcon = (status: TreeStatus) => divIcon({
     html: `<div style="
                 width: 15px;
                 height: 15px;
@@ -22,7 +32,7 @@ export const treeIcon = () => divIcon({
                 left: 3px;
                 border: 1px solid darkgreen;
                 border-radius: 20px;
-                background-color:rgba(110,204,57,0.6);
+                background-color: ${treeIconColor(status)};
             "></div>`,
     className: "circle-div-icon",
     iconSize: [15, 15],

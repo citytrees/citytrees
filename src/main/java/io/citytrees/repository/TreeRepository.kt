@@ -30,7 +30,7 @@ interface TreeRepository : CrudRepository<Tree?, Long>, TreeRepositoryExtension 
     @Query(
         """
         INSERT INTO $TREE_TABLE(user_id, status, geo_point, creation_date_time)
-        VALUES (:userId, :status, ST_SetSRID(ST_MakePoint(:x, :y), :srid, :creationDateTime))
+        VALUES (:userId, :status, ST_SetSRID(ST_MakePoint(:x, :y), :srid), :creationDateTime)
         RETURNING id
         """
     )
