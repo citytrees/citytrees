@@ -25,9 +25,11 @@ import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import java.util.function.Predicate;
 
 @Service
 @RequiredArgsConstructor
@@ -73,7 +75,7 @@ public class TreeService {
             branchesCondition != null ? new HashSet<>(branchesCondition) : Collections.emptySet(),
             treeUpdateRequest.getPlantingType(),
             treeUpdateRequest.getComment(),
-            fileIds != null ? fileIds : Collections.emptyList(),
+            fileIds != null ? fileIds.stream().filter(Predicate.not(Objects::isNull)).toList() : Collections.emptyList(),
             treeUpdateRequest.getDiameterOfCrown(),
             treeUpdateRequest.getHeightOfTheFirstBranch(),
             treeUpdateRequest.getNumberOfTreeTrunks(),

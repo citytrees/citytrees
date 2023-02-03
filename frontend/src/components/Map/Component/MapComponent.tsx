@@ -7,16 +7,15 @@ import {TileLayerProps} from "react-leaflet/lib/TileLayer";
 import {useUser} from "../../../app/hooks";
 import {TreesGetResponseTree, TreeStatus} from "../../../generated/openapi";
 import MarkerClusterGroup from "react-leaflet-cluster";
-import {Button, Card, notification, Skeleton} from "antd";
+import {Button, Card, Image, Modal, Toast} from "antd-mobile";
 import api from "../../../api";
 import {mapBoundsOf} from "../Bounds/MapBounds";
 import uuid from "react-uuid";
 import {clusterIcon, newTreeIcon, treeIcon} from "../Icon/MapIcons";
 import {CtTree, ctTreeOf} from "../Models/CtTree";
-import TreeView from "../TreeView";
 import {DragEndEvent, LatLng} from "leaflet";
-import Meta from "antd/es/card/Meta";
 import {useSearchParams} from "react-router-dom";
+import TreeForm from "../TreeForm";
 
 interface DraftCtTree {
   latitude: number
@@ -73,16 +72,27 @@ const TreeMap = ({...props}: TreeMapProps & MapContainerProps) => {
         .then((responseTrees) => setTrees(responseTrees))
   }, [map, zoom, bounds, newTree, trigger])
 
-  const [treeViewOpen, setTreeViewOpen] = useState(false)
-  const [treeViewValue, setTreeViewValue] = useState<CtTree | undefined>()
-  const [treeViesEditable, setTreeViewEditable] = useState(false)
-  const setTreeViewState = (isOpen: boolean, value: CtTree) => {
-    const isTreeEditable = value.status === TreeStatus.New || value.status === TreeStatus.ToApprove;
-    const isUserHasPermission = user !== null && value.userId === user.sub;
-    setTreeViewEditable(isUserHasPermission && isTreeEditable)
-    setTreeViewValue(value)
-    setTreeViewOpen(isOpen)
+  const isTreeEditable = (tree: CtTree) => {
+    const isTreeEditable = tree.status === TreeStatus.New || tree.status === TreeStatus.ToApprove;
+    const isUserHasPermission = user !== null && tree.userId === user.sub;
+    return isUserHasPermission && isTreeEditable
   }
+
+  const showTreeModal = (tree: CtTree) => {
+    let modal = Modal.show({
+      content: <TreeForm
+          initial={tree}
+          onSave={onSave}
+          onPublish={(tree) => {
+            onPublish(tree)
+            modal.close()
+          }}
+          onCancel={() => modal.close()}
+          editable={isTreeEditable(tree)}/>,
+      closeOnMaskClick: true
+    })
+  }
+
   const createTreeMarker = (tree: TreesGetResponseTree) =>
       <Marker
           key={uuid()}
@@ -90,48 +100,31 @@ const TreeMap = ({...props}: TreeMapProps & MapContainerProps) => {
           icon={treeIcon(tree.status)}
       >
         <Popup>
-          <Card
-              style={{width: 300}}
-              cover={
-                <div style={{display: "flex", width: "100%"}}>
-                  {
-                    tree.fileUrl
-                        ? <img style={{
-                          height: 300,
-                          margin: "auto",
-                          objectFit: "cover",
-                          objectPosition: "100% 0"
-                        }}
-                               alt={tree.id.toString()}
-                               src={tree.fileUrl}
-                        />
-                        : <Skeleton.Image style={{height: 250, width: 300}}/>
-                  }
-                </div>
-              }
-              actions={[
-                <Button key="tree-details" type="text" onClick={() => {
-                  api.tree.getTreeById({id: tree.id})
-                      .then(treeResponse => {
-                        api.tree.getAllAttachedFiles({treeId: tree.id})
-                            .then((filesResponse) => {
-                              setTreeViewState(true, ctTreeOf(treeResponse, filesResponse));
-                            })
-                      })
-                      .catch()
-                }}>Details</Button>,
-              ]}
-          >
-            <Meta
-                title={tree.id}
-                description={
-                  <div>
-                    <p>Tree height: {tree.treeHeight}</p>
-                    <p>Trunk girth: {tree.trunkGirth}</p>
-                    <p>Wood type: {tree.woodTypeName}</p>
-                  </div>
-                }
+          <Card>
+            <Image
+                alt={tree.id.toString()}
+                src={tree.fileUrl}
+                width={280}
+                height={280}
+                fit='cover'
+                style={{borderRadius: 4}}
             />
+            <div>
+              <p>Tree height: {tree.treeHeight}</p>
+              <p>Trunk girth: {tree.trunkGirth}</p>
+              <p>Wood type: {tree.woodTypeName}</p>
+            </div>
+            <Button onClick={() => {
+              api.tree.getTreeById({id: tree.id})
+                  .then(treeResponse => {
+                    api.tree.getAllAttachedFiles({treeId: tree.id})
+                        .then((filesResponse) => {
+                          showTreeModal(ctTreeOf(treeResponse, filesResponse));
+                          map.closePopup()
+                        })
+                  })
+                  .catch()
+            }}>Details</Button>
           </Card>
         </Popup>
       </Marker>
@@ -155,13 +148,10 @@ const TreeMap = ({...props}: TreeMapProps & MapContainerProps) => {
         <Popup>
           {tree.latitude} {tree.longitude}
           <Button
-              type="primary"
+              color="primary"
               onClick={() => {
                 api.tree.createTree({treeCreateRequest: tree}).then((response) =>
-                    api.tree.getTreeById({id: response.treeId}).then(tree => {
-                      setNewTree(null)
-                      setTreeViewState(true, ctTreeOf(tree, []))
-                    }))
+                    api.tree.getTreeById({id: response.treeId}).then(tree => showTreeModal(ctTreeOf(tree, []))))
               }}
           >Create tree</Button>
         </Popup>
@@ -195,15 +185,14 @@ const TreeMap = ({...props}: TreeMapProps & MapContainerProps) => {
   const onSave = (tree: CtTree) => {
     updateTree(tree, tree.status,
         () => {
-          notification.open({message: "Tree was saved", type: "info", placement: "topRight"})
+          Toast.show({content: "Tree was saved", position: "top"})
           setTrigger(!trigger)
         })
   }
 
   const onPublish = (tree: CtTree) => {
     updateTree(tree, TreeStatus.ToApprove, () => {
-      notification.open({message: "Tree was published!", type: "info", placement: "topRight"});
-      setTreeViewOpen(false)
+      Toast.show({content: "Tree was published!", position: "top"})
       map.closePopup()
       setTrigger(!trigger)
     })
@@ -220,17 +209,6 @@ const TreeMap = ({...props}: TreeMapProps & MapContainerProps) => {
           {trees.map((tree) => createTreeMarker(tree))}
         </MarkerClusterGroup>
         {newTree && user && createDraftTreeMarker(newTree)}
-        {treeViewValue && <TreeView
-            bodyStyle={{overflowY: 'auto', maxHeight: 'calc(100vh - 100px)'}}
-            width={600}
-            centered={true}
-            editable={treeViesEditable}
-            open={treeViewOpen}
-            initial={treeViewValue}
-            onSave={onSave}
-            onPublish={onPublish}
-            onCancel={() => setTreeViewOpen(false)}
-        />}
       </div>
   )
 }

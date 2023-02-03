@@ -8,6 +8,8 @@ import {TreeStatus} from "../../generated/openapi";
 import {BarsOutlined} from "@ant-design/icons";
 import TreeView from "../../components/Map/TreeView";
 import AppRoutes from "../../constants/AppRoutes";
+import {Modal} from "antd-mobile";
+import TreeForm from "../../components/Map/TreeForm";
 
 const AllTreesPage: React.FC = () => {
   const [pagination, setPagination] = useState({limit: 0, offset: 0})
@@ -66,8 +68,11 @@ const AllTreesPage: React.FC = () => {
                 .then(treeResponse => {
                   api.tree.getAllAttachedFiles({treeId: record.id})
                       .then((filesResponse) => {
-                        setSelectedTree(ctTreeOf(treeResponse, filesResponse))
-                        setTreeViewOpen(true)
+                        const tree = ctTreeOf(treeResponse, filesResponse)
+                        Modal.show({
+                          content: <TreeForm initial={tree} editable={false}></TreeForm>,
+                          closeOnMaskClick: true
+                        })
                       })
                 })
                 .catch()

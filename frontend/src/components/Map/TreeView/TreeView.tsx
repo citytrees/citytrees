@@ -40,7 +40,7 @@ const TreeView = ({...props}: ModalProps & TreeEditorProps) => {
     form.resetFields()
     let initialValue = props.initial
     if (initialValue) {
-      setFileList(initialValue.files.map(file => ({uid: file.id, name: file.name, status: 'done', url: file.url,})) ?? [])
+      setFileList(initialValue.files.map(file => ({uid: file.id, name: file.id, status: 'done', url: file.url,})) ?? [])
       form.setFieldsValue(initialValue)
       form.setFieldValue("condition", initialValue.condition ? availableTreeConditionValues.indexOf(initialValue.condition) + 1 : null)
       api.woodType.getAllWoodTypes()
