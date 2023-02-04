@@ -20,6 +20,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -51,11 +53,12 @@ public class UserService implements UserDetailsService {
             UserStatus.NEW,
             Set.of(UserRole.BASIC),
             null,
-            null);
+            null,
+            Collections.emptyList());
     }
 
     public UUID create(User user) {
-        return create(user.getId(), user.getEmail(), user.getPassword(), user.getStatus(), user.getRoles(), user.getFirstName(), user.getLastName());
+        return create(user.getId(), user.getEmail(), user.getPassword(), user.getStatus(), user.getRoles(), user.getFirstName(), user.getLastName(), user.getAuthProviderMeta());
     }
 
     public UUID createIfNotExists(User user) {
@@ -103,10 +106,11 @@ public class UserService implements UserDetailsService {
 
     @SuppressWarnings("checkstyle:ParameterNumber")
     @SneakyThrows
-    private UUID create(UUID id, String email, String pwd, UserStatus status, Set<UserRole> roles, String firstName, String lastName) {
+    private UUID create(UUID id, String email, String pwd, UserStatus status, Set<UserRole> roles, String firstName, String lastName, List<User.AuthProviderMeta> authProviderMetaList) {
         var rolesJson = objectMapper.writeValueAsString(roles);
         var hashedPassword = hashUtil.md5WithSalt(pwd);
-        return userRepository.create(id, email, hashedPassword, status, rolesJson, LocalDateTime.now(), firstName, lastName);
+        var authProviderMetaString = objectMapper.writeValueAsString(authProviderMetaList);
+        return userRepository.create(id, email, hashedPassword, status, rolesJson, LocalDateTime.now(), firstName, lastName, authProviderMetaString);
     }
 
     public User findByAuthProviderIdAndExternalUserId(String providerId, Long externalUserId) {

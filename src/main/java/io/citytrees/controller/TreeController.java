@@ -1,8 +1,9 @@
 package io.citytrees.controller;
 
+import io.citytrees.mapper.TreeMapper;
 import io.citytrees.model.CtFile;
-import io.citytrees.util.FileDownloadUtil;
 import io.citytrees.service.TreeService;
+import io.citytrees.util.FileDownloadUtil;
 import io.citytrees.v1.controller.TreeControllerApiDelegate;
 import io.citytrees.v1.model.FileUploadResponse;
 import io.citytrees.v1.model.TreeCountAllGetResponse;
@@ -10,6 +11,7 @@ import io.citytrees.v1.model.TreeCreateRequest;
 import io.citytrees.v1.model.TreeCreateResponse;
 import io.citytrees.v1.model.TreeGetAttachedFileResponse;
 import io.citytrees.v1.model.TreeGetResponse;
+import io.citytrees.v1.model.TreeShortGetResponse;
 import io.citytrees.v1.model.TreeStatus;
 import io.citytrees.v1.model.TreeUpdateRequest;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +29,7 @@ import java.util.List;
 public class TreeController implements TreeControllerApiDelegate {
 
     private final TreeService treeService;
+    private final TreeMapper treeMapper;
     private final FileDownloadUtil fileDownloadUtil;
 
     @Override
@@ -45,9 +48,7 @@ public class TreeController implements TreeControllerApiDelegate {
         if (optionalTree.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
-
-        var response = treeService.responseFromTree(optionalTree.get());
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(treeMapper.responseFromTree(optionalTree.get()));
     }
 
     @Override
@@ -100,9 +101,9 @@ public class TreeController implements TreeControllerApiDelegate {
 
     @Override
     @PreAuthorize("permitAll()")
-    public ResponseEntity<List<TreeGetResponse>> getAll(Integer limit, Integer offset) {
-        var response = treeService.listAll(limit, offset).stream()
-            .map(treeService::responseFromTree)
+    public ResponseEntity<List<TreeShortGetResponse>> getAll(Integer limit, Long cursorPosition) {
+        var response = treeService.listAll(limit, cursorPosition).stream()
+            .map(treeMapper::shortResponseFromTree)
             .toList();
 
         return ResponseEntity.ok(response);

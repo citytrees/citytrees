@@ -6,6 +6,7 @@ import io.citytrees.constants.CookieNames
 import io.citytrees.model.CtFile
 import io.citytrees.model.Tree
 import io.citytrees.model.User
+import io.citytrees.model.User.AuthProviderMeta
 import io.citytrees.repository.TreeRepository
 import io.citytrees.repository.UserRepository
 import io.citytrees.service.FileService
@@ -107,6 +108,7 @@ abstract class AbstractTest {
         roles: Set<UserRole> = setOf(UserRole.BASIC),
         firstName: String? = null,
         lastName: String? = null,
+        authProviderMeta: List<AuthProviderMeta> = emptyList(),
     ): User = User.builder()
         .id(id)
         .email(email)
@@ -116,6 +118,7 @@ abstract class AbstractTest {
         .creationDateTime(LocalDateTime.now())
         .firstName(firstName)
         .lastName(lastName)
+        .authProviderMeta(authProviderMeta)
         .build().also {
             userService.create(it)
             CLEANUP_TASKS.addFirst { userRepository.deleteById(it.id) }
@@ -137,6 +140,7 @@ abstract class AbstractTest {
         latitude: Double,
         longitude: Double,
         status: TreeStatus = TreeStatus.NEW,
+        creationDateTime: LocalDateTime = LocalDateTime.now(),
     ): Tree = Tree.builder()
         .userId(userId)
         .status(status)
@@ -144,6 +148,7 @@ abstract class AbstractTest {
         .barkCondition(emptySet())
         .branchesCondition(emptySet())
         .fileIds(emptySet())
+        .creationDateTime(creationDateTime)
         .build().also {
             val id = treeService.create(it.userId, it.geoPoint)
             CLEANUP_TASKS.addFirst { treeRepository.deleteById(id) }

@@ -26,7 +26,6 @@ import java.util.UUID;
 public class Tree {
 
     @Id
-    @NotNull
     Long id;
 
     @NotNull

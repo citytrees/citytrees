@@ -3,7 +3,7 @@ package io.citytrees.service;
 import io.citytrees.configuration.properties.GeoProperties;
 import io.citytrees.model.CtFile;
 import io.citytrees.model.Tree;
-import io.citytrees.model.WoodType;
+import io.citytrees.model.TreesCluster;
 import io.citytrees.repository.TreeRepository;
 import io.citytrees.service.exception.UserInputError;
 import io.citytrees.util.GeometryUtil;
@@ -11,12 +11,12 @@ import io.citytrees.v1.model.TreeBarkCondition;
 import io.citytrees.v1.model.TreeBranchCondition;
 import io.citytrees.v1.model.TreeCondition;
 import io.citytrees.v1.model.TreeCreateRequest;
-import io.citytrees.v1.model.TreeGetResponse;
 import io.citytrees.v1.model.TreePlantingType;
 import io.citytrees.v1.model.TreeState;
 import io.citytrees.v1.model.TreeStatus;
 import io.citytrees.v1.model.TreeUpdateRequest;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import org.locationtech.jts.geom.Point;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -41,7 +41,6 @@ public class TreeService {
     private final SecurityService securityService;
     private final TreeRepository treeRepository;
     private final FileService fileService;
-    private final WoodTypeService woodTypeService;
 
     public Long create(TreeCreateRequest request) {
         Point point = geometryUtil.createPoint(request.getLatitude(), request.getLongitude());
@@ -144,39 +143,21 @@ public class TreeService {
         treeRepository.updateStatus(id, status);
     }
 
-    public List<Tree> listAll(Integer limit, Integer offset) {
-        return treeRepository.findAll(limit, offset);
+    public List<Tree> listAll(Integer limit, Long cursorPosition) {
+        return treeRepository.findAll(limit, cursorPosition != null ? cursorPosition : Long.MAX_VALUE);
     }
 
     public Long countAll() {
         return treeRepository.count();
     }
 
-    // TODO #32 add mapper
-    public TreeGetResponse responseFromTree(Tree tree) {
-        Integer age = tree.getAge();
-        UUID woodTypeId = tree.getWoodTypeId();
-        WoodType woodType = woodTypeId != null ? woodTypeService.getById(woodTypeId) : null;
-        return new TreeGetResponse()
-            .id(tree.getId())
-            .userId(tree.getUserId())
-            .status(tree.getStatus())
-            .latitude(tree.getGeoPoint().getX())
-            .longitude(tree.getGeoPoint().getY())
-            .woodTypeId(woodTypeId)
-            .woodTypeName(woodType != null ? woodType.getName() : null)
-            .fileIds(tree.getFileIds().stream().map(UUID::toString).toList())
-            .state(tree.getState())
-            .age(age)
-            .condition(tree.getCondition())
-            .barkCondition(tree.getBarkCondition().stream().toList())
-            .branchesCondition(tree.getBranchesCondition().stream().toList())
-            .plantingType(tree.getPlantingType())
-            .comment(tree.getComment())
-            .diameterOfCrown(tree.getDiameterOfCrown())
-            .heightOfTheFirstBranch(tree.getHeightOfTheFirstBranch())
-            .numberOfTreeTrunks(tree.getNumberOfTreeTrunks())
-            .treeHeight(tree.getTreeHeight())
-            .trunkGirth(tree.getTrunkGirth());
+    public List<Tree> listByRegion(Double x1, Double y1, Double x2, Double y2) {
+        return treeRepository.findAllByRegion(x1, y1, x2, y2, geoProperties.getSrid());
+    }
+
+    @SneakyThrows
+    @Deprecated
+    public List<TreesCluster> listClustersByRegion(Double x1, Double y1, Double x2, Double y2) {
+        return treeRepository.findClustersByRegion(x1, y1, x2, y2, geoProperties.getClusterDistance(), geoProperties.getSrid());
     }
 }

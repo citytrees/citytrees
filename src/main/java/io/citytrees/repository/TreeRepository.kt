@@ -23,9 +23,16 @@ interface TreeRepository : CrudRepository<Tree?, Long>, TreeRepositoryExtension 
     )
     fun findAllByRegion(x1: Double, y1: Double, x2: Double, y2: Double, srid: Int): List<Tree>
 
-    // todo #18 implement cursor based pagination, order by created_at
-    @Query("SELECT * FROM $TREE_TABLE ORDER BY id LIMIT :limit OFFSET :offset")
-    fun findAll(limit: Int, offset: Int): List<Tree>
+    @Query(
+        """
+        SELECT * 
+        FROM $TREE_TABLE 
+        WHERE id < :cursorPosition
+        ORDER BY id DESC 
+        LIMIT :limit 
+        """
+    )
+    fun findAll(limit: Int, cursorPosition: Long): List<Tree>
 
     @Query(
         """

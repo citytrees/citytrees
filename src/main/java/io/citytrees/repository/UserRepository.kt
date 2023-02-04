@@ -11,33 +11,39 @@ import java.util.*
 
 interface UserRepository : CrudRepository<User, UUID> {
 
-    @Query("""
+    @Query(
+        """
         SELECT *
         FROM ct_user
         WHERE id = :id
-    """)
+    """
+    )
     fun findFirstById(id: UUID): Optional<User>
 
-    @Query("""
+    @Query(
+        """
         SELECT *
         FROM ct_user
         WHERE email = :email
         LIMIT 1
-    """)
+    """
+    )
     fun findFirstByEmail(email: String): Optional<User>
 
-    @Query("""
+    @Query(
+        """
         SELECT *
         FROM ct_user
         WHERE status = :status
         LIMIT 100
-    """)
+    """
+    )
     fun findByStatus(status: UserStatus, limit: Int): List<User>
 
     @Query(
         """
-        INSERT INTO $USER_TABLE(id, email, pwd, status, roles, creation_date_time, first_name, last_name)
-        VALUES (:id, :email, :pwd, :status, :roles::jsonb, :creationDateTime, :firstName, :lastName)
+        INSERT INTO $USER_TABLE(id, email, pwd, status, roles, creation_date_time, first_name, last_name, auth_provider_meta)
+        VALUES (:id, :email, :pwd, :status, :roles::jsonb, :creationDateTime, :firstName, :lastName, :authProviderMetaString::jsonb)
         RETURNING id
         """
     )
@@ -49,7 +55,8 @@ interface UserRepository : CrudRepository<User, UUID> {
         roles: String,
         creationDateTime: LocalDateTime,
         firstName: String?,
-        lastName: String?
+        lastName: String?,
+        authProviderMetaString: String
     ): UUID
 
     @Modifying
@@ -71,10 +78,16 @@ interface UserRepository : CrudRepository<User, UUID> {
     fun updateStatus(id: UUID, status: UserStatus): Int
 
     // TODO #32: сделать так, чтобы externalUserId мог быть с типом Any
-    @Query("""
+    @Query(
+        """
         SELECT *
         FROM $USER_TABLE
         WHERE auth_provider_meta @> '[{"id": ":providerId", "params": {"id": :externalUserId}}]'::jsonb
-    """)
+    """
+    )
     fun findByAuthProviderIdAndExternalUserId(providerId: String, externalUserId: Long): User?
+
+    @Modifying
+    @Query("DELETE FROM $USER_TABLE where id = :id")
+    override fun deleteById(id: UUID)
 }

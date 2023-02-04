@@ -1,131 +1,102 @@
-import React, {useEffect, useState} from "react";
-import {Dropdown, MenuProps, Table, Tag} from "antd";
-import {CtTree, ctTreeOf} from "../../components/Map/Models/CtTree";
+import React, {useState} from "react";
+import {ctTreeOf} from "../../components/Map/Models/CtTree";
 import api from "../../api";
-import {ColumnType} from "antd/es/table/interface";
-import {PresetStatusColorType} from "antd/es/_util/colors";
 import {TreeStatus} from "../../generated/openapi";
-import {BarsOutlined} from "@ant-design/icons";
 import AppRoutes from "../../constants/AppRoutes";
-import {Modal} from "antd-mobile";
+import {Avatar, Button, DotLoading, Dropdown, InfiniteScroll, List, Modal, Space, Tag} from "antd-mobile";
 import TreeForm from "../../components/Map/TreeForm";
+import {ctShortTreeOf, CtTreeShort} from "../../components/Map/Models/CtTreeShort";
 
 const AllTreesPage: React.FC = () => {
-  const [pagination, setPagination] = useState({limit: 0, offset: 0})
-  const [total, setTotal] = useState(1)
+  const [data, setData] = useState<CtTreeShort[]>([])
 
-  const [data, setData] = useState<CtTree[]>([])
+  const getTreeTag = (tree: CtTreeShort) => {
+    const status = tree.status;
+    let color
+    if (status === TreeStatus.New) {
+      color = "primary"
+    } else if (status === TreeStatus.ToApprove) {
+      color = "warning"
+    } else if (status === TreeStatus.Approved) {
+      color = "success"
+    } else if (status === TreeStatus.Deleted) {
+      color = "default"
+    } else {
+      color = "default"
+    }
+    return <Tag color={color} fill="outline">{status}</Tag>
+  }
 
-  const columns: ColumnType<CtTree>[] = [
+  const listActions = (tree: CtTreeShort) => {
     {
-      title: 'Id',
-      dataIndex: 'id',
-    },
-    {
-      title: 'Lat',
-      dataIndex: 'latitude',
-    },
-    {
-      title: 'Long',
-      dataIndex: 'longitude',
-    },
-    {
-      title: 'Status',
-      dataIndex: 'status',
-      render: (_, record: CtTree) => {
-        const status = record.status;
-        let color: PresetStatusColorType
-        if (status === TreeStatus.New) {
-          color = "processing"
-        } else if (status === TreeStatus.ToApprove) {
-          color = "warning"
-        } else if (status === TreeStatus.Approved) {
-          color = "success"
-        } else if (status === TreeStatus.Deleted) {
-          color = "default"
-        } else {
-          color = "default"
-        }
-        return <Tag color={color}>{status}</Tag>
-      }
-    },
-    {
-      title: 'Actions',
-      key: 'actions',
-      render: (_, record: CtTree) => {
-        const items: MenuProps["items"] = []
-
-        const status = record.status;
-
-        items.push({
-          label: 'Details',
-          key: "action-details-tree",
-          onClick: () => {
-            api.tree.getTreeById({id: record.id})
-                .then(treeResponse => {
-                  api.tree.getAllAttachedFiles({treeId: record.id})
-                      .then((filesResponse) => {
-                        const tree = ctTreeOf(treeResponse, filesResponse)
-                        Modal.show({
-                          content: <TreeForm initial={tree} editable={false}></TreeForm>,
-                          closeOnMaskClick: true
-                        })
+      const items = []
+      const status = tree.status;
+      items.push({
+        label: 'Details',
+        key: "action-details-tree",
+        onClick: () => {
+          api.tree.getTreeById({id: tree.id})
+              .then(treeResponse => {
+                api.tree.getAllAttachedFiles({treeId: tree.id})
+                    .then((filesResponse) => {
+                      const tree = ctTreeOf(treeResponse, filesResponse)
+                      Modal.show({
+                        content: <TreeForm initial={tree} editable={false}></TreeForm>,
+                        closeOnMaskClick: true
                       })
-                })
-                .catch()
+                    })
+              })
+              .catch()
+        }
+      })
+
+      if (status === TreeStatus.ToApprove) {
+        items.push({
+          label: 'Approve tree',
+          key: "action-approve-tree",
+          onClick: () => {
+            api.tree.approveTree({treeId: tree.id}).then(() => {
+              tree.status = TreeStatus.Approved
+              updateTableRecord(tree)
+            })
           }
         })
-
-        if (status !== TreeStatus.Deleted) {
-          items.push({
-            label: 'Open on map',
-            key: 'action-open-on-map',
-            onClick: () => {
-              window.open(`${AppRoutes.MAIN}?lat=${record.latitude}&lng=${record.longitude}`, '_blank')
-            }
-          })
-          items.push({
-            label: 'Delete',
-            key: "action-delete-tree",
-            onClick: () => {
-              api.tree.deleteTree({id: record.id}).then(() => {
-                record.status = TreeStatus.Deleted
-                updateTableRecord(record)
-              })
-            }
-          })
-        } else if (status === TreeStatus.Deleted) {
-          // TODO #32 restore
-          items.push({
-            label: 'Restore',
-            key: "action-restore-tree",
-            disabled: true,
-            onClick: () => {
-            }
-          })
-        }
-
-        if (status === TreeStatus.ToApprove) {
-          items.push({
-            label: 'Approve tree',
-            key: "action-approve-tree",
-            onClick: () => {
-              api.tree.approveTree({treeId: record.id}).then(() => {
-                record.status = TreeStatus.Approved
-                updateTableRecord(record)
-              })
-            }
-          })
-        }
-
-        return <Dropdown trigger={['click']} disabled={items.length === 0} menu={{items}}>
-          <BarsOutlined/>
-        </Dropdown>
       }
-    },
-  ]
 
-  const updateTableRecord = (record: CtTree) => {
+      if (status !== TreeStatus.Deleted) {
+        items.push({
+          label: 'Open on map',
+          key: 'action-open-on-map',
+          onClick: () => {
+            window.open(`${AppRoutes.MAIN}?lat=${tree.latitude}&lng=${tree.longitude}`, '_blank')
+          }
+        })
+        items.push({
+          label: 'Delete',
+          key: "action-delete-tree",
+          onClick: () => {
+            api.tree.deleteTree({id: tree.id}).then(() => {
+              tree.status = TreeStatus.Deleted
+              updateTableRecord(tree)
+            })
+          }
+        })
+      } else if (status === TreeStatus.Deleted) {
+        // TODO #32 restore
+        items.push({
+          label: 'Restore',
+          key: "action-restore-tree",
+          disabled: true,
+          onClick: () => {
+          }
+        })
+      }
+
+      return items
+    }
+  }
+
+  const updateTableRecord = (record: CtTreeShort) => {
     const index = data.findIndex((tree) => record.id === tree.id)
     if (index > -1) {
       const newData = [...data]
@@ -138,32 +109,55 @@ const AllTreesPage: React.FC = () => {
     }
   }
 
-  useEffect(() => {
-    api.tree.getAllTreesCount().then(response => {
-      setTotal(response.count)
-      setPagination({limit: 20, offset: 0})
-    })
-  }, [])
+  const [hasMore, setHasMore] = useState(true)
 
-  useEffect(() => {
-    api.tree.getAll(pagination)
-        .then(request => setData(request.map(tree => ctTreeOf(tree, []))))
-  }, [pagination])
+  const loadMore = async () => {
+    let cursorPosition
+    if (data.length > 0) {
+      cursorPosition = data[data.length - 1].id
+    }
+    let append = await api.tree.getAll({limit: 30, cursorPosition: cursorPosition})
+        .then(request => request.map(tree => ctShortTreeOf(tree)))
+
+    setData(val => [...val, ...append])
+    setHasMore(append.length > 0)
+  };
 
   return (
       <div>
-        <Table
-            dataSource={data}
-            columns={columns}
-            pagination={{
-              position: ['bottomCenter'],
-              showSizeChanger: false,
-              total: total,
-              onChange: (page, pageSize) => {
-                setPagination({limit: pageSize, offset: (page - 1) * pageSize})
-              },
-            }}
-        />
+        <List>
+          {data.map((item, index) => (
+              <List.Item
+                  key={item.id}
+                  prefix={item.fileUrls && <Avatar src={item.fileUrls[0]}/>}
+                  description={`${item.latitude} ${item.longitude}`}
+                  extra={
+                    <Dropdown>
+                      <Dropdown.Item key={`details-dropdown-${index}`} title="Details">
+                        <div style={{display: "flex", justifyContent: "flex-end", padding: 12}}>
+                          {listActions(item).reverse().map(action =>
+                              <Button key={action.key} fill="none" onClick={action.onClick}>{action.label}</Button>
+                          )}
+                        </div>
+                      </Dropdown.Item>
+                    </Dropdown>
+                  }
+              >
+                <Space justify="center">
+                  <span style={{verticalAlign: "middle"}}>{item.id}</span>
+                  {getTreeTag(item)}
+                </Space>
+              </List.Item>
+          ))}
+        </List>
+        <InfiniteScroll aria-valuetext="" loadMore={loadMore} hasMore={hasMore}>
+          <div>
+            {hasMore && <>
+              <span>Loading</span>
+              <DotLoading/>
+            </>}
+          </div>
+        </InfiniteScroll>
       </div>
   )
 };

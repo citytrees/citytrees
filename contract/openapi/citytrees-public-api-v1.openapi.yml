@@ -613,7 +613,7 @@ paths:
           $ref: '#/components/responses/Forbidden'
         500:
           $ref: '#/components/responses/InternalServerError'
-  /tree/all/{limit}/{offset}:
+  /tree/all:
     get:
       tags:
         - tree-controller
@@ -621,16 +621,16 @@ paths:
       operationId: getAll
       parameters:
         - name: limit
-          in: path
+          in: query
           required: true
           schema:
             type: integer
             maximum: 50
-        - name: offset
-          in: path
-          required: true
+        - name: cursorPosition
+          in: query
           schema:
             type: integer
+            format: int64
       responses:
         200:
           description: OK
@@ -639,7 +639,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/TreeGetResponse'
+                  $ref: '#/components/schemas/TreeShortGetResponse'
         400:
           $ref: "#/components/responses/BadRequest"
         401:
@@ -1203,15 +1203,16 @@ components:
     TreesGetResponse:
       type: array
       items:
-        $ref: '#/components/schemas/TreesGetResponseTree'
+        $ref: '#/components/schemas/TreeShortGetResponse'
 
-    TreesGetResponseTree:
+    TreeShortGetResponse:
       type: object
       required:
         - id
         - latitude
         - longitude
         - status
+        - fileUrls
       properties:
         id:
           type: integer
@@ -1237,8 +1238,10 @@ components:
         trunkGirth:
           type: number
           format: double
-        fileUrl:
-          type: string
+        fileUrls:
+          type: array
+          items:
+            type: string
 
     TreesClusterGetResponse:
       type: object

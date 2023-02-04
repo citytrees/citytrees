@@ -5,7 +5,7 @@ import 'leaflet.markercluster';
 import {MapContainerProps} from "react-leaflet/lib/MapContainer";
 import {TileLayerProps} from "react-leaflet/lib/TileLayer";
 import {useUser} from "../../../app/hooks";
-import {TreesGetResponseTree, TreeStatus} from "../../../generated/openapi";
+import {TreeShortGetResponse, TreeStatus} from "../../../generated/openapi";
 import MarkerClusterGroup from "react-leaflet-cluster";
 import {Button, Card, Image, Modal, Toast} from "antd-mobile";
 import api from "../../../api";
@@ -36,7 +36,7 @@ const TreeMap = ({...props}: TreeMapProps & MapContainerProps) => {
   const [searchParams] = useSearchParams();
   const user = useUser()
 
-  const [trees, setTrees] = useState<TreesGetResponseTree[]>([])
+  const [trees, setTrees] = useState<TreeShortGetResponse[]>([])
   const [newTree, setNewTree] = useState<DraftCtTree | null>(null)
   const [trigger, setTrigger] = useState(false) // todo #32 refactor TreeMap
 
@@ -93,7 +93,7 @@ const TreeMap = ({...props}: TreeMapProps & MapContainerProps) => {
     })
   }
 
-  const createTreeMarker = (tree: TreesGetResponseTree) =>
+  const createTreeMarker = (tree: TreeShortGetResponse) =>
       <Marker
           key={uuid()}
           position={[tree.latitude, tree.longitude]}
@@ -103,7 +103,7 @@ const TreeMap = ({...props}: TreeMapProps & MapContainerProps) => {
           <Card>
             <Image
                 alt={tree.id.toString()}
-                src={tree.fileUrl}
+                src={tree.fileUrls.length ? tree.fileUrls[0] : undefined}
                 width={280}
                 height={280}
                 fit='cover'
@@ -116,7 +116,7 @@ const TreeMap = ({...props}: TreeMapProps & MapContainerProps) => {
             </div>
             <Button onClick={() => {
               api.tree.getTreeById({id: tree.id})
-                  .then(treeResponse => {
+                  .then((treeResponse) => {
                     api.tree.getAllAttachedFiles({treeId: tree.id})
                         .then((filesResponse) => {
                           showTreeModal(ctTreeOf(treeResponse, filesResponse));
