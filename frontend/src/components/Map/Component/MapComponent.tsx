@@ -60,7 +60,7 @@ const TreeMap = ({...props}: TreeMapProps & MapContainerProps) => {
 
     if (latStr !== null && lngStr !== null) {
       try {
-        map.flyTo(new LatLng(parseFloat(latStr!!), parseFloat(lngStr!!)), props.maxZoom, {duration: 1})
+        map.setView(new LatLng(parseFloat(latStr!!), parseFloat(lngStr!!)), props.maxZoom)
       } catch (e) {
         console.warn("Incorrect coordinates")
       }
@@ -91,6 +91,7 @@ const TreeMap = ({...props}: TreeMapProps & MapContainerProps) => {
           editable={isTreeEditable(tree)}/>,
       closeOnMaskClick: true
     })
+    map.closePopup()
   }
 
   const createTreeMarker = (tree: TreeShortGetResponse) =>
@@ -118,10 +119,7 @@ const TreeMap = ({...props}: TreeMapProps & MapContainerProps) => {
               api.tree.getTreeById({id: tree.id})
                   .then((treeResponse) => {
                     api.tree.getAllAttachedFiles({treeId: tree.id})
-                        .then((filesResponse) => {
-                          showTreeModal(ctTreeOf(treeResponse, filesResponse));
-                          map.closePopup()
-                        })
+                        .then((filesResponse) => showTreeModal(ctTreeOf(treeResponse, filesResponse)))
                   })
                   .catch()
             }}>Details</Button>
@@ -141,7 +139,7 @@ const TreeMap = ({...props}: TreeMapProps & MapContainerProps) => {
             },
             click: () => {
               if (map.getZoom() !== props.maxZoom) {
-                map.flyTo(new LatLng(tree.latitude, tree.longitude), props.maxZoom, {duration: 1})
+                map.setView(new LatLng(tree.latitude, tree.longitude), props.maxZoom)
               }
             }
           }}>
@@ -193,7 +191,6 @@ const TreeMap = ({...props}: TreeMapProps & MapContainerProps) => {
   const onPublish = (tree: CtTree) => {
     updateTree(tree, TreeStatus.ToApprove, () => {
       Toast.show({content: "Tree was published!", position: "top"})
-      map.closePopup()
       setTrigger(!trigger)
     })
   }
