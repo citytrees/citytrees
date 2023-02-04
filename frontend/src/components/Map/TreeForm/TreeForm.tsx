@@ -1,7 +1,7 @@
-import {Button, Form, ImageUploader, ImageUploadItem, Input, Selector, Space} from "antd-mobile";
+import {Button, Form, ImageUploader, ImageUploadItem, Input, Picker, Selector, Space, Stepper} from "antd-mobile";
 import {CtTree} from "../Models/CtTree";
 import {useForm} from "antd/es/form/Form";
-import {TreeBarkCondition, TreeBranchCondition, TreeCondition, TreePlantingType, TreeState} from "../../../generated/openapi";
+import {TreeBarkCondition, TreeBranchCondition, TreePlantingType, TreeState} from "../../../generated/openapi";
 import TextArea from "antd/es/input/TextArea";
 import api from "../../../api";
 import React, {useEffect, useState} from "react";
@@ -19,69 +19,52 @@ interface TreeEditorProps {
   onPublish?: (tree: CtTree) => void,
 }
 
-const availableTreeConditionValues = [
-  TreeCondition.VeryBad,
-  TreeCondition.Bad,
-  TreeCondition.Normal,
-  TreeCondition.Great,
-  TreeCondition.Awesome,
-]
-
 const TreeForm = ({...props}: TreeEditorProps) => {
   const [form] = useForm()
   const [fileList, setFileList] = useState<ImageUploadItem[]>([])
-  const [woodTypes, setWoodTypes] = useState<WoodType[]>([])
+
+  const [woodTypes, setWoodTypes] = useState<Map<string, WoodType>>(new Map())
+  const [selectedWoodTypeName, setSelectedWoodTypeName] = useState<string | undefined>()
+  const [woodTypePickerLoading, setWoodTypePickerLoading] = useState(true)
+
+  const isFormEditable = props.editable
+
+  const handlePickerInit = () => {
+    if (woodTypes.size === 0) {
+      api.woodType.getAllWoodTypes()
+          .then((response) => {
+            setWoodTypePickerLoading(false)
+            setWoodTypes(new Map(response.map(item => [item.id, {id: item.id, name: item.name}])))
+          })
+    }
+  }
 
   useEffect(() => {
     form.resetFields()
     let initialValue = props.initial
     if (initialValue) {
-      setFileList(initialValue.files.map(file => ({url: file.url!!})) ?? [])
+      setSelectedWoodTypeName(initialValue.woodTypeName)
       form.setFieldsValue(initialValue)
       form.setFieldValue("state", [initialValue.state])
+      form.setFieldValue("woodTypeId", [initialValue.woodTypeId])
       form.setFieldValue("plantingType", [initialValue.plantingType])
-      form.setFieldValue("condition", initialValue.condition ? availableTreeConditionValues.indexOf(initialValue.condition) + 1 : null)
-      api.woodType.getAllWoodTypes()
-          .then((responce) => {
-            setWoodTypes(responce.map(type => ({id: type.id, name: type.name})))
-          })
+      setFileList(initialValue.files.map(file => ({key: file.id, url: file.url!!})))
     }
   }, [form, props.initial])
 
   const getCtTree: () => CtTree = () => {
-    let comment = form.getFieldValue("comment")
-    if (comment && comment.size === 0) {
-      comment = null
-    }
-
-    const conditionNumber: number = form.getFieldValue("condition")
-    let condition: TreeCondition | undefined
-    if (conditionNumber) {
-      condition = availableTreeConditionValues[conditionNumber - 1]
-    }
-    let value = props.initial;
     let state = form.getFieldValue("state");
     let plantingType = form.getFieldValue("plantingType");
-    return {
-      id: value.id,
-      latitude: value.latitude,
-      longitude: value.longitude,
-      woodTypeId: form.getFieldValue("woodTypeId"),
-      status: value.status,
-      state: state ? state[0] : null,
-      age: form.getFieldValue("age"),
-      condition: condition,
-      barkCondition: form.getFieldValue("barkCondition"),
-      branchesCondition: form.getFieldValue("branchesCondition"),
-      plantingType: plantingType ? plantingType[0] : null,
-      comment: comment,
-      files: fileList.map(file => ({id: file.key as string, url: file.url})),
-      diameterOfCrown: form.getFieldValue("diameterOfCrown"),
-      heightOfTheFirstBranch: form.getFieldValue("heightOfTheFirstBranch"),
-      numberOfTreeTrunks: form.getFieldValue("numberOfTreeTrunks"),
-      treeHeight: form.getFieldValue("treeHeight"),
-      trunkGirth: form.getFieldValue("trunkGirth"),
-    }
+    let woodTypeId = form.getFieldValue("woodTypeId");
+
+    let result = {...props.initial, ...form.getFieldsValue()}
+
+    result.woodTypeId = woodTypeId ? woodTypeId[0] : null
+    result.state = state ? state[0] : null
+    result.plantingType = plantingType ? plantingType[0] : null
+    result.files = fileList.map(file => ({id: file.key as string, url: file.url}))
+
+    return result
   }
 
   return (
@@ -89,8 +72,8 @@ const TreeForm = ({...props}: TreeEditorProps) => {
         <Form
             form={form}
             layout="vertical"
-            footer={props.editable ? [
-              <Space direction="vertical">
+            footer={isFormEditable ? [
+              <Space wrap>
                 <Button
                     color="primary"
                     style={{display: "inline"}}
@@ -102,77 +85,96 @@ const TreeForm = ({...props}: TreeEditorProps) => {
             ] : null}
         >
           <Form.Item name="latitude" label="Latitude">
-            <Input disabled={true}/>
+            <Input readOnly={true}/>
           </Form.Item>
 
           <Form.Item name="longitude" label="Longitude">
-            <Input disabled={true}/>
+            <Input readOnly={true}/>
           </Form.Item>
 
-
-          <Form.Item name="state" label="Alive / dead">
+          <Form.Item name="state" label="Alive / dead" disabled={!isFormEditable}>
             <Selector
                 options={Object.values(TreeState).map(item => ({label: item, value: item}))}
             />
           </Form.Item>
 
-          <Form.Item name="plantingType" label="Planting type">
+          <Form.Item name="plantingType" label="Planting type" disabled={!isFormEditable}>
             <Selector
                 options={Object.values(TreePlantingType).map(item => ({label: item.toUpperCase(), value: item}))}
             />
           </Form.Item>
 
-          <Form.Item name="woodTypeId" label="Type of wood">
-            <Selector
-                multiple
-                options={woodTypes.map(item => ({label: item.name, value: item.id}))}
+          <Form.Item
+              name='woodTypeId'
+              label={selectedWoodTypeName ?? 'Select type of wood'}
+              trigger='onConfirm'
+              onClick={(e, datePickerRef) => {
+                datePickerRef.current?.open()
+                handlePickerInit()
+              }}
+              disabled={!isFormEditable}
+          >
+            <Picker
+                loading={woodTypePickerLoading}
+                mouseWheel={true}
+                cancelText="Cancel"
+                confirmText="Select"
+                onConfirm={(value) => {
+                  if (value) {
+                    setSelectedWoodTypeName(value[0] ? woodTypes.get(value[0])?.name : undefined)
+                  }
+                }}
+                columns={[Array.from(woodTypes.values()).map(item => ({label: item.name, value: item.id}))]}
             />
           </Form.Item>
 
-          <Form.Item name="barkCondition" label="Bark condition">
+          <Form.Item name="barkCondition" label="Bark condition" disabled={!isFormEditable}>
             <Selector
                 multiple
                 options={Object.values(TreeBarkCondition).map(item => ({label: item, value: item}))}
             />
           </Form.Item>
 
-          <Form.Item name="branchesCondition" label="Branches condition">
+          <Form.Item name="branchesCondition" label="Branches condition" disabled={!isFormEditable}>
             <Selector
                 multiple
                 options={Object.values(TreeBranchCondition).map(item => ({label: item, value: item}))}
             />
           </Form.Item>
 
-          <Form.Item name="age" label="Age">
-            <Input type="numeric"/>
+          <Form.Item name="age" label="Age" disabled={!isFormEditable}>
+            <Stepper min={0}/>
           </Form.Item>
 
-          <Form.Item name="diameterOfCrown" label="Diameter of crown">
-            <Input type="numeric"/>
+          <Form.Item name="diameterOfCrown" label="Diameter of crown" disabled={!isFormEditable}>
+            <Stepper min={0} digits={2}/>
           </Form.Item>
 
-          <Form.Item name="heightOfTheFirstBranch" label="Height of the first branch">
-            <Input type="numeric"/>
+          <Form.Item name="heightOfTheFirstBranch" label="Height of the first branch" disabled={!isFormEditable}>
+            <Stepper min={0} digits={2}/>
           </Form.Item>
 
-          <Form.Item name="numberOfTreeTrunks" label="Number of tree trunks">
-            <Input type="numeric"/>
+          <Form.Item name="numberOfTreeTrunks" label="Number of tree trunks" disabled={!isFormEditable}>
+            <Stepper min={0} digits={2}/>
           </Form.Item>
 
-          <Form.Item name="treeHeight" label="Tree height">
-            <Input type="numeric"/>
+          <Form.Item name="treeHeight" label="Tree height" disabled={!isFormEditable}>
+            <Stepper min={0} digits={2}/>
           </Form.Item>
 
-          <Form.Item name="trunkGirth" label="Trunk girth">
-            <Input type="numeric"/>
+          <Form.Item name="trunkGirth" label="Trunk girth" disabled={!isFormEditable}>
+            <Stepper min={0} digits={2}/>
           </Form.Item>
 
-          <Form.Item name="comment" label="Comment">
+          <Form.Item name="comment" label="Comment" disabled={!isFormEditable}>
             <TextArea rows={2} maxLength={150} showCount/>
           </Form.Item>
 
           <Form.Item label="Files">
             <ImageUploader
+                disableUpload={!isFormEditable}
+                deletable={isFormEditable}
+                showUpload={isFormEditable}
                 maxCount={8}
                 value={fileList}
                 upload={(file) =>

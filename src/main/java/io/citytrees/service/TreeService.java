@@ -3,6 +3,7 @@ package io.citytrees.service;
 import io.citytrees.configuration.properties.GeoProperties;
 import io.citytrees.model.CtFile;
 import io.citytrees.model.Tree;
+import io.citytrees.model.WoodType;
 import io.citytrees.repository.TreeRepository;
 import io.citytrees.service.exception.UserInputError;
 import io.citytrees.util.GeometryUtil;
@@ -40,6 +41,7 @@ public class TreeService {
     private final SecurityService securityService;
     private final TreeRepository treeRepository;
     private final FileService fileService;
+    private final WoodTypeService woodTypeService;
 
     public Long create(TreeCreateRequest request) {
         Point point = geometryUtil.createPoint(request.getLatitude(), request.getLongitude());
@@ -153,13 +155,16 @@ public class TreeService {
     // TODO #32 add mapper
     public TreeGetResponse responseFromTree(Tree tree) {
         Integer age = tree.getAge();
+        UUID woodTypeId = tree.getWoodTypeId();
+        WoodType woodType = woodTypeId != null ? woodTypeService.getById(woodTypeId) : null;
         return new TreeGetResponse()
             .id(tree.getId())
             .userId(tree.getUserId())
             .status(tree.getStatus())
             .latitude(tree.getGeoPoint().getX())
             .longitude(tree.getGeoPoint().getY())
-            .woodTypeId(tree.getWoodTypeId())
+            .woodTypeId(woodTypeId)
+            .woodTypeName(woodType != null ? woodType.getName() : null)
             .fileIds(tree.getFileIds().stream().map(UUID::toString).toList())
             .state(tree.getState())
             .age(age)

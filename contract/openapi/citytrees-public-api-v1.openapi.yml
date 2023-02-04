@@ -1058,6 +1058,8 @@ components:
         woodTypeId:
           type: string
           format: uuid
+        woodTypeName:
+          type: string
         state:
           $ref: '#/components/schemas/TreeState'
         age:

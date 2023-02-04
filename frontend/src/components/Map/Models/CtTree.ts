@@ -6,6 +6,7 @@ export interface CtTree {
     latitude: number
     longitude: number
     woodTypeId?: string
+    woodTypeName?: string
     status: TreeStatus
     state?: TreeState
     age?: number,
@@ -29,6 +30,7 @@ export const ctTreeOf: (tree: TreeGetResponse, files: TreeGetAttachedFileRespons
         latitude: tree.latitude,
         longitude: tree.longitude,
         woodTypeId: tree.woodTypeId,
+        woodTypeName: tree.woodTypeName,
         status: tree.status,
         state: tree.state,
         age: tree.age,

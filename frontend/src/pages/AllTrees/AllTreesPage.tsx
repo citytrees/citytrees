@@ -6,7 +6,6 @@ import {ColumnType} from "antd/es/table/interface";
 import {PresetStatusColorType} from "antd/es/_util/colors";
 import {TreeStatus} from "../../generated/openapi";
 import {BarsOutlined} from "@ant-design/icons";
-import TreeView from "../../components/Map/TreeView";
 import AppRoutes from "../../constants/AppRoutes";
 import {Modal} from "antd-mobile";
 import TreeForm from "../../components/Map/TreeForm";
@@ -16,8 +15,6 @@ const AllTreesPage: React.FC = () => {
   const [total, setTotal] = useState(1)
 
   const [data, setData] = useState<CtTree[]>([])
-  const [treeViewOpen, setTreeViewOpen] = useState(false)
-  const [selectedTree, setSelectedTree] = useState<CtTree>()
 
   const columns: ColumnType<CtTree>[] = [
     {
@@ -155,15 +152,6 @@ const AllTreesPage: React.FC = () => {
 
   return (
       <div>
-        <TreeView
-            open={treeViewOpen}
-            centered={true}
-            initial={selectedTree!!}
-            editable={false}
-            onCancel={() => setTreeViewOpen(false)}
-            bodyStyle={{overflowY: 'auto', maxHeight: 'calc(100vh - 100px)'}}
-            width={600}
-        />
         <Table
             dataSource={data}
             columns={columns}
