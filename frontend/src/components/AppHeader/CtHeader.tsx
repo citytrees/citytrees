@@ -1,14 +1,13 @@
 import React from "react";
-import {Avatar, Button, Col, Dropdown, Layout, MenuProps, Row, Tabs, TabsProps, Typography} from "antd";
+import {Avatar, Button, Tabs} from "antd-mobile";
 import {useTranslation} from "react-i18next";
-import Logo from "../Logo";
 import {useAppDispatch, useUser} from "../../app/hooks";
 import {Link, useLocation, useNavigate} from "react-router-dom";
 import AppRoutes from "../../constants/AppRoutes";
-import {UserOutlined} from "@ant-design/icons";
 import {UserRole} from "../../generated/openapi";
 import {setUser, User} from "../../features/user/userSlice";
 import {removeAccessToken} from "../../helpers/cookies";
+import {MenuProps} from "antd";
 
 const CtHeader: React.FC = () => {
   const {t} = useTranslation()
@@ -17,7 +16,7 @@ const CtHeader: React.FC = () => {
   const location = useLocation()
   const dispatch = useAppDispatch()
 
-  const tabs: TabsProps["items"] = [
+  const tabs: any[] = [
     {
       label: t("appHeader.menuItems.map"),
       key: AppRoutes.MAIN
@@ -70,40 +69,25 @@ const CtHeader: React.FC = () => {
       },
     ]
 
-    const {Text} = Typography;
     return (
         <Link to={AppRoutes.USER}>
-          <Avatar icon={<UserOutlined/>}/> {/* TODO user image */}
-          <Dropdown menu={{items}}>
-            <Text>{nameText}</Text>
-          </Dropdown>
+          <Avatar src="sss"/> {/* TODO user image */}
         </Link>
     )
   }
 
-  const {Header} = Layout;
-
   return (
-      <Header>
-        <Row justify="space-between" align="middle">
-          <Col>
-            <Logo/>
-          </Col>
-          <Col>
-            <Tabs activeKey={location.pathname}
-                  onChange={(activeKey) => {
-                    navigate(activeKey)
-                  }}
-                  items={tabs}
-            />
-          </Col>
-          <Col>
-            {user !== null
-                ? renderUserBlock(user)
-                : <Button onClick={() => navigate(AppRoutes.LOGIN)}>{t('appHeader.buttons.signIn')}</Button>}
-          </Col>
-        </Row>
-      </Header>
+      <div style={{display: "flex"}}>
+        <Tabs style={{flex: "1"}} activeKey={location.pathname}
+              onChange={(activeKey) => {
+                navigate(activeKey)
+              }}>
+          {tabs.map((tab) => <Tabs.Tab title={tab.label} key={tab.key}></Tabs.Tab>)}
+        </Tabs>
+        {user !== null
+            ? renderUserBlock(user)
+            : <Button onClick={() => navigate(AppRoutes.LOGIN)}>{t('appHeader.buttons.signIn')}</Button>}
+      </div>
   )
 };
 
