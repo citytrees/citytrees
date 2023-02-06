@@ -8,7 +8,7 @@ const MainPage = () => {
         <MapComponent
             url="http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             attributionControl={false}
-            style={{height: "85vh"}}
+            style={{height: "91vh"}}
             center={[56.8, 60.6]}
             zoom={10}
             minZoom={10}

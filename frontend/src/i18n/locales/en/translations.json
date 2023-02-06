@@ -52,7 +52,8 @@
             "myTrees": "My trees",
             "allTrees": "All trees",
             "users": "Users",
-            "woodTypes": "Types of wood"
+            "woodTypes": "Types of wood",
+            "profile": "Profile"
         },
         "buttons": {
             "signIn": "Sign in",
