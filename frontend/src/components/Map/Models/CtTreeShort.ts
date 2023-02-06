@@ -9,7 +9,8 @@ export interface CtTreeShort {
     status: TreeStatus
     treeHeight?: number,
     trunkGirth?: number,
-    fileUrls: string[]
+    fileUrls: string[],
+    userId?: string,
 }
 
 export const ctShortTreeOf: (tree: TreeShortGetResponse) => CtTreeShort = (tree) => {
@@ -23,5 +24,6 @@ export const ctShortTreeOf: (tree: TreeShortGetResponse) => CtTreeShort = (tree)
         treeHeight: tree.treeHeight,
         trunkGirth: tree.trunkGirth,
         fileUrls: tree.fileUrls,
+        userId: tree.userId,
     }
 }

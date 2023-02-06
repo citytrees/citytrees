@@ -1,5 +1,8 @@
 import {TreeBarkCondition, TreeBranchCondition, TreeCondition, TreeGetAttachedFileResponse, TreeGetResponse, TreePlantingType, TreeState, TreeStatus} from "../../../generated/openapi";
 import {CtFile} from "./CtFile";
+import {NullableUser} from "../../../features/user/userSlice";
+import {CtTreeShort} from "./CtTreeShort";
+import api from "../../../api";
 
 export interface CtTree {
     id: number,
@@ -47,4 +50,45 @@ export const ctTreeOf: (tree: TreeGetResponse, files: TreeGetAttachedFileRespons
         treeHeight: tree.treeHeight,
         trunkGirth: tree.trunkGirth,
     }
+}
+
+export const isTreeEditable = (tree: CtTree | CtTreeShort, user: NullableUser) => {
+    const isTreeEditable = tree.status === TreeStatus.New || tree.status === TreeStatus.ToApprove;
+    const isUserHasPermission = user !== null && tree.userId === user.sub;
+    return isUserHasPermission && isTreeEditable
+}
+
+export const isTreeDeletable = (tree: CtTree | CtTreeShort, user: NullableUser) => {
+    const isTreeDeletable = tree.status === TreeStatus.New || tree.status === TreeStatus.ToApprove;
+    const isUserHasPermission = user !== null && tree.userId === user.sub;
+    return isUserHasPermission && isTreeDeletable
+}
+
+export const updateTree = (tree: CtTree, status: TreeStatus, onSuccess: () => void) => {
+    api.tree.updateTreeById(
+        {
+            id: tree.id,
+            treeUpdateRequest: {
+                woodTypeId: tree.woodTypeId,
+                status: status,
+                state: tree.state,
+                age: tree.age,
+                condition: tree.condition,
+                barkCondition: tree.barkCondition,
+                branchesCondition: tree.branchesCondition,
+                plantingType: tree.plantingType,
+                comment: tree.comment,
+                fileIds: tree.files.map(file => file.id),
+                diameterOfCrown: tree.diameterOfCrown,
+                heightOfTheFirstBranch: tree.heightOfTheFirstBranch,
+                numberOfTreeTrunks: tree.numberOfTreeTrunks,
+                treeHeight: tree.treeHeight,
+                trunkGirth: tree.trunkGirth,
+            }
+        }
+    ).then(onSuccess)
+}
+
+export const deleteTree = (tree: CtTree | CtTreeShort, onSuccess: () => void) => {
+    api.tree.deleteTree({id: tree.id}).then(onSuccess)
 }

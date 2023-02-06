@@ -110,6 +110,16 @@ public class TreeController implements TreeControllerApiDelegate {
     }
 
     @Override
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<List<TreeShortGetResponse>> getAllUserTrees(Integer limit, Long cursorPosition) {
+        var response = treeService.listAllByUser(limit, cursorPosition).stream()
+            .map(treeMapper::shortResponseFromTree)
+            .toList();
+
+        return ResponseEntity.ok(response);
+    }
+
+    @Override
     public ResponseEntity<TreeCountAllGetResponse> getAllTreesCount() {
         return ResponseEntity.ok(new TreeCountAllGetResponse().count(treeService.countAll()));
     }

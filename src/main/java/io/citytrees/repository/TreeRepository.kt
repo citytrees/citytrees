@@ -36,6 +36,17 @@ interface TreeRepository : CrudRepository<Tree?, Long>, TreeRepositoryExtension 
 
     @Query(
         """
+        SELECT * 
+        FROM $TREE_TABLE 
+        WHERE id < :cursorPosition and user_id = :userId
+        ORDER BY id DESC 
+        LIMIT :limit 
+        """
+    )
+    fun findAllByUserId(userId: UUID, limit: Int, cursorPosition: Long): List<Tree>
+
+    @Query(
+        """
         INSERT INTO $TREE_TABLE(user_id, status, geo_point, creation_date_time)
         VALUES (:userId, :status, ST_SetSRID(ST_MakePoint(:x, :y), :srid), :creationDateTime)
         RETURNING id

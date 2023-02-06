@@ -4,10 +4,10 @@ import {useTranslation} from "react-i18next";
 import {useUser} from "../../app/hooks";
 import {useLocation, useNavigate} from "react-router-dom";
 import AppRoutes from "../../constants/AppRoutes";
-import {UserRole} from "../../generated/openapi";
 import {Space} from "antd";
 import {isMobile} from 'react-device-detect';
 import {CollectMoneyOutline, LocationFill, TagOutline, UnorderedListOutline, UserContactOutline, UserOutline} from "antd-mobile-icons"
+import {isUserAdmin} from "../../features/user/userSlice";
 
 const CtHeader: React.FC = () => {
   const {t} = useTranslation()
@@ -29,7 +29,7 @@ const CtHeader: React.FC = () => {
       key: AppRoutes.MY_TREES,
       icon: <TagOutline/>
     })
-    if (user.roles.indexOf(UserRole.Admin) !== -1) {
+    if (isUserAdmin(user)) {
       tabs.push({
             label: t("appHeader.menuItems.allTrees"),
             key: AppRoutes.ALL_TREES,

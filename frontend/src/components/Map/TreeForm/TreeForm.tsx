@@ -17,6 +17,8 @@ interface TreeEditorProps {
   onCancel?: () => void,
   onSave?: (tree: CtTree) => void,
   onPublish?: (tree: CtTree) => void,
+  onDelete?: (tree: CtTree) => void,
+  isDeletable?: boolean
   footer?: ReactNode
 }
 
@@ -77,11 +79,13 @@ const TreeForm = ({...props}: TreeEditorProps) => {
               <Space wrap>
                 <Button
                     color="primary"
+                    fill="outline"
                     style={{display: "inline"}}
                     onClick={() => props.onSave?.(getCtTree())}
                 > Save</Button>
                 <Button onClick={() => props.onPublish?.(getCtTree())}>Save and publish</Button>
-                <Button onClick={() => props.onCancel?.()}> Close</Button>
+                {props.isDeletable ? <Button color='danger' onClick={() => props.onDelete?.(getCtTree())}>Delete</Button> : null}
+                <Button onClick={() => props.onCancel?.()}>Close</Button>
               </Space>
             ] : null) : props.footer}
         >

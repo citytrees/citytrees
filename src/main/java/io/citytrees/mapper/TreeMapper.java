@@ -62,6 +62,7 @@ public class TreeMapper {
             .woodTypeName(woodType != null ? woodType.getName() : null)
             .treeHeight(tree.getTreeHeight())
             .trunkGirth(tree.getTrunkGirth())
-            .fileUrls(fileIds.stream().map(fileDownloadUtil::generateDownloadUrl).toList());
+            .fileUrls(fileIds.stream().map(fileDownloadUtil::generateDownloadUrl).toList())
+            .userId(tree.getUserId());
     }
 }

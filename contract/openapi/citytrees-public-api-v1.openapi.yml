@@ -648,6 +648,41 @@ paths:
           $ref: '#/components/responses/Forbidden'
         500:
           $ref: '#/components/responses/InternalServerError'
+  /tree/all-user-trees:
+    get:
+      tags:
+        - tree-controller
+      summary: Get all current user's trees
+      operationId: getAllUserTrees
+      parameters:
+        - name: limit
+          in: query
+          required: true
+          schema:
+            type: integer
+            maximum: 50
+        - name: cursorPosition
+          in: query
+          schema:
+            type: integer
+            format: int64
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TreeShortGetResponse'
+        400:
+          $ref: "#/components/responses/BadRequest"
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/Forbidden'
+        500:
+          $ref: '#/components/responses/InternalServerError'
   /tree/all/count:
     get:
       tags:
@@ -1213,6 +1248,7 @@ components:
         - longitude
         - status
         - fileUrls
+        - userId
       properties:
         id:
           type: integer
@@ -1242,6 +1278,9 @@ components:
           type: array
           items:
             type: string
+        userId:
+          type: string
+          format: uuid
 
     TreesClusterGetResponse:
       type: object

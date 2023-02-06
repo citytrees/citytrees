@@ -1,5 +1,6 @@
 import {createSlice, PayloadAction} from '@reduxjs/toolkit';
 import {RootState} from '../../app/store';
+import {UserRole} from "../../generated/openapi";
 
 export type User = {
     sub: string
@@ -8,6 +9,8 @@ export type User = {
     firstName: string
     lastName: string
 }
+
+export const isUserAdmin = (user: NullableUser) => user?.roles?.indexOf(UserRole.Admin) !== -1
 
 export type NullableUser = User | null
 

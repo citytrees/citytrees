@@ -1,12 +1,13 @@
 import React, {useState} from "react";
 import {ctTreeOf} from "../../components/Map/Models/CtTree";
 import api from "../../api";
-import {TreeStatus, UserRole} from "../../generated/openapi";
+import {TreeStatus} from "../../generated/openapi";
 import AppRoutes from "../../constants/AppRoutes";
 import {Button, DotLoading, Image, InfiniteScroll, List, Modal, Space, Tag} from "antd-mobile";
 import TreeForm from "../../components/Map/TreeForm";
 import {ctShortTreeOf, CtTreeShort} from "../../components/Map/Models/CtTreeShort";
 import {useUser} from "../../app/hooks";
+import {isUserAdmin} from "../../features/user/userSlice";
 
 const AllTreesPage: React.FC = () => {
   const user = useUser()
@@ -29,12 +30,22 @@ const AllTreesPage: React.FC = () => {
     return <Tag color={color} fill="outline">{status}</Tag>
   }
 
+
   const listActions = (tree: CtTreeShort) => {
     const items = []
     const status = tree.status;
-    const isUserAdmin = user?.roles?.indexOf(UserRole.Admin) !== -1
 
-    if (isUserAdmin) {
+    if(status !== "DELETED") {
+      items.push({
+        label: 'Open on map',
+        key: 'action-open-on-map',
+        onClick: () => {
+          window.open(`${AppRoutes.MAIN}?lat=${tree.latitude}&lng=${tree.longitude}`, '_blank')
+        }
+      })
+    }
+
+    if (isUserAdmin(user)) {
       if (status === TreeStatus.ToApprove) {
         items.push({
           label: 'Approve tree',
@@ -54,13 +65,6 @@ const AllTreesPage: React.FC = () => {
       }
 
       if (status !== TreeStatus.Deleted) {
-        items.push({
-          label: 'Open on map',
-          key: 'action-open-on-map',
-          onClick: () => {
-            window.open(`${AppRoutes.MAIN}?lat=${tree.latitude}&lng=${tree.longitude}`, '_blank')
-          }
-        })
         items.push({
           label: 'Delete',
           key: "action-delete-tree",

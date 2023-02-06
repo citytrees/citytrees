@@ -12,7 +12,7 @@ import api from "../../../api";
 import {mapBoundsOf} from "../Bounds/MapBounds";
 import uuid from "react-uuid";
 import {clusterIcon, newTreeIcon, treeIcon} from "../Icon/MapIcons";
-import {CtTree, ctTreeOf} from "../Models/CtTree";
+import {CtTree, ctTreeOf, deleteTree, isTreeDeletable, isTreeEditable, updateTree} from "../Models/CtTree";
 import {DragEndEvent, LatLng} from "leaflet";
 import {useSearchParams} from "react-router-dom";
 import TreeForm from "../TreeForm";
@@ -72,12 +72,6 @@ const TreeMap = ({...props}: TreeMapProps & MapContainerProps) => {
         .then((responseTrees) => setTrees(responseTrees))
   }, [map, zoom, bounds, newTree, trigger])
 
-  const isTreeEditable = (tree: CtTree) => {
-    const isTreeEditable = tree.status === TreeStatus.New || tree.status === TreeStatus.ToApprove;
-    const isUserHasPermission = user !== null && tree.userId === user.sub;
-    return isUserHasPermission && isTreeEditable
-  }
-
   const showTreeModal = (tree: CtTree) => {
     let modal = Modal.show({
       content: <TreeForm
@@ -88,7 +82,12 @@ const TreeMap = ({...props}: TreeMapProps & MapContainerProps) => {
             modal.close()
           }}
           onCancel={() => modal.close()}
-          editable={isTreeEditable(tree)}/>,
+          onDelete={() => {
+            onDelete(tree)
+            modal.close()
+          }}
+          isDeletable={isTreeDeletable(tree, user)}
+          editable={isTreeEditable(tree, user)}/>,
       closeOnMaskClick: true
     })
     map.closePopup()
@@ -158,31 +157,6 @@ const TreeMap = ({...props}: TreeMapProps & MapContainerProps) => {
         </Popup>
       </Marker>
 
-  const updateTree = (tree: CtTree, status: TreeStatus, onSuccess: () => void) => {
-    api.tree.updateTreeById(
-        {
-          id: tree.id,
-          treeUpdateRequest: {
-            woodTypeId: tree.woodTypeId,
-            status: status,
-            state: tree.state,
-            age: tree.age,
-            condition: tree.condition,
-            barkCondition: tree.barkCondition,
-            branchesCondition: tree.branchesCondition,
-            plantingType: tree.plantingType,
-            comment: tree.comment,
-            fileIds: tree.files.map(file => file.id),
-            diameterOfCrown: tree.diameterOfCrown,
-            heightOfTheFirstBranch: tree.heightOfTheFirstBranch,
-            numberOfTreeTrunks: tree.numberOfTreeTrunks,
-            treeHeight: tree.treeHeight,
-            trunkGirth: tree.trunkGirth,
-          }
-        }
-    ).then(() => onSuccess())
-  }
-
   const onSave = (tree: CtTree) => {
     updateTree(tree, tree.status,
         () => {
@@ -196,6 +170,10 @@ const TreeMap = ({...props}: TreeMapProps & MapContainerProps) => {
       Toast.show({content: "Tree was published!", position: "top"})
       setTrigger(!trigger)
     })
+  }
+
+  const onDelete = (tree: CtTree) => {
+    deleteTree(tree, () => setTrigger(!trigger))
   }
 
   return (

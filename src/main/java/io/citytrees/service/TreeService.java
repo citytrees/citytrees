@@ -147,6 +147,10 @@ public class TreeService {
         return treeRepository.findAll(limit, cursorPosition != null ? cursorPosition : Long.MAX_VALUE);
     }
 
+    public List<Tree> listAllByUser(Integer limit, Long cursorPosition) {
+        return treeRepository.findAllByUserId(securityService.getCurrentUserId(), limit, cursorPosition != null ? cursorPosition : Long.MAX_VALUE);
+    }
+
     public Long countAll() {
         return treeRepository.count();
     }
