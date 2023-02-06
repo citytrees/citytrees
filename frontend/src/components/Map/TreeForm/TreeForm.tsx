@@ -5,6 +5,8 @@ import {TreeBarkCondition, TreeBranchCondition, TreePlantingType, TreeState} fro
 import TextArea from "antd/es/input/TextArea";
 import api from "../../../api";
 import React, {ReactNode, useEffect, useState} from "react";
+import {isMobile} from 'react-device-detect';
+
 
 interface WoodType {
   id: string,
@@ -76,7 +78,7 @@ const TreeForm = ({...props}: TreeEditorProps) => {
             form={form}
             layout="vertical"
             footer={!props.footer ? (isFormEditable ? [
-              <Space wrap>
+              <Space wrap direction={isMobile ? "vertical" : "horizontal"}>
                 <Button
                     color="primary"
                     fill="outline"

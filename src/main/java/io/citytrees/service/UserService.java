@@ -83,11 +83,11 @@ public class UserService implements UserDetailsService {
     }
 
     public void update(UUID id, UserUpdateRequest request) {
-        update(id, request.getEmail(), request.getFirstName(), request.getLastName());
+        update(id, request.getFirstName(), request.getLastName());
     }
 
-    public void update(UUID id, String email, String firstName, String lastName) {
-        userRepository.update(id, email, firstName, lastName);
+    public void update(UUID id, String firstName, String lastName) {
+        userRepository.update(id, firstName, lastName);
     }
 
     public void updatePassword(UserUpdatePasswordRequest userUpdatePasswordRequest) {

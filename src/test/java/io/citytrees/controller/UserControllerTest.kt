@@ -69,7 +69,6 @@ class UserControllerTest : AbstractTest() {
             password = "p@ssw0rd!",
         )
 
-        val newEmail = "newexample@mail.com"
         val newFirstName = "NewFirstName"
         val newLastName = "NewLastName"
 
@@ -77,7 +76,6 @@ class UserControllerTest : AbstractTest() {
             withAuthenticationAs(user)
             contentType = MediaType.APPLICATION_JSON
             content = objectMapper.createObjectNode().apply {
-                put("email", newEmail)
                 put("firstName", newFirstName)
                 put("lastName", newLastName)
             }
@@ -87,7 +85,6 @@ class UserControllerTest : AbstractTest() {
 
         userService.getById(userId)
             .ifPresent {
-                assertEquals(it.email, newEmail)
                 assertEquals(it.firstName, newFirstName)
                 assertEquals(it.lastName, newLastName)
             }

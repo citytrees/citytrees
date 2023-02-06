@@ -14,7 +14,7 @@ interface UserRepository : CrudRepository<User, UUID> {
     @Query(
         """
         SELECT *
-        FROM ct_user
+        FROM $USER_TABLE
         WHERE id = :id
     """
     )
@@ -23,7 +23,7 @@ interface UserRepository : CrudRepository<User, UUID> {
     @Query(
         """
         SELECT *
-        FROM ct_user
+        FROM $USER_TABLE
         WHERE email = :email
         LIMIT 1
     """
@@ -33,7 +33,7 @@ interface UserRepository : CrudRepository<User, UUID> {
     @Query(
         """
         SELECT *
-        FROM ct_user
+        FROM $USER_TABLE
         WHERE status = :status
         LIMIT 100
     """
@@ -63,11 +63,11 @@ interface UserRepository : CrudRepository<User, UUID> {
     @Query(
         """
         UPDATE $USER_TABLE
-        SET email = :email, first_name = :firstName, last_name = :lastName
+        SET first_name = :firstName, last_name = :lastName
         WHERE id = :id
         """
     )
-    fun update(id: UUID, email: String, firstName: String?, lastName: String?): Int
+    fun update(id: UUID, firstName: String?, lastName: String?): Int
 
     @Modifying
     @Query("UPDATE $USER_TABLE SET pwd = :pwd WHERE id = :id")
