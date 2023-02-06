@@ -4,7 +4,7 @@ import {useForm} from "antd/es/form/Form";
 import {TreeBarkCondition, TreeBranchCondition, TreePlantingType, TreeState} from "../../../generated/openapi";
 import TextArea from "antd/es/input/TextArea";
 import api from "../../../api";
-import React, {useEffect, useState} from "react";
+import React, {ReactNode, useEffect, useState} from "react";
 
 interface WoodType {
   id: string,
@@ -17,6 +17,7 @@ interface TreeEditorProps {
   onCancel?: () => void,
   onSave?: (tree: CtTree) => void,
   onPublish?: (tree: CtTree) => void,
+  footer?: ReactNode
 }
 
 const TreeForm = ({...props}: TreeEditorProps) => {
@@ -72,7 +73,7 @@ const TreeForm = ({...props}: TreeEditorProps) => {
         <Form
             form={form}
             layout="vertical"
-            footer={isFormEditable ? [
+            footer={!props.footer ? (isFormEditable ? [
               <Space wrap>
                 <Button
                     color="primary"
@@ -82,7 +83,7 @@ const TreeForm = ({...props}: TreeEditorProps) => {
                 <Button onClick={() => props.onPublish?.(getCtTree())}>Save and publish</Button>
                 <Button onClick={() => props.onCancel?.()}> Close</Button>
               </Space>
-            ] : null}
+            ] : null) : props.footer}
         >
           <Form.Item name="latitude" label="Latitude">
             <Input readOnly={true}/>

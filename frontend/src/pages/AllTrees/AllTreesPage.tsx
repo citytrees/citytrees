@@ -1,13 +1,15 @@
 import React, {useState} from "react";
 import {ctTreeOf} from "../../components/Map/Models/CtTree";
 import api from "../../api";
-import {TreeStatus} from "../../generated/openapi";
+import {TreeStatus, UserRole} from "../../generated/openapi";
 import AppRoutes from "../../constants/AppRoutes";
-import {Avatar, Button, DotLoading, Dropdown, InfiniteScroll, List, Modal, Space, Tag} from "antd-mobile";
+import {Button, DotLoading, Image, InfiniteScroll, List, Modal, Space, Tag} from "antd-mobile";
 import TreeForm from "../../components/Map/TreeForm";
 import {ctShortTreeOf, CtTreeShort} from "../../components/Map/Models/CtTreeShort";
+import {useUser} from "../../app/hooks";
 
 const AllTreesPage: React.FC = () => {
+  const user = useUser()
   const [data, setData] = useState<CtTreeShort[]>([])
 
   const getTreeTag = (tree: CtTreeShort) => {
@@ -28,36 +30,24 @@ const AllTreesPage: React.FC = () => {
   }
 
   const listActions = (tree: CtTreeShort) => {
-    {
-      const items = []
-      const status = tree.status;
-      items.push({
-        label: 'Details',
-        key: "action-details-tree",
-        onClick: () => {
-          api.tree.getTreeById({id: tree.id})
-              .then(treeResponse => {
-                api.tree.getAllAttachedFiles({treeId: tree.id})
-                    .then((filesResponse) => {
-                      const tree = ctTreeOf(treeResponse, filesResponse)
-                      Modal.show({
-                        content: <TreeForm initial={tree} editable={false}></TreeForm>,
-                        closeOnMaskClick: true
-                      })
-                    })
-              })
-              .catch()
-        }
-      })
+    const items = []
+    const status = tree.status;
+    const isUserAdmin = user?.roles?.indexOf(UserRole.Admin) !== -1
 
+    if (isUserAdmin) {
       if (status === TreeStatus.ToApprove) {
         items.push({
           label: 'Approve tree',
           key: "action-approve-tree",
           onClick: () => {
-            api.tree.approveTree({treeId: tree.id}).then(() => {
-              tree.status = TreeStatus.Approved
-              updateTableRecord(tree)
+            Modal.confirm({
+              content: "Are you sure you what to approve tree?",
+              confirmText: "Approve",
+              cancelText: "Cancel",
+              onConfirm: () => api.tree.approveTree({treeId: tree.id}).then(() => {
+                tree.status = TreeStatus.Approved
+                updateTableRecord(tree)
+              })
             })
           }
         })
@@ -75,9 +65,14 @@ const AllTreesPage: React.FC = () => {
           label: 'Delete',
           key: "action-delete-tree",
           onClick: () => {
-            api.tree.deleteTree({id: tree.id}).then(() => {
-              tree.status = TreeStatus.Deleted
-              updateTableRecord(tree)
+            Modal.confirm({
+              content: "Are you sure you what to delete tree?",
+              confirmText: "Approve",
+              cancelText: "Cancel",
+              onConfirm: () => api.tree.deleteTree({id: tree.id}).then(() => {
+                tree.status = TreeStatus.Deleted
+                updateTableRecord(tree)
+              })
             })
           }
         })
@@ -91,9 +86,9 @@ const AllTreesPage: React.FC = () => {
           }
         })
       }
-
-      return items
     }
+
+    return items
   }
 
   const updateTableRecord = (record: CtTreeShort) => {
@@ -126,21 +121,42 @@ const AllTreesPage: React.FC = () => {
   return (
       <div>
         <List>
-          {data.map((item, index) => (
+          {data.map((item) => (
               <List.Item
                   key={item.id}
-                  prefix={item.fileUrls && <Avatar src={item.fileUrls[0]}/>}
+                  prefix={item.fileUrls &&
+                      <Image
+                          width={44}
+                          height={44}
+                          style={{borderRadius: 4}}
+                          fit='cover'
+                          src={item.fileUrls[0]}
+                      />}
                   description={`${item.latitude} ${item.longitude}`}
-                  extra={
-                    <Dropdown>
-                      <Dropdown.Item key={`details-dropdown-${index}`} title="Details">
-                        <div style={{display: "flex", justifyContent: "flex-end", padding: 12}}>
-                          {listActions(item).reverse().map(action =>
-                              <Button key={action.key} fill="none" onClick={action.onClick}>{action.label}</Button>
-                          )}
-                        </div>
-                      </Dropdown.Item>
-                    </Dropdown>
+                  onClick={() =>
+                      api.tree.getTreeById({id: item.id}).then(treeResponse => {
+                        api.tree.getAllAttachedFiles({treeId: item.id}).then((filesResponse) => {
+                          const tree = ctTreeOf(treeResponse, filesResponse)
+                          Modal.show({
+                            content: <TreeForm
+                                initial={tree}
+                                editable={false}
+                                footer={<Space>
+                                  {listActions(item).map(action =>
+                                      <Button
+                                          size='small'
+                                          color='primary'
+                                          fill='outline'
+                                          key={action.key}
+                                          onClick={action.onClick}>{action.label}
+                                      </Button>
+                                  )}
+                                </Space>}
+                            />,
+                            closeOnMaskClick: true
+                          })
+                        })
+                      })
                   }
               >
                 <Space justify="center">

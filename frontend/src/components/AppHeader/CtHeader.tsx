@@ -1,7 +1,7 @@
 import React from "react";
 import {Tabs} from "antd-mobile";
 import {useTranslation} from "react-i18next";
-import {useAppDispatch, useUser} from "../../app/hooks";
+import {useUser} from "../../app/hooks";
 import {useLocation, useNavigate} from "react-router-dom";
 import AppRoutes from "../../constants/AppRoutes";
 import {UserRole} from "../../generated/openapi";

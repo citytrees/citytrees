@@ -149,7 +149,10 @@ const TreeMap = ({...props}: TreeMapProps & MapContainerProps) => {
               color="primary"
               onClick={() => {
                 api.tree.createTree({treeCreateRequest: tree}).then((response) =>
-                    api.tree.getTreeById({id: response.treeId}).then(tree => showTreeModal(ctTreeOf(tree, []))))
+                    api.tree.getTreeById({id: response.treeId}).then(tree => {
+                      showTreeModal(ctTreeOf(tree, []))
+                      setNewTree(null)
+                    }))
               }}
           >Create tree</Button>
         </Popup>
