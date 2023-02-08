@@ -87,7 +87,9 @@ const TreeMap = ({...props}: TreeMapProps & MapContainerProps) => {
             modal.close()
           }}
           isDeletable={isTreeDeletable(tree, user)}
-          editable={isTreeEditable(tree, user)}/>,
+          editable={isTreeEditable(tree, user)}
+          enableOpenOnMapOption={false}
+      />,
       closeOnMaskClick: true
     })
     map.closePopup()

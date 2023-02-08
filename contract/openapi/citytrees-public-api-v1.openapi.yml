@@ -654,6 +654,8 @@ paths:
         - tree-controller
       summary: Get all current user's trees
       operationId: getAllUserTrees
+      security:
+        - BearerAuth: [ ]
       parameters:
         - name: limit
           in: query
@@ -731,6 +733,32 @@ paths:
           $ref: '#/components/responses/Forbidden'
         500:
           $ref: '#/components/responses/InternalServerError'
+  /wood-type/{id}:
+    delete:
+      tags:
+        - wood-type-controller
+      summary: Delete wood type by id
+      operationId: deleteWoodType
+      security:
+        - BearerAuth: [ ]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        200:
+          description: OK
+        400:
+          $ref: "#/components/responses/BadRequest"
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/Forbidden'
+        500:
+          $ref: '#/components/responses/InternalServerError'
   /wood-type/all:
     get:
       tags:
@@ -739,7 +767,36 @@ paths:
       operationId: getAllWoodTypes
       responses:
         200:
-          description: Returns file's data
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/WoodTypeResponse'
+        400:
+          $ref: "#/components/responses/BadRequest"
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/Forbidden'
+        500:
+          $ref: '#/components/responses/InternalServerError'
+  /wood-type/all/{name}:
+    get:
+      tags:
+        - wood-type-controller
+      summary: Get all types of wood
+      operationId: getAllWoodTypesByName
+      parameters:
+        - name: name
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: OK
           content:
             application/json:
               schema:
@@ -929,6 +986,12 @@ components:
       enum:
         - SELF_SEEDING
         - CULTURAL_SEEDING
+
+    WoodTypeStatus:
+      type: string
+      enum:
+        - ACTIVE
+        - DELETED
 
     UserRegisterResponse:
       type: object
@@ -1311,6 +1374,7 @@ components:
       required:
         - id
         - name
+        - status
         - userId
       properties:
         id:
@@ -1318,6 +1382,8 @@ components:
           format: uuid
         name:
           type: string
+        status:
+          $ref: '#/components/schemas/WoodTypeStatus'
         userId:
           type: string
           format: uuid

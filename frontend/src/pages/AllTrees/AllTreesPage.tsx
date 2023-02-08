@@ -2,7 +2,6 @@ import React, {useState} from "react";
 import {ctTreeOf} from "../../components/Map/Models/CtTree";
 import api from "../../api";
 import {TreeStatus} from "../../generated/openapi";
-import AppRoutes from "../../constants/AppRoutes";
 import {Button, DotLoading, Image, InfiniteScroll, List, Modal, Space, Tag} from "antd-mobile";
 import TreeForm from "../../components/Map/TreeForm";
 import {ctShortTreeOf, CtTreeShort} from "../../components/Map/Models/CtTreeShort";
@@ -13,7 +12,7 @@ const AllTreesPage: React.FC = () => {
   const user = useUser()
   const [data, setData] = useState<CtTreeShort[]>([])
 
-  const getTreeTag = (tree: CtTreeShort) => {
+  const renderTreeTag = (tree: CtTreeShort) => {
     const status = tree.status;
     let color
     if (status === TreeStatus.New) {
@@ -34,16 +33,6 @@ const AllTreesPage: React.FC = () => {
   const listActions = (tree: CtTreeShort) => {
     const items = []
     const status = tree.status;
-
-    if(status !== "DELETED") {
-      items.push({
-        label: 'Open on map',
-        key: 'action-open-on-map',
-        onClick: () => {
-          window.open(`${AppRoutes.MAIN}?lat=${tree.latitude}&lng=${tree.longitude}`, '_blank')
-        }
-      })
-    }
 
     if (isUserAdmin(user)) {
       if (status === TreeStatus.ToApprove) {
@@ -145,8 +134,8 @@ const AllTreesPage: React.FC = () => {
                             content: <TreeForm
                                 initial={tree}
                                 editable={false}
-                                footer={<Space>
-                                  {listActions(item).map(action =>
+                                footerElements={
+                                  listActions(item).map(action =>
                                       <Button
                                           size='small'
                                           color='primary'
@@ -155,7 +144,6 @@ const AllTreesPage: React.FC = () => {
                                           onClick={action.onClick}>{action.label}
                                       </Button>
                                   )}
-                                </Space>}
                             />,
                             closeOnMaskClick: true
                           })
@@ -165,7 +153,7 @@ const AllTreesPage: React.FC = () => {
               >
                 <Space justify="center">
                   <span style={{verticalAlign: "middle"}}>{item.id}</span>
-                  {getTreeTag(item)}
+                  {renderTreeTag(item)}
                 </Space>
               </List.Item>
           ))}

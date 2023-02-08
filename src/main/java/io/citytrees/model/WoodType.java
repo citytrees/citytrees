@@ -1,6 +1,7 @@
 package io.citytrees.model;
 
 import io.citytrees.constants.TableNames;
+import io.citytrees.v1.model.WoodTypeStatus;
 import lombok.Builder;
 import lombok.Value;
 import org.jetbrains.annotations.Nullable;
@@ -21,6 +22,9 @@ public class WoodType {
 
     @NotNull
     String name;
+
+    @NotNull
+    WoodTypeStatus status;
 
     @Nullable
     UUID userId;

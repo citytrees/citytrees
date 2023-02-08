@@ -87,8 +87,9 @@ const MyTreesPage: React.FC = () => {
                                 }}
                                 onPublish={(tree) => {
                                   updateTree(tree, TreeStatus.ToApprove, () => {
-                                    Toast.show({content: "Tree was published!", position: "top"})
+                                    tree.status = TreeStatus.ToApprove
                                     updateTableRecord(tree)
+                                    Toast.show({content: "Tree was published!", position: "top"})
                                     modal.close()
                                   })
                                 }}

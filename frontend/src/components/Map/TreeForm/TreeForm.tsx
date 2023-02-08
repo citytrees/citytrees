@@ -6,6 +6,7 @@ import TextArea from "antd/es/input/TextArea";
 import api from "../../../api";
 import React, {ReactNode, useEffect, useState} from "react";
 import {isMobile} from 'react-device-detect';
+import AppRoutes from "../../../constants/AppRoutes";
 
 
 interface WoodType {
@@ -14,14 +15,15 @@ interface WoodType {
 }
 
 interface TreeEditorProps {
-  initial: CtTree,
-  editable: boolean,
-  onCancel?: () => void,
-  onSave?: (tree: CtTree) => void,
-  onPublish?: (tree: CtTree) => void,
-  onDelete?: (tree: CtTree) => void,
+  initial: CtTree
+  editable: boolean
+  onCancel?: () => void
+  onSave?: (tree: CtTree) => void
+  onPublish?: (tree: CtTree) => void
+  onDelete?: (tree: CtTree) => void
   isDeletable?: boolean
-  footer?: ReactNode
+  footerElements?: ReactNode[]
+  enableOpenOnMapOption?: boolean
 }
 
 const TreeForm = ({...props}: TreeEditorProps) => {
@@ -33,13 +35,21 @@ const TreeForm = ({...props}: TreeEditorProps) => {
   const [woodTypePickerLoading, setWoodTypePickerLoading] = useState(true)
 
   const isFormEditable = props.editable
+  const isTreeDeletable = props.isDeletable
 
   const handlePickerInit = () => {
     if (woodTypes.size === 0) {
       api.woodType.getAllWoodTypes()
           .then((response) => {
             setWoodTypePickerLoading(false)
-            setWoodTypes(new Map(response.map(item => [item.id, {id: item.id, name: item.name}])))
+            let woodTypesMap = new Map(response.map(item => [item.id, {id: item.id, name: item.name}]))
+            let initialTree = props.initial;
+
+            let initialWoodTypeId = initialTree.woodTypeId
+            if (initialWoodTypeId !== undefined && !woodTypesMap.has(initialWoodTypeId)) {
+              woodTypesMap.set(initialWoodTypeId, {id: initialWoodTypeId, name: initialTree.woodTypeName!!})
+            }
+            setWoodTypes(woodTypesMap)
           })
     }
   }
@@ -72,24 +82,59 @@ const TreeForm = ({...props}: TreeEditorProps) => {
     return result
   }
 
+  function renderFooter() {
+    const items = []
+
+    if (props.enableOpenOnMapOption === undefined || props.enableOpenOnMapOption) {
+      items.push(
+          <Button
+              key="tree-open-on-map"
+              color="primary"
+              fill="outline"
+              size='small'
+              onClick={() => {
+                const tree = getCtTree()
+                window.open(`${AppRoutes.MAIN}?lat=${tree.latitude}&lng=${tree.longitude}`, '_blank')
+              }}
+          >Open on Map</Button>
+      )
+    }
+
+    if (isFormEditable) {
+      items.push(
+          <Button
+              color="primary"
+              fill="outline"
+              style={{display: "inline"}}
+              size='small'
+              onClick={() => props.onSave?.(getCtTree())}
+          > Save</Button>,
+          <Button color="primary" fill="outline" size='small' onClick={() => props.onPublish?.(getCtTree())}>Save and publish</Button>,
+          <Button size='small' onClick={() => props.onCancel?.()}>Close</Button>
+      )
+    }
+
+    if (isTreeDeletable) {
+      items.push(<Button color='danger' size='small' onClick={() => props.onDelete?.(getCtTree())}>Delete</Button>)
+    }
+
+    if (props.footerElements) {
+      items.push(props.footerElements)
+    }
+
+    if (items.length !== 0) {
+      return <Space wrap direction={isMobile ? "vertical" : "horizontal"}>{items}</Space>
+    } else {
+      return null
+    }
+  }
+
   return (
       <div>
         <Form
             form={form}
             layout="vertical"
-            footer={!props.footer ? (isFormEditable ? [
-              <Space wrap direction={isMobile ? "vertical" : "horizontal"}>
-                <Button
-                    color="primary"
-                    fill="outline"
-                    style={{display: "inline"}}
-                    onClick={() => props.onSave?.(getCtTree())}
-                > Save</Button>
-                <Button onClick={() => props.onPublish?.(getCtTree())}>Save and publish</Button>
-                {props.isDeletable ? <Button color='danger' onClick={() => props.onDelete?.(getCtTree())}>Delete</Button> : null}
-                <Button onClick={() => props.onCancel?.()}>Close</Button>
-              </Space>
-            ] : null) : props.footer}
+            footer={renderFooter()}
         >
           <Form.Item name="latitude" label="Latitude">
             <Input readOnly={true}/>

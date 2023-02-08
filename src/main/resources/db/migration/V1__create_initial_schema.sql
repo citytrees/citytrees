@@ -2,11 +2,11 @@ create extension if not exists postgis;
 
 create table ct_user
 (
-    id                 uuid         not null primary key,
-    roles              jsonb        not null,
-    status             varchar(16)  not null,
-    creation_date_time timestamp    not null,
-    auth_provider_meta jsonb        not null default '[]',
+    id                 uuid        not null primary key,
+    roles              jsonb       not null,
+    status             varchar(16) not null,
+    creation_date_time timestamp   not null,
+    auth_provider_meta jsonb       not null default '[]',
     email              varchar(128),
     pwd                varchar(128),
     first_name         varchar(128),
@@ -74,6 +74,7 @@ create table ct_wood_type
 (
     id      uuid               not null primary key,
     name    varchar(32) unique not null,
+    status  varchar(16)        not null,
     user_id uuid
 )
 
