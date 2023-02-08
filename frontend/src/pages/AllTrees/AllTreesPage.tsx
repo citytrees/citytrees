@@ -1,12 +1,13 @@
 import React, {useState} from "react";
-import {ctTreeOf} from "../../components/Map/Models/CtTree";
+import {CtTree, ctTreeOf, deleteTree, isTreeDeletable} from "../../components/Map/Models/CtTree";
 import api from "../../api";
 import {TreeStatus} from "../../generated/openapi";
-import {Button, DotLoading, Image, InfiniteScroll, List, Modal, Space, Tag} from "antd-mobile";
+import {ActionSheet, DotLoading, Image, InfiniteScroll, List, Modal, Space, Tag} from "antd-mobile";
 import TreeForm from "../../components/Map/TreeForm";
 import {ctShortTreeOf, CtTreeShort} from "../../components/Map/Models/CtTreeShort";
 import {useUser} from "../../app/hooks";
 import {isUserAdmin} from "../../features/user/userSlice";
+import AppRoutes from "../../constants/AppRoutes";
 
 const AllTreesPage: React.FC = () => {
   const user = useUser()
@@ -34,10 +35,38 @@ const AllTreesPage: React.FC = () => {
     const items = []
     const status = tree.status;
 
+    items.push({
+      text: 'Details',
+      key: 'action-details',
+      onClick: () => api.tree.getTreeById({id: tree.id}).then(treeResponse => {
+        api.tree.getAllAttachedFiles({treeId: tree.id}).then((filesResponse) => {
+          const tree = ctTreeOf(treeResponse, filesResponse)
+          Modal.show({
+            content: <TreeForm
+                initial={tree}
+                editable={false}
+                isDeletable={isTreeDeletable(tree, user)}
+                onDelete={() => api.tree.deleteTree({id: tree.id}).then(() => {
+                  tree.status = TreeStatus.Deleted
+                  updateTableRecord(tree)
+                })}
+            />,
+            closeOnMaskClick: true
+          })
+        })
+      })
+    })
+
+    items.push({
+      text: 'Open on map',
+      key: "action-open-on-map",
+      onClick: () => window.open(`${AppRoutes.MAIN}?lat=${tree.latitude}&lng=${tree.longitude}`, '_blank')
+    })
+
     if (isUserAdmin(user)) {
       if (status === TreeStatus.ToApprove) {
         items.push({
-          label: 'Approve tree',
+          text: 'Approve tree',
           key: "action-approve-tree",
           onClick: () => {
             Modal.confirm({
@@ -53,26 +82,24 @@ const AllTreesPage: React.FC = () => {
         })
       }
 
-      if (status !== TreeStatus.Deleted) {
+      if (isTreeDeletable(tree, user)) {
         items.push({
-          label: 'Delete',
-          key: "action-delete-tree",
-          onClick: () => {
-            Modal.confirm({
-              content: "Are you sure you what to delete tree?",
-              confirmText: "Approve",
-              cancelText: "Cancel",
-              onConfirm: () => api.tree.deleteTree({id: tree.id}).then(() => {
-                tree.status = TreeStatus.Deleted
-                updateTableRecord(tree)
-              })
+          text: 'Delete',
+          key: "action-delete",
+          onClick: () => Modal.confirm({
+            content: "Are you sure you what to delete tree?",
+            confirmText: "Delete",
+            cancelText: "Cancel",
+            onConfirm: () => deleteTree(tree, () => {
+              tree.status = TreeStatus.Deleted
+              updateTableRecord(tree)
             })
-          }
+          })
         })
       } else if (status === TreeStatus.Deleted) {
         // TODO #32 restore
         items.push({
-          label: 'Restore',
+          text: 'Restore',
           key: "action-restore-tree",
           disabled: true,
           onClick: () => {
@@ -84,7 +111,7 @@ const AllTreesPage: React.FC = () => {
     return items
   }
 
-  const updateTableRecord = (record: CtTreeShort) => {
+  const updateTableRecord = (record: CtTreeShort | CtTree) => {
     const index = data.findIndex((tree) => record.id === tree.id)
     if (index > -1) {
       const newData = [...data]
@@ -126,30 +153,7 @@ const AllTreesPage: React.FC = () => {
                           src={item.fileUrls[0]}
                       />}
                   description={`${item.latitude} ${item.longitude}`}
-                  onClick={() =>
-                      api.tree.getTreeById({id: item.id}).then(treeResponse => {
-                        api.tree.getAllAttachedFiles({treeId: item.id}).then((filesResponse) => {
-                          const tree = ctTreeOf(treeResponse, filesResponse)
-                          Modal.show({
-                            content: <TreeForm
-                                initial={tree}
-                                editable={false}
-                                footerElements={
-                                  listActions(item).map(action =>
-                                      <Button
-                                          size='small'
-                                          color='primary'
-                                          fill='outline'
-                                          key={action.key}
-                                          onClick={action.onClick}>{action.label}
-                                      </Button>
-                                  )}
-                            />,
-                            closeOnMaskClick: true
-                          })
-                        })
-                      })
-                  }
+                  onClick={() => ActionSheet.show({actions: listActions(item)})}
               >
                 <Space justify="center">
                   <span style={{verticalAlign: "middle"}}>{item.id}</span>

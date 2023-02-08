@@ -31,19 +31,22 @@ const UserPage: React.FC = () => {
   }
 
   return (
-      <Form
-          form={form}
-          footer={<Space>
-            <Button color="primary" fill="outline" onClick={handleSave}>Submit</Button>
-          </Space>}
-      >
-        <Form.Item name="lastName" label="Last name">
-          <Input/>
-        </Form.Item>
-        <Form.Item name="firstName" label="First name">
-          <Input/>
-        </Form.Item>
-      </Form>
+      <div>
+        <Form
+            form={form}
+            footer={<Space>
+              <Button color="primary" fill="outline" onClick={handleSave}>Submit</Button>
+            </Space>}
+        >
+          <Form.Item name="lastName" label="Last name">
+            <Input/>
+          </Form.Item>
+          <Form.Item name="firstName" label="First name">
+            <Input/>
+          </Form.Item>
+        </Form>
+
+      </div>
   )
 };
 

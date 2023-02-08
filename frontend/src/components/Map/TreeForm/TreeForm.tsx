@@ -1,12 +1,11 @@
-import {Button, Form, ImageUploader, ImageUploadItem, Input, Picker, Selector, Space, Stepper} from "antd-mobile";
+import {Button, Form, ImageUploader, ImageUploadItem, Input, Modal, Picker, Selector, Space, Stepper} from "antd-mobile";
 import {CtTree} from "../Models/CtTree";
 import {useForm} from "antd/es/form/Form";
 import {TreeBarkCondition, TreeBranchCondition, TreePlantingType, TreeState} from "../../../generated/openapi";
 import TextArea from "antd/es/input/TextArea";
 import api from "../../../api";
-import React, {ReactNode, useEffect, useState} from "react";
+import React, {useEffect, useState} from "react";
 import {isMobile} from 'react-device-detect';
-import AppRoutes from "../../../constants/AppRoutes";
 
 
 interface WoodType {
@@ -22,8 +21,6 @@ interface TreeEditorProps {
   onPublish?: (tree: CtTree) => void
   onDelete?: (tree: CtTree) => void
   isDeletable?: boolean
-  footerElements?: ReactNode[]
-  enableOpenOnMapOption?: boolean
 }
 
 const TreeForm = ({...props}: TreeEditorProps) => {
@@ -85,21 +82,6 @@ const TreeForm = ({...props}: TreeEditorProps) => {
   function renderFooter() {
     const items = []
 
-    if (props.enableOpenOnMapOption === undefined || props.enableOpenOnMapOption) {
-      items.push(
-          <Button
-              key="tree-open-on-map"
-              color="primary"
-              fill="outline"
-              size='small'
-              onClick={() => {
-                const tree = getCtTree()
-                window.open(`${AppRoutes.MAIN}?lat=${tree.latitude}&lng=${tree.longitude}`, '_blank')
-              }}
-          >Open on Map</Button>
-      )
-    }
-
     if (isFormEditable) {
       items.push(
           <Button
@@ -115,11 +97,14 @@ const TreeForm = ({...props}: TreeEditorProps) => {
     }
 
     if (isTreeDeletable) {
-      items.push(<Button color='danger' size='small' onClick={() => props.onDelete?.(getCtTree())}>Delete</Button>)
-    }
-
-    if (props.footerElements) {
-      items.push(props.footerElements)
+      items.push(<Button color='danger' size='small' onClick={() => {
+        Modal.confirm({
+          content: "Are you sure you what to delete tree?",
+          confirmText: "Delete",
+          cancelText: "Cancel",
+          onConfirm: () => props.onDelete?.(getCtTree())
+        })
+      }}>Delete</Button>)
     }
 
     if (items.length !== 0) {

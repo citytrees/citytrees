@@ -88,7 +88,6 @@ const TreeMap = ({...props}: TreeMapProps & MapContainerProps) => {
           }}
           isDeletable={isTreeDeletable(tree, user)}
           editable={isTreeEditable(tree, user)}
-          enableOpenOnMapOption={false}
       />,
       closeOnMaskClick: true
     })
