@@ -116,4 +116,15 @@ public class UserService implements UserDetailsService {
     public User findByAuthProviderIdAndExternalUserId(String providerId, Long externalUserId) {
         return userRepository.findByAuthProviderIdAndExternalUserId(providerId, externalUserId);
     }
+
+    public List<User> listAll(Integer limit, LocalDateTime cursorPosition) {
+        return userRepository.findAll(limit, cursorPosition != null ? cursorPosition : LocalDateTime.MAX);
+    }
+
+    public void updateStatus(UUID id, UserStatus status) {
+        if (securityService.getCurrentUserId() == id) {
+            throw new UserInputError("Current user's can't be updated");
+        }
+        userRepository.updateStatus(id, status);
+    }
 }

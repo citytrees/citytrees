@@ -13,6 +13,17 @@ interface UserRepository : CrudRepository<User, UUID> {
 
     @Query(
         """
+        SELECT * 
+        FROM $USER_TABLE 
+        WHERE creation_date_time < :cursorPosition
+        ORDER BY creation_date_time DESC 
+        LIMIT :limit 
+        """
+    )
+    fun findAll(limit: Int, cursorPosition: LocalDateTime): List<User>
+
+    @Query(
+        """
         SELECT *
         FROM $USER_TABLE
         WHERE id = :id

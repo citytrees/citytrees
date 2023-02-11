@@ -30,7 +30,6 @@ const AllTreesPage: React.FC = () => {
     return <Tag color={color} fill="outline">{status}</Tag>
   }
 
-
   const listActions = (tree: CtTreeShort) => {
     const items = []
     const status = tree.status;
@@ -136,7 +135,7 @@ const AllTreesPage: React.FC = () => {
 
     setData(val => [...val, ...append])
     setHasMore(append.length > 0)
-  };
+  }
 
   return (
       <div>
@@ -162,7 +161,7 @@ const AllTreesPage: React.FC = () => {
               </List.Item>
           ))}
         </List>
-        <InfiniteScroll aria-valuetext="" loadMore={loadMore} hasMore={hasMore}>
+        <InfiniteScroll loadMore={loadMore} hasMore={hasMore}>
           <div>
             {hasMore && <>
               <span>Loading</span>

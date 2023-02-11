@@ -5,11 +5,13 @@ import io.citytrees.service.UserPasswordResetService;
 import io.citytrees.service.UserService;
 import io.citytrees.v1.controller.UserControllerApiDelegate;
 import io.citytrees.v1.model.UserEmailConfirmRequest;
+import io.citytrees.v1.model.UserGetAllResponse;
 import io.citytrees.v1.model.UserGetResponse;
 import io.citytrees.v1.model.UserPasswordResetRequest;
 import io.citytrees.v1.model.UserRegisterRequest;
 import io.citytrees.v1.model.UserRegisterResponse;
 import io.citytrees.v1.model.UserRequestPasswordResetRequest;
+import io.citytrees.v1.model.UserStatus;
 import io.citytrees.v1.model.UserUpdatePasswordRequest;
 import io.citytrees.v1.model.UserUpdateRequest;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +21,9 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
+import java.util.List;
 import java.util.UUID;
 
 @Component
@@ -84,6 +89,39 @@ public class UserController extends BaseController implements UserControllerApiD
     @Override
     public ResponseEntity<Void> resetPassword(UserPasswordResetRequest userPasswordResetRequest) {
         userPasswordResetService.reset(userPasswordResetRequest.getEmail(), userPasswordResetRequest.getToken(), userPasswordResetRequest.getNewPassword());
+        return ResponseEntity.ok().build();
+    }
+
+    // todo #32 fix cursor
+    @Override
+    @PreAuthorize("permitAll()")
+    public ResponseEntity<List<UserGetAllResponse>> getAllUsers(Integer limit, OffsetDateTime cursorPosition) {
+        var response = userService.listAll(limit, cursorPosition != null ? cursorPosition.toLocalDateTime() : null).stream()
+            .map(user -> new UserGetAllResponse()
+                .id(user.getId())
+                .email(user.getEmail())
+                .roles(user.getRoles().stream().toList())
+                .status(user.getStatus())
+                .creationDate(user.getCreationDateTime().atOffset(ZoneOffset.UTC))
+                .lastName(user.getLastName())
+                .firstName(user.getFirstName())
+            )
+            .toList();
+
+        return ResponseEntity.ok(response);
+    }
+
+    @Override
+    @PreAuthorize("hasAuthority(@Roles.ADMIN)")
+    public ResponseEntity<Void> restore(UUID id) {
+        userService.updateStatus(id, UserStatus.NEW);
+        return ResponseEntity.ok().build();
+    }
+
+    @Override
+    @PreAuthorize("hasAuthority(@Roles.ADMIN)")
+    public ResponseEntity<Void> ban(UUID id) {
+        userService.updateStatus(id, UserStatus.BANNED);
         return ResponseEntity.ok().build();
     }
 }

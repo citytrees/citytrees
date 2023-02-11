@@ -98,6 +98,58 @@ paths:
           $ref: '#/components/responses/Forbidden'
         500:
           $ref: '#/components/responses/InternalServerError'
+  /user/{id}/restore:
+    put:
+      tags:
+        - user-controller
+      summary: Restore user
+      operationId: restore
+      security:
+        - BearerAuth: [ ]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        200:
+          description: OK
+        400:
+          $ref: "#/components/responses/BadRequest"
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/Forbidden'
+        500:
+          $ref: '#/components/responses/InternalServerError'
+  /user/{id}/ban:
+    put:
+      tags:
+        - user-controller
+      summary: Ban user
+      operationId: ban
+      security:
+        - BearerAuth: [ ]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        200:
+          description: OK
+        400:
+          $ref: "#/components/responses/BadRequest"
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/Forbidden'
+        500:
+          $ref: '#/components/responses/InternalServerError'
   /user/password:
     put:
       tags:
@@ -183,6 +235,41 @@ paths:
       responses:
         200:
           description: OK
+        400:
+          $ref: "#/components/responses/BadRequest"
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/Forbidden'
+        500:
+          $ref: '#/components/responses/InternalServerError'
+  /user/all:
+    get:
+      tags:
+        - user-controller
+      summary: Get all users
+      operationId: getAllUsers
+      parameters:
+        - name: limit
+          in: query
+          required: true
+          schema:
+            type: integer
+            maximum: 50
+        - name: cursorPosition
+          in: query
+          schema:
+            type: string
+            format: date-time
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UserGetAllResponse'
         400:
           $ref: "#/components/responses/BadRequest"
         401:
@@ -1024,6 +1111,41 @@ components:
           items:
             $ref: '#/components/schemas/UserRole'
           example: [ "BASIC" ]
+        firstName:
+          type: string
+          example: FirstName
+        lastName:
+          type: string
+          example: LastName
+    UserGetAllResponse:
+      type: object
+      required:
+        - id
+        - email
+        - roles
+        - status
+        - creationDate
+        - firstName
+        - lastName
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: ed156378-204b-473c-9d2a-886941a819ff
+        email:
+          type: string
+          format: email
+          example: example@mail.com
+        roles:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserRole'
+          example: [ "BASIC" ]
+        status:
+          $ref: '#/components/schemas/UserStatus'
+        creationDate:
+          type: string
+          format: date-time
         firstName:
           type: string
           example: FirstName
