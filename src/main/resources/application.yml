@@ -65,3 +65,8 @@ s3:
 geo:
   srid: ${GEO_SRID:4326}
   cluster-distance: ${CLUSTER_DISTANCE:0.001}
+
+oauth2:
+  vk:
+    client-id: ${VK_CLIENT_ID:vk_client_id}
+    client-secret: ${VK_CLIENT_SECRET:vk_client_secret}

@@ -7,7 +7,8 @@ import com.vk.api.sdk.exceptions.ClientException;
 import com.vk.api.sdk.objects.UserAuthResponse;
 import com.vk.api.sdk.objects.users.responses.GetResponse;
 import io.citytrees.configuration.properties.ApplicationProperties;
-import io.citytrees.configuration.security.OAuth2Config;
+import io.citytrees.configuration.security.oauth.VkOAuth2Config;
+import io.citytrees.dto.OAuth2Props;
 import io.citytrees.model.User;
 import io.citytrees.service.AuthService;
 import io.citytrees.service.UserService;
@@ -15,6 +16,7 @@ import io.citytrees.v1.model.UserRole;
 import lombok.RequiredArgsConstructor;
 import org.apache.http.client.utils.URIBuilder;
 import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import javax.servlet.http.HttpServletResponse;
@@ -22,7 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-//@Service TODO #32
+@Service
 @RequiredArgsConstructor
 public class VkOAuth2Service implements OAuth2Service {
 
@@ -30,16 +32,17 @@ public class VkOAuth2Service implements OAuth2Service {
 
     private final UserService userService;
     private final AuthService authService;
-    private final OAuth2Config oAuth2Config;
+    private final VkOAuth2Config vkOAuth2Config;
     private final ApplicationProperties applicationProperties;
     private final VkApiClient vk;
 
     @Override
     public String getOAuthUri() {
         return new URIBuilder()
-            .setHost("https://oauth.vk.com")
+            .setScheme("https")
+            .setHost("oauth.vk.com")
             .setPath("authorize")
-            .setParameter("client_id", oAuth2Config.getClientId(PROVIDER_ID))
+            .setParameter("client_id", vkOAuth2Config.getClientId())
             .setParameter("display", "page")
             .setParameter("redirect_uri", applicationProperties.getBaseUrl() + "/auth/oauth2/vk/callback")
             .setParameter("scope", "groups")
@@ -53,8 +56,8 @@ public class VkOAuth2Service implements OAuth2Service {
         UserAuthResponse authResponse;
         try {
             authResponse = vk.oAuth().userAuthorizationCodeFlow(
-                Integer.parseInt(oAuth2Config.getClientId(PROVIDER_ID)),
-                oAuth2Config.getClientSecret(PROVIDER_ID),
+                Integer.parseInt(vkOAuth2Config.getClientId()),
+                vkOAuth2Config.getClientSecret(),
                 getRedirectUri(),
                 authorizationCode
             ).execute();
@@ -62,12 +65,20 @@ public class VkOAuth2Service implements OAuth2Service {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage(), e);
         }
 
-        User user = userService.findByAuthProviderIdAndExternalUserId(PROVIDER_ID, Long.valueOf(authResponse.getUserId()));
+        User user = userService.findByAuthProviderIdAndExternalUserId(PROVIDER_ID, authResponse.getUserId().toString());
         if (user == null) {
             user = createNewUser(authResponse.getUserId(), authResponse.getAccessToken());
         }
 
         authService.generateAndSetAuthCookies(user, response);
+    }
+
+    @Override
+    public OAuth2Props getProps() {
+        return OAuth2Props.builder()
+            .id("vk")
+            .label("VK")
+            .build();
     }
 
     private String getRedirectUri() {

@@ -2,12 +2,13 @@ import {useNavigate} from "react-router-dom";
 import {useTranslation} from "react-i18next";
 import {Button, Col, Form, Input, notification, Row} from "antd";
 import api from "../../api";
-import React from "react";
+import React, {useEffect, useState} from "react";
 import AppRoutes from "../../constants/AppRoutes";
 import {useAppDispatch} from "../../app/hooks";
 import {setUser, User} from "../../features/user/userSlice";
 import jwt_decode from "jwt-decode";
 import {getAccessToken} from "../../helpers/cookies";
+import {AuthGetAllProviderResponseItem} from "../../generated/openapi";
 
 function LoginPage() {
   const dispatch = useAppDispatch();
@@ -18,8 +19,14 @@ function LoginPage() {
   const email = Form.useWatch('email', form);
   const password = Form.useWatch('password', form);
 
+  const [oauthProviders, setOauthProviders] = useState<AuthGetAllProviderResponseItem[]>([])
+
+  useEffect(() => {
+    api.auth.getAllProviders().then((response) => setOauthProviders(response.items))
+  }, [])
+
   return (
-      <Row style={{minHeight: "100%"}} justify="center" align="middle" >
+      <Row style={{minHeight: "100%"}} justify="center" align="middle">
         <Col xs={{span: 16}} lg={{span: 6}}>
           <Form
               form={form}
@@ -91,6 +98,15 @@ function LoginPage() {
               >
                 {t('signInPage.password.reset.label')}
               </Button>
+            </Form.Item>
+            <Form.Item>
+              {oauthProviders.map((provider) => (
+                  <Button
+                      onClick={() => api.auth.handle0Auth2({providerId: provider.id})}
+                  >
+                    {provider.id}
+                  </Button>
+              ))}
             </Form.Item>
           </Form>
         </Col>

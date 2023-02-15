@@ -8,6 +8,7 @@ import io.citytrees.configuration.properties.GeoProperties;
 import io.citytrees.configuration.properties.S3Properties;
 import io.citytrees.configuration.properties.SchedulingProperties;
 import io.citytrees.configuration.properties.SecurityProperties;
+import io.citytrees.configuration.security.oauth.VkOAuth2Config;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -22,6 +23,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
     ApplicationProperties.class,
     FileStorageProperties.class,
     CaffeineCacheSpecificProperties.class,
+    VkOAuth2Config.class,
 })
 public class CityTreesApplication {
 

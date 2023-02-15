@@ -1,5 +1,6 @@
 openapi: 3.0.0
 
+# TODO #32 fix arrays at top level
 info:
   title: citytrees public API
   contact:
@@ -362,23 +363,70 @@ paths:
         500:
           $ref: '#/components/responses/InternalServerError'
 
-  /auth/oauth2/{provider}:
+  /auth/oauth2/{providerId}:
     get:
       tags:
         - auth-controller
       summary: Authenticates user using third-party provider
       operationId: handle0Auth2
       parameters:
-        - name: provider
+        - name: providerId
           in: path
           required: true
           schema:
             type: string
-            enum:
-              - google
+      responses:
+        302:
+          description: FOUND
+        400:
+          $ref: "#/components/responses/BadRequest"
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/Forbidden'
+        500:
+          $ref: '#/components/responses/InternalServerError'
+  /auth/oauth2/{providerId}/callback:
+    get:
+      tags:
+        - auth-controller
+      summary: Handle callback from third-party provider
+      operationId: handleCallback
+      parameters:
+        - name: providerId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: authorizationCode
+          in: query
+          required: true
+          schema:
+            type: string
       responses:
         200:
           description: OK
+        400:
+          $ref: "#/components/responses/BadRequest"
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/Forbidden'
+        500:
+          $ref: '#/components/responses/InternalServerError'
+  /auth/oauth2/provider/all:
+    get:
+      tags:
+        - auth-controller
+      summary: Return all available providers
+      operationId: getAllProviders
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthGetAllProviderResponse'
         400:
           $ref: "#/components/responses/BadRequest"
         401:
@@ -1563,6 +1611,28 @@ components:
           type: string
           format: uuid
           example: 1a60dc75-6e43-4e62-becf-2683042b4818
+    AuthGetAllProviderResponse:
+      type: object
+      required:
+        - items
+      properties:
+        items:
+          description: Provider id
+          type: array
+          items:
+            $ref: "#/components/schemas/AuthGetAllProviderResponseItem"
+    AuthGetAllProviderResponseItem:
+      type: object
+      required:
+        - id
+        - label
+      properties:
+        id:
+          description: Provider id
+          type: string
+        label:
+          description: Provider label
+          type: string
 
     ErrorResponse:
       description: Error

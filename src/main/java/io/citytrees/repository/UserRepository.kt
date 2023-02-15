@@ -88,15 +88,14 @@ interface UserRepository : CrudRepository<User, UUID> {
     @Query("UPDATE $USER_TABLE SET status = :status WHERE id = :id")
     fun updateStatus(id: UUID, status: UserStatus): Int
 
-    // TODO #32: сделать так, чтобы externalUserId мог быть с типом Any
     @Query(
         """
         SELECT *
         FROM $USER_TABLE
-        WHERE auth_provider_meta @> '[{"id": ":providerId", "params": {"id": :externalUserId}}]'::jsonb
+        WHERE auth_provider_meta @> '[{"id": ":providerId", "params": {"id": ":externalUserId"}}]'::jsonb
     """
     )
-    fun findByAuthProviderIdAndExternalUserId(providerId: String, externalUserId: Long): User?
+    fun findByAuthProviderIdAndExternalUserId(providerId: String, externalUserId: String): User?
 
     @Modifying
     @Query("DELETE FROM $USER_TABLE where id = :id")

@@ -113,7 +113,7 @@ public class UserService implements UserDetailsService {
         return userRepository.create(id, email, hashedPassword, status, rolesJson, LocalDateTime.now(), firstName, lastName, authProviderMetaString);
     }
 
-    public User findByAuthProviderIdAndExternalUserId(String providerId, Long externalUserId) {
+    public User findByAuthProviderIdAndExternalUserId(String providerId, String externalUserId) {
         return userRepository.findByAuthProviderIdAndExternalUserId(providerId, externalUserId);
     }
 
